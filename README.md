@@ -3,7 +3,6 @@
 [![GitHub issues](https://img.shields.io/github/issues/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/issues)
 ![GitHub Repo stars](https://img.shields.io/github/stars/openhue/openhue-cli)
 [![GitHub](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
-[![GitHub release (with filter)](https://img.shields.io/github/v/release/openhue/openhue-cli?logo=openapiinitiative&labelColor=white&color=grey)](https://github.com/openhue/openhue-cli/releases/latest)
 
 ## Overview
 
