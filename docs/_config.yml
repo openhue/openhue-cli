@@ -1,0 +1,6 @@
+remote_theme: sighingnow/jekyll-gitbook
+
+# Theme config
+syntax_highlighter_style: colorful
+tracker:
+  google_analytics: "G-4DT5YQ51N5"
