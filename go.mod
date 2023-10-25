@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/brutella/dnssd v1.2.9
 	github.com/deepmap/oapi-codegen v1.15.0
+	github.com/fatih/color v1.15.0
 	github.com/oapi-codegen/runtime v1.0.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.17.0
@@ -12,7 +13,6 @@ require (
 
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
-	github.com/fatih/color v1.15.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
