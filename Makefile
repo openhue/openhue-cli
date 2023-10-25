@@ -1,6 +1,9 @@
 # Go Command Path
 GO ?= `which go`
 
+# GoRelease Command Path
+GORELEASER ?= `which goreleaser`
+
 GREEN = "\\033[0\;32m"
 BOLD = "\\033[1m"
 RESET = "\\033[0m"
@@ -15,11 +18,10 @@ generate: ## Generates the openhue.gen.go client from the latest https://github.
 	@echo "${GREEN}${BOLD}./openhue/openhue.gen.go successfully generated 🚀${RESET}"
 
 .PHONY: build
-build: ## Generates the openhue-cli executable, and output it in the ./bin folder
-	@$(GO) build -o bin/openhue
-	@echo "${GREEN}${BOLD}openhue binary successfully generated in ./bin folder 📦${RESET}"
-	@echo "Checking if the binary file is valid...\n"
-	./bin/openhue -h
+build: ## Generates the openhue-cli executables in the ./dist folder
+	@$(GORELEASER) check
+	@$(GORELEASER) build --clean --snapshot
+	@echo "\n${GREEN}${BOLD}openhue binaries successfully generated in the ./dist folder 📦${RESET}"
 
 .PHONY: tidy
 tidy: ## Tidy makes sure go.mod matches the source code in the module
