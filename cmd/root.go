@@ -11,7 +11,7 @@ var rootCmd = &cobra.Command{
 	Short: "openhue-cli controls your Philips Hue lighting system",
 	Long: `openhue-cli controls your Philips Hue lighting system
 
-    Find more information at: https://cli.openhue.io`,
+    Find more information at: https://www.openhue.io/cli`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

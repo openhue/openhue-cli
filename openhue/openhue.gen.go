@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/oapi-codegen/runtime"
 )
@@ -33,6 +34,33 @@ const (
 // Defines values for BridgePutType.
 const (
 	BridgePutTypeBridge BridgePutType = "bridge"
+)
+
+// Defines values for GroupedLightPutColorTemperatureDeltaAction.
+const (
+	GroupedLightPutColorTemperatureDeltaActionDown GroupedLightPutColorTemperatureDeltaAction = "down"
+	GroupedLightPutColorTemperatureDeltaActionStop GroupedLightPutColorTemperatureDeltaAction = "stop"
+	GroupedLightPutColorTemperatureDeltaActionUp   GroupedLightPutColorTemperatureDeltaAction = "up"
+)
+
+// Defines values for GroupedLightPutDimmingDeltaAction.
+const (
+	GroupedLightPutDimmingDeltaActionDown GroupedLightPutDimmingDeltaAction = "down"
+	GroupedLightPutDimmingDeltaActionStop GroupedLightPutDimmingDeltaAction = "stop"
+	GroupedLightPutDimmingDeltaActionUp   GroupedLightPutDimmingDeltaAction = "up"
+)
+
+// Defines values for GroupedLightPutSignalingSignal.
+const (
+	GroupedLightPutSignalingSignalAlternating GroupedLightPutSignalingSignal = "alternating"
+	GroupedLightPutSignalingSignalNoSignal    GroupedLightPutSignalingSignal = "no_signal"
+	GroupedLightPutSignalingSignalOnOff       GroupedLightPutSignalingSignal = "on_off"
+	GroupedLightPutSignalingSignalOnOffColor  GroupedLightPutSignalingSignal = "on_off_color"
+)
+
+// Defines values for GroupedLightPutType.
+const (
+	GroupedLightPutTypeGroupedLight GroupedLightPutType = "grouped_light"
 )
 
 // Defines values for LightArchetype.
@@ -332,7 +360,7 @@ const (
 
 // Defines values for ScenePutType.
 const (
-	ScenePutTypeScene ScenePutType = "scene"
+	Scene ScenePutType = "scene"
 )
 
 // Defines values for SupportedDynamicStatus.
@@ -361,16 +389,21 @@ const (
 
 // Defines values for SupportedSignals.
 const (
-	SupportedSignalsAlternating SupportedSignals = "alternating"
-	SupportedSignalsNoSignal    SupportedSignals = "no_signal"
-	SupportedSignalsOnOff       SupportedSignals = "on_off"
-	SupportedSignalsOnOffColor  SupportedSignals = "on_off_color"
+	Alternating SupportedSignals = "alternating"
+	NoSignal    SupportedSignals = "no_signal"
+	OnOff       SupportedSignals = "on_off"
+	OnOffColor  SupportedSignals = "on_off_color"
 )
 
 // Defines values for SupportedTimedEffects.
 const (
 	SupportedTimedEffectsNoEffect SupportedTimedEffects = "no_effect"
 	SupportedTimedEffectsSunrise  SupportedTimedEffects = "sunrise"
+)
+
+// Defines values for TemperaturePutType.
+const (
+	Temperature TemperaturePutType = "temperature"
 )
 
 // ActionGet defines model for ActionGet.
@@ -556,6 +589,100 @@ type Gradient struct {
 	// Points Collection of gradients points. For control of the gradient points through a PUT a minimum of 2 points need to be provided.
 	Points *[]Color `json:"points,omitempty"`
 }
+
+// GroupedLightGet defines model for GroupedLightGet.
+type GroupedLightGet struct {
+	// Alert Joined alert control
+	Alert *struct {
+		ActionValues *[]string `json:"action_values,omitempty"`
+	} `json:"alert,omitempty"`
+	Dimming *Dimming `json:"dimming,omitempty"`
+
+	// Id Unique identifier representing a specific resource instance
+	Id *string `json:"id,omitempty"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1  *string             `json:"id_v1,omitempty"`
+	On    *On                 `json:"on,omitempty"`
+	Owner *ResourceIdentifier `json:"owner,omitempty"`
+
+	// Signaling Feature containing basic signaling properties.
+	Signaling *struct {
+		// SignalValues Signals that the light supports.
+		SignalValues *[]SupportedSignals `json:"signal_values,omitempty"`
+	} `json:"signaling,omitempty"`
+
+	// Type Type of the supported resources
+	Type *string `json:"type,omitempty"`
+}
+
+// GroupedLightPut defines model for GroupedLightPut.
+type GroupedLightPut struct {
+	// Alert Joined alert control
+	Alert *struct {
+		Action *string `json:"action,omitempty"`
+	} `json:"alert,omitempty"`
+	Color *Color `json:"color,omitempty"`
+
+	// ColorTemperature Joined color temperature control
+	ColorTemperature *struct {
+		// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
+		Mirek *Mirek `json:"mirek,omitempty"`
+	} `json:"color_temperature,omitempty"`
+	ColorTemperatureDelta *struct {
+		Action GroupedLightPutColorTemperatureDeltaAction `json:"action"`
+
+		// MirekDelta color temperature in mirek or null when the light color is not in the ct spectrum
+		MirekDelta *Mirek `json:"mirek_delta,omitempty"`
+	} `json:"color_temperature_delta,omitempty"`
+	Dimming      *Dimming `json:"dimming,omitempty"`
+	DimmingDelta *struct {
+		Action GroupedLightPutDimmingDeltaAction `json:"action"`
+
+		// BrightnessDelta Brightness percentage of full-scale increase delta to current dimlevel. Clip at Max-level or Min-level.
+		BrightnessDelta *float32 `json:"brightness_delta,omitempty"`
+	} `json:"dimming_delta,omitempty"`
+	Dynamics *struct {
+		// Duration Duration of a light transition or timed effects in ms.
+		Duration *int `json:"duration,omitempty"`
+	} `json:"dynamics,omitempty"`
+	On *On `json:"on,omitempty"`
+
+	// Signaling Feature containing basic signaling properties.
+	Signaling *struct {
+		// Color List of colors to apply to the signal (not supported by all signals)
+		Color *[]Color `json:"color,omitempty"`
+
+		// Duration Duration has a max of 65534000 ms and a stepsize of 1 second.
+		// Values inbetween steps will be rounded.
+		// Duration is ignored for `no_signal`.
+		Duration *int `json:"duration,omitempty"`
+
+		// Signal - `no_signal`: No signal is active. Write “no_signal” to stop active signal.
+		// - `on_off`: Toggles between max brightness and Off in fixed color.
+		// - `on_off_color`: Toggles between off and max brightness with color provided.
+		// - `alternating`: Alternates between 2 provided colors.
+		Signal *GroupedLightPutSignalingSignal `json:"signal,omitempty"`
+	} `json:"signaling,omitempty"`
+
+	// Type Type of the supported resources (always `grouped_light` here)
+	Type *GroupedLightPutType `json:"type,omitempty"`
+}
+
+// GroupedLightPutColorTemperatureDeltaAction defines model for GroupedLightPut.ColorTemperatureDelta.Action.
+type GroupedLightPutColorTemperatureDeltaAction string
+
+// GroupedLightPutDimmingDeltaAction defines model for GroupedLightPut.DimmingDelta.Action.
+type GroupedLightPutDimmingDeltaAction string
+
+// GroupedLightPutSignalingSignal - `no_signal`: No signal is active. Write “no_signal” to stop active signal.
+// - `on_off`: Toggles between max brightness and Off in fixed color.
+// - `on_off_color`: Toggles between off and max brightness with color provided.
+// - `alternating`: Alternates between 2 provided colors.
+type GroupedLightPutSignalingSignal string
+
+// GroupedLightPutType Type of the supported resources (always `grouped_light` here)
+type GroupedLightPutType string
 
 // LightArchetype Light archetype
 type LightArchetype string
@@ -759,6 +886,48 @@ type LightGetPowerupOnMode string
 
 // LightGetPowerupPreset When setting the custom preset the additional properties can be set. For all other presets, no other properties can be included.
 type LightGetPowerupPreset string
+
+// LightLevelGet defines model for LightLevelGet.
+type LightLevelGet struct {
+	// Enabled true when sensor is activated, false when deactivated
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Id Unique identifier representing a specific resource instance
+	Id *string `json:"id,omitempty"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1  *string `json:"id_v1,omitempty"`
+	Light *struct {
+		// LightLevel Deprecated. Moved to light_level_report/light_level
+		LightLevel       *int `json:"light_level,omitempty"`
+		LightLevelReport *struct {
+			// Changed last time the value of this property is changed.
+			Changed *time.Time `json:"changed,omitempty"`
+
+			// LightLevel Light level in 10000*log10(lux) +1 measured by sensor.
+			// Logarithmic scale used because the human eye adjusts to light levels and small changes at low
+			// lux levels are more noticeable than at high lux levels.
+			// This allows use of linear scale configuration sliders.
+			LightLevel *int `json:"light_level,omitempty"`
+		} `json:"light_level_report,omitempty"`
+
+		// LightLevelValid Deprecated. Indication whether the value presented in light_level is valid
+		LightLevelValid *bool `json:"light_level_valid,omitempty"`
+	} `json:"light,omitempty"`
+	Owner *ResourceIdentifier `json:"owner,omitempty"`
+
+	// Type Type of the supported resources
+	Type *string `json:"type,omitempty"`
+}
+
+// LightLevelPut defines model for LightLevelPut.
+type LightLevelPut struct {
+	// Enabled true when sensor is activated, false when deactivated
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Type Type of the supported resources (always `light_level` here)
+	Type *string `json:"type,omitempty"`
+}
 
 // LightPut defines model for LightPut.
 type LightPut struct {
@@ -1152,6 +1321,48 @@ type SupportedSignals string
 // SupportedTimedEffects Current status values the light is in regarding timed effects
 type SupportedTimedEffects string
 
+// TemperatureGet defines model for TemperatureGet.
+type TemperatureGet struct {
+	// Enabled `true` when sensor is activated, `false` when deactivated
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Id Unique identifier representing a specific resource instance
+	Id *string `json:"id,omitempty"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1        *string             `json:"id_v1,omitempty"`
+	Owner       *ResourceIdentifier `json:"owner,omitempty"`
+	Temperature *struct {
+		// Temperature Deprecated. Moved to Temperature_report/temperature
+		Temperature       *float32 `json:"temperature,omitempty"`
+		TemperatureReport *struct {
+			// Changed last time the value of this property is changed.
+			Changed *time.Time `json:"changed,omitempty"`
+
+			// Temperature Temperature in 1.00 degrees Celsius
+			Temperature *float32 `json:"temperature,omitempty"`
+		} `json:"temperature_report,omitempty"`
+
+		// TemperatureValid Deprecated. Indication whether the value presented in temperature is valid
+		TemperatureValid *bool `json:"temperature_valid,omitempty"`
+	} `json:"temperature,omitempty"`
+
+	// Type Type of the supported resources
+	Type *string `json:"type,omitempty"`
+}
+
+// TemperaturePut defines model for TemperaturePut.
+type TemperaturePut struct {
+	// Enabled true when sensor is activated, false when deactivated
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Type Type of the supported resources (always `temperature` here)
+	Type *TemperaturePutType `json:"type,omitempty"`
+}
+
+// TemperaturePutType Type of the supported resources (always `temperature` here)
+type TemperaturePutType string
+
 // Response defines model for response.
 type Response struct {
 	Success *struct {
@@ -1202,8 +1413,14 @@ type AuthenticateJSONRequestBody AuthenticateJSONBody
 // UpdateBridgeJSONRequestBody defines body for UpdateBridge for application/json ContentType.
 type UpdateBridgeJSONRequestBody = BridgePut
 
+// UpdateGroupedLightJSONRequestBody defines body for UpdateGroupedLight for application/json ContentType.
+type UpdateGroupedLightJSONRequestBody = GroupedLightPut
+
 // UpdateLightJSONRequestBody defines body for UpdateLight for application/json ContentType.
 type UpdateLightJSONRequestBody = LightPut
+
+// UpdateLightLevelJSONRequestBody defines body for UpdateLightLevel for application/json ContentType.
+type UpdateLightLevelJSONRequestBody = LightLevelPut
 
 // CreateRoomJSONRequestBody defines body for CreateRoom for application/json ContentType.
 type CreateRoomJSONRequestBody = RoomPut
@@ -1216,6 +1433,9 @@ type CreateSceneJSONRequestBody = ScenePost
 
 // UpdateSceneJSONRequestBody defines body for UpdateScene for application/json ContentType.
 type UpdateSceneJSONRequestBody = ScenePut
+
+// UpdateTemperatureJSONRequestBody defines body for UpdateTemperature for application/json ContentType.
+type UpdateTemperatureJSONRequestBody = TemperaturePut
 
 // CreateZoneJSONRequestBody defines body for CreateZone for application/json ContentType.
 type CreateZoneJSONRequestBody = RoomPut
@@ -1321,6 +1541,17 @@ type ClientInterface interface {
 	// GetBridgeHome request
 	GetBridgeHome(ctx context.Context, bridgeHomeId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetGroupedLights request
+	GetGroupedLights(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetGroupedLight request
+	GetGroupedLight(ctx context.Context, groupedLightId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateGroupedLightWithBody request with any body
+	UpdateGroupedLightWithBody(ctx context.Context, groupedLightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateGroupedLight(ctx context.Context, groupedLightId string, body UpdateGroupedLightJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetLights request
 	GetLights(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1331,6 +1562,17 @@ type ClientInterface interface {
 	UpdateLightWithBody(ctx context.Context, lightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateLight(ctx context.Context, lightId string, body UpdateLightJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetLightLevels request
+	GetLightLevels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetLightLevel request
+	GetLightLevel(ctx context.Context, lightId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateLightLevelWithBody request with any body
+	UpdateLightLevelWithBody(ctx context.Context, lightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateLightLevel(ctx context.Context, lightId string, body UpdateLightLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetRooms request
 	GetRooms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1369,6 +1611,17 @@ type ClientInterface interface {
 	UpdateSceneWithBody(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateScene(ctx context.Context, sceneId string, body UpdateSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTemperatures request
+	GetTemperatures(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTemperature request
+	GetTemperature(ctx context.Context, temperatureId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateTemperatureWithBody request with any body
+	UpdateTemperatureWithBody(ctx context.Context, temperatureId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateTemperature(ctx context.Context, temperatureId string, body UpdateTemperatureJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetZones request
 	GetZones(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1498,6 +1751,54 @@ func (c *Client) GetBridgeHome(ctx context.Context, bridgeHomeId string, reqEdit
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetGroupedLights(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupedLightsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetGroupedLight(ctx context.Context, groupedLightId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupedLightRequest(c.Server, groupedLightId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateGroupedLightWithBody(ctx context.Context, groupedLightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupedLightRequestWithBody(c.Server, groupedLightId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateGroupedLight(ctx context.Context, groupedLightId string, body UpdateGroupedLightJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupedLightRequest(c.Server, groupedLightId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetLights(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetLightsRequest(c.Server)
 	if err != nil {
@@ -1536,6 +1837,54 @@ func (c *Client) UpdateLightWithBody(ctx context.Context, lightId string, conten
 
 func (c *Client) UpdateLight(ctx context.Context, lightId string, body UpdateLightJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateLightRequest(c.Server, lightId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetLightLevels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLightLevelsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetLightLevel(ctx context.Context, lightId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLightLevelRequest(c.Server, lightId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateLightLevelWithBody(ctx context.Context, lightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateLightLevelRequestWithBody(c.Server, lightId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateLightLevel(ctx context.Context, lightId string, body UpdateLightLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateLightLevelRequest(c.Server, lightId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1704,6 +2053,54 @@ func (c *Client) UpdateSceneWithBody(ctx context.Context, sceneId string, conten
 
 func (c *Client) UpdateScene(ctx context.Context, sceneId string, body UpdateSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSceneRequest(c.Server, sceneId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTemperatures(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTemperaturesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTemperature(ctx context.Context, temperatureId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTemperatureRequest(c.Server, temperatureId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTemperatureWithBody(ctx context.Context, temperatureId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTemperatureRequestWithBody(c.Server, temperatureId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTemperature(ctx context.Context, temperatureId string, body UpdateTemperatureJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTemperatureRequest(c.Server, temperatureId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2034,6 +2431,114 @@ func NewGetBridgeHomeRequest(server string, bridgeHomeId string) (*http.Request,
 	return req, nil
 }
 
+// NewGetGroupedLightsRequest generates requests for GetGroupedLights
+func NewGetGroupedLightsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/grouped_light")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetGroupedLightRequest generates requests for GetGroupedLight
+func NewGetGroupedLightRequest(server string, groupedLightId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "groupedLightId", runtime.ParamLocationPath, groupedLightId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/grouped_light/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateGroupedLightRequest calls the generic UpdateGroupedLight builder with application/json body
+func NewUpdateGroupedLightRequest(server string, groupedLightId string, body UpdateGroupedLightJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateGroupedLightRequestWithBody(server, groupedLightId, "application/json", bodyReader)
+}
+
+// NewUpdateGroupedLightRequestWithBody generates requests for UpdateGroupedLight with any type of body
+func NewUpdateGroupedLightRequestWithBody(server string, groupedLightId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "groupedLightId", runtime.ParamLocationPath, groupedLightId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/grouped_light/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetLightsRequest generates requests for GetLights
 func NewGetLightsRequest(server string) (*http.Request, error) {
 	var err error
@@ -2123,6 +2628,114 @@ func NewUpdateLightRequestWithBody(server string, lightId string, contentType st
 	}
 
 	operationPath := fmt.Sprintf("/clip/v2/resource/light/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetLightLevelsRequest generates requests for GetLightLevels
+func NewGetLightLevelsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/light_level")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetLightLevelRequest generates requests for GetLightLevel
+func NewGetLightLevelRequest(server string, lightId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "lightId", runtime.ParamLocationPath, lightId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/light_level/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateLightLevelRequest calls the generic UpdateLightLevel builder with application/json body
+func NewUpdateLightLevelRequest(server string, lightId string, body UpdateLightLevelJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateLightLevelRequestWithBody(server, lightId, "application/json", bodyReader)
+}
+
+// NewUpdateLightLevelRequestWithBody generates requests for UpdateLightLevel with any type of body
+func NewUpdateLightLevelRequestWithBody(server string, lightId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "lightId", runtime.ParamLocationPath, lightId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/light_level/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2506,6 +3119,114 @@ func NewUpdateSceneRequestWithBody(server string, sceneId string, contentType st
 	return req, nil
 }
 
+// NewGetTemperaturesRequest generates requests for GetTemperatures
+func NewGetTemperaturesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/temperature")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetTemperatureRequest generates requests for GetTemperature
+func NewGetTemperatureRequest(server string, temperatureId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "temperatureId", runtime.ParamLocationPath, temperatureId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/temperature/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateTemperatureRequest calls the generic UpdateTemperature builder with application/json body
+func NewUpdateTemperatureRequest(server string, temperatureId string, body UpdateTemperatureJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateTemperatureRequestWithBody(server, temperatureId, "application/json", bodyReader)
+}
+
+// NewUpdateTemperatureRequestWithBody generates requests for UpdateTemperature with any type of body
+func NewUpdateTemperatureRequestWithBody(server string, temperatureId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "temperatureId", runtime.ParamLocationPath, temperatureId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/resource/temperature/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetZonesRequest generates requests for GetZones
 func NewGetZonesRequest(server string) (*http.Request, error) {
 	var err error
@@ -2756,6 +3477,17 @@ type ClientWithResponsesInterface interface {
 	// GetBridgeHomeWithResponse request
 	GetBridgeHomeWithResponse(ctx context.Context, bridgeHomeId string, reqEditors ...RequestEditorFn) (*GetBridgeHomeResponse, error)
 
+	// GetGroupedLightsWithResponse request
+	GetGroupedLightsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetGroupedLightsResponse, error)
+
+	// GetGroupedLightWithResponse request
+	GetGroupedLightWithResponse(ctx context.Context, groupedLightId string, reqEditors ...RequestEditorFn) (*GetGroupedLightResponse, error)
+
+	// UpdateGroupedLightWithBodyWithResponse request with any body
+	UpdateGroupedLightWithBodyWithResponse(ctx context.Context, groupedLightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupedLightResponse, error)
+
+	UpdateGroupedLightWithResponse(ctx context.Context, groupedLightId string, body UpdateGroupedLightJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupedLightResponse, error)
+
 	// GetLightsWithResponse request
 	GetLightsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLightsResponse, error)
 
@@ -2766,6 +3498,17 @@ type ClientWithResponsesInterface interface {
 	UpdateLightWithBodyWithResponse(ctx context.Context, lightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLightResponse, error)
 
 	UpdateLightWithResponse(ctx context.Context, lightId string, body UpdateLightJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLightResponse, error)
+
+	// GetLightLevelsWithResponse request
+	GetLightLevelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLightLevelsResponse, error)
+
+	// GetLightLevelWithResponse request
+	GetLightLevelWithResponse(ctx context.Context, lightId string, reqEditors ...RequestEditorFn) (*GetLightLevelResponse, error)
+
+	// UpdateLightLevelWithBodyWithResponse request with any body
+	UpdateLightLevelWithBodyWithResponse(ctx context.Context, lightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLightLevelResponse, error)
+
+	UpdateLightLevelWithResponse(ctx context.Context, lightId string, body UpdateLightLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLightLevelResponse, error)
 
 	// GetRoomsWithResponse request
 	GetRoomsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetRoomsResponse, error)
@@ -2804,6 +3547,17 @@ type ClientWithResponsesInterface interface {
 	UpdateSceneWithBodyWithResponse(ctx context.Context, sceneId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSceneResponse, error)
 
 	UpdateSceneWithResponse(ctx context.Context, sceneId string, body UpdateSceneJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSceneResponse, error)
+
+	// GetTemperaturesWithResponse request
+	GetTemperaturesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTemperaturesResponse, error)
+
+	// GetTemperatureWithResponse request
+	GetTemperatureWithResponse(ctx context.Context, temperatureId string, reqEditors ...RequestEditorFn) (*GetTemperatureResponse, error)
+
+	// UpdateTemperatureWithBodyWithResponse request with any body
+	UpdateTemperatureWithBodyWithResponse(ctx context.Context, temperatureId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTemperatureResponse, error)
+
+	UpdateTemperatureWithResponse(ctx context.Context, temperatureId string, body UpdateTemperatureJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTemperatureResponse, error)
 
 	// GetZonesWithResponse request
 	GetZonesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetZonesResponse, error)
@@ -3058,6 +3812,111 @@ func (r GetBridgeHomeResponse) StatusCode() int {
 	return 0
 }
 
+type GetGroupedLightsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]GroupedLightGet `json:"data,omitempty"`
+		Errors *[]Error           `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetGroupedLightsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetGroupedLightsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetGroupedLightResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]GroupedLightGet `json:"data,omitempty"`
+		Errors *[]Error           `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetGroupedLightResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetGroupedLightResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateGroupedLightResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateGroupedLightResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateGroupedLightResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetLightsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3157,6 +4016,111 @@ func (r UpdateLightResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateLightResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetLightLevelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]LightLevelGet `json:"data,omitempty"`
+		Errors *[]Error         `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetLightLevelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetLightLevelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetLightLevelResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]LightLevelGet `json:"data,omitempty"`
+		Errors *[]Error         `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetLightLevelResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetLightLevelResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateLightLevelResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateLightLevelResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateLightLevelResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3513,6 +4477,111 @@ func (r UpdateSceneResponse) StatusCode() int {
 	return 0
 }
 
+type GetTemperaturesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]TemperatureGet `json:"data,omitempty"`
+		Errors *[]Error          `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTemperaturesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTemperaturesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTemperatureResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]TemperatureGet `json:"data,omitempty"`
+		Errors *[]Error          `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTemperatureResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTemperatureResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateTemperatureResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateTemperatureResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateTemperatureResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetZonesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3767,6 +4836,41 @@ func (c *ClientWithResponses) GetBridgeHomeWithResponse(ctx context.Context, bri
 	return ParseGetBridgeHomeResponse(rsp)
 }
 
+// GetGroupedLightsWithResponse request returning *GetGroupedLightsResponse
+func (c *ClientWithResponses) GetGroupedLightsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetGroupedLightsResponse, error) {
+	rsp, err := c.GetGroupedLights(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetGroupedLightsResponse(rsp)
+}
+
+// GetGroupedLightWithResponse request returning *GetGroupedLightResponse
+func (c *ClientWithResponses) GetGroupedLightWithResponse(ctx context.Context, groupedLightId string, reqEditors ...RequestEditorFn) (*GetGroupedLightResponse, error) {
+	rsp, err := c.GetGroupedLight(ctx, groupedLightId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetGroupedLightResponse(rsp)
+}
+
+// UpdateGroupedLightWithBodyWithResponse request with arbitrary body returning *UpdateGroupedLightResponse
+func (c *ClientWithResponses) UpdateGroupedLightWithBodyWithResponse(ctx context.Context, groupedLightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupedLightResponse, error) {
+	rsp, err := c.UpdateGroupedLightWithBody(ctx, groupedLightId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateGroupedLightResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateGroupedLightWithResponse(ctx context.Context, groupedLightId string, body UpdateGroupedLightJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupedLightResponse, error) {
+	rsp, err := c.UpdateGroupedLight(ctx, groupedLightId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateGroupedLightResponse(rsp)
+}
+
 // GetLightsWithResponse request returning *GetLightsResponse
 func (c *ClientWithResponses) GetLightsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLightsResponse, error) {
 	rsp, err := c.GetLights(ctx, reqEditors...)
@@ -3800,6 +4904,41 @@ func (c *ClientWithResponses) UpdateLightWithResponse(ctx context.Context, light
 		return nil, err
 	}
 	return ParseUpdateLightResponse(rsp)
+}
+
+// GetLightLevelsWithResponse request returning *GetLightLevelsResponse
+func (c *ClientWithResponses) GetLightLevelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLightLevelsResponse, error) {
+	rsp, err := c.GetLightLevels(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetLightLevelsResponse(rsp)
+}
+
+// GetLightLevelWithResponse request returning *GetLightLevelResponse
+func (c *ClientWithResponses) GetLightLevelWithResponse(ctx context.Context, lightId string, reqEditors ...RequestEditorFn) (*GetLightLevelResponse, error) {
+	rsp, err := c.GetLightLevel(ctx, lightId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetLightLevelResponse(rsp)
+}
+
+// UpdateLightLevelWithBodyWithResponse request with arbitrary body returning *UpdateLightLevelResponse
+func (c *ClientWithResponses) UpdateLightLevelWithBodyWithResponse(ctx context.Context, lightId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLightLevelResponse, error) {
+	rsp, err := c.UpdateLightLevelWithBody(ctx, lightId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateLightLevelResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateLightLevelWithResponse(ctx context.Context, lightId string, body UpdateLightLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLightLevelResponse, error) {
+	rsp, err := c.UpdateLightLevel(ctx, lightId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateLightLevelResponse(rsp)
 }
 
 // GetRoomsWithResponse request returning *GetRoomsResponse
@@ -3922,6 +5061,41 @@ func (c *ClientWithResponses) UpdateSceneWithResponse(ctx context.Context, scene
 		return nil, err
 	}
 	return ParseUpdateSceneResponse(rsp)
+}
+
+// GetTemperaturesWithResponse request returning *GetTemperaturesResponse
+func (c *ClientWithResponses) GetTemperaturesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTemperaturesResponse, error) {
+	rsp, err := c.GetTemperatures(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTemperaturesResponse(rsp)
+}
+
+// GetTemperatureWithResponse request returning *GetTemperatureResponse
+func (c *ClientWithResponses) GetTemperatureWithResponse(ctx context.Context, temperatureId string, reqEditors ...RequestEditorFn) (*GetTemperatureResponse, error) {
+	rsp, err := c.GetTemperature(ctx, temperatureId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTemperatureResponse(rsp)
+}
+
+// UpdateTemperatureWithBodyWithResponse request with arbitrary body returning *UpdateTemperatureResponse
+func (c *ClientWithResponses) UpdateTemperatureWithBodyWithResponse(ctx context.Context, temperatureId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTemperatureResponse, error) {
+	rsp, err := c.UpdateTemperatureWithBody(ctx, temperatureId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTemperatureResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateTemperatureWithResponse(ctx context.Context, temperatureId string, body UpdateTemperatureJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTemperatureResponse, error) {
+	rsp, err := c.UpdateTemperature(ctx, temperatureId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTemperatureResponse(rsp)
 }
 
 // GetZonesWithResponse request returning *GetZonesResponse
@@ -4612,6 +5786,303 @@ func ParseGetBridgeHomeResponse(rsp *http.Response) (*GetBridgeHomeResponse, err
 	return response, nil
 }
 
+// ParseGetGroupedLightsResponse parses an HTTP response from a GetGroupedLightsWithResponse call
+func ParseGetGroupedLightsResponse(rsp *http.Response) (*GetGroupedLightsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetGroupedLightsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]GroupedLightGet `json:"data,omitempty"`
+			Errors *[]Error           `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetGroupedLightResponse parses an HTTP response from a GetGroupedLightWithResponse call
+func ParseGetGroupedLightResponse(rsp *http.Response) (*GetGroupedLightResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetGroupedLightResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]GroupedLightGet `json:"data,omitempty"`
+			Errors *[]Error           `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateGroupedLightResponse parses an HTTP response from a UpdateGroupedLightWithResponse call
+func ParseUpdateGroupedLightResponse(rsp *http.Response) (*UpdateGroupedLightResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateGroupedLightResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetLightsResponse parses an HTTP response from a GetLightsWithResponse call
 func ParseGetLightsResponse(rsp *http.Response) (*GetLightsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -4819,6 +6290,303 @@ func ParseUpdateLightResponse(rsp *http.Response) (*UpdateLightResponse, error) 
 	}
 
 	response := &UpdateLightResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetLightLevelsResponse parses an HTTP response from a GetLightLevelsWithResponse call
+func ParseGetLightLevelsResponse(rsp *http.Response) (*GetLightLevelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetLightLevelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]LightLevelGet `json:"data,omitempty"`
+			Errors *[]Error         `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetLightLevelResponse parses an HTTP response from a GetLightLevelWithResponse call
+func ParseGetLightLevelResponse(rsp *http.Response) (*GetLightLevelResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetLightLevelResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]LightLevelGet `json:"data,omitempty"`
+			Errors *[]Error         `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateLightLevelResponse parses an HTTP response from a UpdateLightLevelWithResponse call
+func ParseUpdateLightLevelResponse(rsp *http.Response) (*UpdateLightLevelResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateLightLevelResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -5809,6 +7577,303 @@ func ParseUpdateSceneResponse(rsp *http.Response) (*UpdateSceneResponse, error) 
 	}
 
 	response := &UpdateSceneResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTemperaturesResponse parses an HTTP response from a GetTemperaturesWithResponse call
+func ParseGetTemperaturesResponse(rsp *http.Response) (*GetTemperaturesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTemperaturesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]TemperatureGet `json:"data,omitempty"`
+			Errors *[]Error          `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTemperatureResponse parses an HTTP response from a GetTemperatureWithResponse call
+func ParseGetTemperatureResponse(rsp *http.Response) (*GetTemperatureResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTemperatureResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]TemperatureGet `json:"data,omitempty"`
+			Errors *[]Error          `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateTemperatureResponse parses an HTTP response from a UpdateTemperatureWithResponse call
+func ParseUpdateTemperatureResponse(rsp *http.Response) (*UpdateTemperatureResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateTemperatureResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
