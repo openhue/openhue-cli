@@ -1,6 +1,6 @@
 # Packaging & Releasing OpenHue CLI
 
-name: release
+name: Release
 on:
   push:
     tags:
