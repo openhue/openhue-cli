@@ -30,6 +30,6 @@ tidy: ## Tidy makes sure go.mod matches the source code in the module
 
 .PHONY: clean
 clean: ##
-	@rm -rf ./bin
+	@rm -rf ./dist
 	@$(GO) clean
 	@echo "${GREEN}${BOLD}Project successfully cleaned 🧹${RESET} (removed ./bin folder + go clean)"
