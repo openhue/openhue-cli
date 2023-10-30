@@ -20,7 +20,7 @@ generate: ## Generates the openhue.gen.go client from the latest https://github.
 .PHONY: build
 build: ## Generates the openhue-cli executables in the ./dist folder
 	@$(GORELEASER) check
-	@$(GORELEASER) build --clean --snapshot
+	@$(GORELEASER) build --clean --snapshot --single-target
 	@echo "\n${GREEN}${BOLD}openhue binaries successfully generated in the ./dist folder 📦${RESET}"
 
 .PHONY: tidy
