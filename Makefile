@@ -20,7 +20,7 @@ generate: ## Generates the openhue.gen.go client from the latest https://github.
 .PHONY: build
 build: ## Generates the openhue-cli executables in the ./dist folder
 	@$(GORELEASER) check
-	@$(GORELEASER) build --clean --snapshot --single-target
+	@$(GORELEASER) build --clean --snapshot
 	@echo "\n${GREEN}${BOLD}openhue binaries successfully generated in the ./dist folder 📦${RESET}"
 
 .PHONY: tidy
@@ -30,6 +30,6 @@ tidy: ## Tidy makes sure go.mod matches the source code in the module
 
 .PHONY: clean
 clean: ##
-	@rm -rf ./bin
+	@rm -rf ./dist
 	@$(GO) clean
 	@echo "${GREEN}${BOLD}Project successfully cleaned 🧹${RESET} (removed ./bin folder + go clean)"
