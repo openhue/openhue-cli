@@ -31,7 +31,7 @@ Before you start, ensure that you have the following prerequisites installed:
 - [Docker](https://docs.docker.com/engine/install/) (_optional_) that is used to build the CLI Docker Image and run it as a container
 
 ### Fork the Repository
-Before contributing to Open-Hue, it's a good practice to [fork](https://github.com/openhue/openhue-cli/fork) the repository to your own GitHub account.
+Before contributing to OpenHue CLI, it's a good practice to [fork](https://github.com/openhue/openhue-cli/fork) the repository to your own GitHub account.
 This will create a copy of the project that you can work on independently.
 
 ### Build
