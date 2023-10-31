@@ -15,7 +15,7 @@ help:
 .PHONY: generate
 generate: ## Generates the openhue.gen.go client from the latest https://github.com/openhue/openhue-api specification
 	@$(GO) generate
-	@echo "${GREEN}${BOLD}./openhue/openhue.gen.go successfully generated 🚀${RESET}"
+	@echo "\n${GREEN}${BOLD}./openhue/openhue.gen.go successfully generated 🚀${RESET}"
 
 .PHONY: build
 build: ## Generates the openhue-cli executables in the ./dist folder
@@ -26,10 +26,10 @@ build: ## Generates the openhue-cli executables in the ./dist folder
 .PHONY: tidy
 tidy: ## Tidy makes sure go.mod matches the source code in the module
 	@$(GO) mod tidy
-	@echo "${GREEN}${BOLD}go.mod successfully cleaned 🧽${RESET}"
+	@echo "\n${GREEN}${BOLD}go.mod successfully cleaned 🧽${RESET}"
 
 .PHONY: clean
 clean: ##
 	@rm -rf ./dist
 	@$(GO) clean
-	@echo "${GREEN}${BOLD}Project successfully cleaned 🧹${RESET} (removed ./bin folder + go clean)"
+	@echo "\n${GREEN}${BOLD}Project successfully cleaned 🧹${RESET} (removed ./dist folder + go clean)"

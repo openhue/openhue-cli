@@ -38,7 +38,7 @@ func Load() *Config {
 	viper.SetConfigType("yaml")
 
 	// List of commands that does not require configuration
-	ignoredCmds := []string{"setup", "help", "discover"}
+	ignoredCmds := []string{"setup", "help", "discover", "auth"}
 
 	// When trying to run CLI without configuration
 	if err := viper.ReadInConfig(); err != nil && !slices.Contains(ignoredCmds, os.Args[1]) {
@@ -62,6 +62,19 @@ func NewOpenHueClient(c *Config) *ClientWithResponses {
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	client, err := NewClientWithResponses("https://"+c.ip, WithRequestEditorFn(p.Intercept))
+	cobra.CheckErr(err)
+
+	return client
+}
+
+// NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application key.
+// This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
+func NewOpenHueClientNoAuth(ip string) *ClientWithResponses {
+
+	// skip SSL Verification
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
+	client, err := NewClientWithResponses("https://" + ip)
 	cobra.CheckErr(err)
 
 	return client
