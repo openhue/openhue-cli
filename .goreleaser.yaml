@@ -3,23 +3,43 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
+project_name: openhue
+
 before:
   hooks:
     - go mod tidy
 
 universal_binaries:
-  - replace: true
+  - id: openhue
+    replace: true
 
 builds:
-  - env:
+  - id: openhue
+    binary: openhue
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
+
+dockers:
+  - id: openhue
+    image_templates:
+      - openhue/cli
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
 
 archives:
-  - format: tar.gz
+  - id: openhue
+    format: tar.gz
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_

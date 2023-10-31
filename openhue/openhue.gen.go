@@ -849,7 +849,7 @@ type LightGet struct {
 		// Effect Current status values the light is in regarding timed effects
 		Effect *SupportedTimedEffects `json:"effect,omitempty"`
 
-		// EffectValues Possible timed effect values you can set in a light.
+		// EffectValues Possible timed effect values you can set in a light
 		EffectValues *[]SupportedTimedEffects `json:"effect_values,omitempty"`
 
 		// Status Current status values the light is in regarding timed effects
@@ -1364,7 +1364,12 @@ type TemperaturePut struct {
 type TemperaturePutType string
 
 // Response defines model for response.
-type Response struct {
+type Response = []struct {
+	Error *struct {
+		Address     *string `json:"address,omitempty"`
+		Description *string `json:"description,omitempty"`
+		Type        *int    `json:"type,omitempty"`
+	} `json:"error,omitempty"`
 	Success *struct {
 		Clientkey *string `json:"clientkey,omitempty"`
 		Username  *string `json:"username,omitempty"`
