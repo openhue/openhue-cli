@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/brutella/dnssd v1.2.9
-	github.com/deepmap/oapi-codegen v1.15.0
+	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/fatih/color v1.15.0
 	github.com/oapi-codegen/runtime v1.0.0
 	github.com/spf13/cobra v1.7.0
