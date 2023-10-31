@@ -40,7 +40,7 @@ dockers:
 brews:
   - name: openhue-cli
     homepage: https://github.com/openhue/homebrew-cli
-    tap:
+    repository:
       owner: openhue
       name: homebrew-cli
 
