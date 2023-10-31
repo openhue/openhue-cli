@@ -37,6 +37,13 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
 
+brews:
+  - name: openhue-cli
+    homepage: https://github.com/openhue/homebrew-cli
+    tap:
+      owner: openhue
+      name: homebrew-cli
+
 archives:
   - id: openhue
     format: tar.gz
