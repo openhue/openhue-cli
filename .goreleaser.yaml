@@ -43,6 +43,7 @@ brews:
     repository:
       owner: openhue
       name: homebrew-cli
+      token: "{{ .Env.OPENHUE_HOMEBREW_CLI_TOKEN }}"
 
 archives:
   - id: openhue
