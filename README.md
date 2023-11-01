@@ -1,7 +1,6 @@
 # OpenHue CLI
 [![Build](https://github.com/openhue/openhue-cli/actions/workflows/build.yml/badge.svg)](https://github.com/openhue/openhue-cli/actions/workflows/build.yml)
-[![codebeat badge](https://codebeat.co/badges/f44cf894-b957-45e9-964b-a0119338c02d)](https://codebeat.co/projects/github-com-openhue-openhue-cli-main)
-[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/openhue/cli/latest)](https://hub.docker.com/r/openhue/cli)
+[![Maintainability with Code Climate](https://api.codeclimate.com/v1/badges/fb934bb37c36a04f8efd/maintainability)](https://codeclimate.com/github/openhue/openhue-cli/maintainability)[![Docker Image Size (tag)](https://img.shields.io/docker/image-size/openhue/cli/latest)](https://hub.docker.com/r/openhue/cli)
 [![GitHub Repo stars](https://img.shields.io/github/stars/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/issues)
 [![GitHub](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
