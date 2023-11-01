@@ -1,3 +1,9 @@
+plugins:
+  gofmt:
+    enabled: true
+  govet:
+    enabled: true
+
 # We don't want the scan and analyze generated code
 exclude_patterns:
   - openhue/openhue.gen.go
