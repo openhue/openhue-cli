@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"net/http"
 	"os"
+	"path/filepath"
 	"slices"
 )
 
@@ -32,9 +33,12 @@ func Load() *Config {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 
+	var configPath = filepath.Join(home, "/.openhue")
+	_ = os.MkdirAll(configPath, os.ModePerm)
+
 	// Search config in home directory with name ".openhue" (without an extension).
-	viper.AddConfigPath(home)
-	viper.SetConfigName(".openhue")
+	viper.AddConfigPath(configPath)
+	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
 	// List of commands that does not require configuration

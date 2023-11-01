@@ -1,8 +1,3 @@
-# The lines bellow are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
-
 project_name: openhue
 
 before:
@@ -29,7 +24,8 @@ builds:
 dockers:
   - id: openhue
     image_templates:
-      - openhue/cli
+      - openhue/cli:latest
+      - openhue/cli:{{ .Tag }}
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"

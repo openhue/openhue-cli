@@ -10,24 +10,25 @@ var setupCmd = &cobra.Command{
 	Use:     "setup",
 	GroupID: "init",
 	Short:   "Configure your local Philips HUE environment",
-	Long: `The setup command must be run as a prerequisite. It allows to store your Philips HUE Bridge IP and 
-application key in the configuration file`,
+	Long: `The setup command must be run as a prerequisite for all resource related commands (controlling lights, rooms, scenes, etc.)
+
+It allows to store your Philips Hue Bridge IP and application key in the configuration file (~/.openhue/config.yaml).`,
 	Run: Setup,
 }
 
 func Setup(cmd *cobra.Command, args []string) {
-	err := viper.SafeWriteConfig()
+	err := viper.WriteConfig()
 	cobra.CheckErr(err)
 }
 
 func init() {
 	rootCmd.AddCommand(setupCmd)
 
-	setupCmd.PersistentFlags().StringP("ip", "i", "192.168.1.68", "The local IP of your Philips HUE Bridge")
-	_ = setupCmd.MarkPersistentFlagRequired("ip")
-	_ = viper.BindPFlag("ip", setupCmd.PersistentFlags().Lookup("ip"))
+	setupCmd.Flags().StringP("bridge", "b", "", "The local IP of your Philips Hue Bridge (example '192.168.1.68')")
+	_ = setupCmd.MarkFlagRequired("ip")
+	_ = viper.BindPFlag("ip", setupCmd.Flags().Lookup("ip"))
 
-	setupCmd.PersistentFlags().StringP("key", "k", "####", "Your HUE application key")
-	_ = setupCmd.MarkPersistentFlagRequired("key")
-	_ = viper.BindPFlag("key", setupCmd.PersistentFlags().Lookup("key"))
+	setupCmd.Flags().StringP("key", "k", "", "Your Hue Application Key")
+	_ = setupCmd.MarkFlagRequired("key")
+	_ = viper.BindPFlag("key", setupCmd.Flags().Lookup("key"))
 }
