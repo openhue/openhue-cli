@@ -16,7 +16,7 @@ var Api *ClientWithResponses
 
 type Config struct {
 	// The IP of the Philips HUE bridge
-	ip string
+	bridge string
 	// The HUE Application Key
 	key string
 }
@@ -50,7 +50,7 @@ func Load() *Config {
 		os.Exit(0)
 	}
 
-	c.ip = viper.GetString("ip")
+	c.bridge = viper.GetString("bridge")
 	c.key = viper.GetString("key")
 
 	return c
@@ -65,7 +65,7 @@ func NewOpenHueClient(c *Config) *ClientWithResponses {
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := NewClientWithResponses("https://"+c.ip, WithRequestEditorFn(p.Intercept))
+	client, err := NewClientWithResponses("https://"+c.bridge, WithRequestEditorFn(p.Intercept))
 	cobra.CheckErr(err)
 
 	return client
