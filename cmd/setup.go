@@ -17,16 +17,19 @@ It allows to store your Philips Hue Bridge IP and application key in the configu
 }
 
 func Setup(cmd *cobra.Command, args []string) {
-	err := viper.WriteConfig()
-	cobra.CheckErr(err)
+	err := viper.SafeWriteConfig()
+	if err != nil {
+		err := viper.WriteConfig()
+		cobra.CheckErr(err)
+	}
 }
 
 func init() {
 	rootCmd.AddCommand(setupCmd)
 
 	setupCmd.Flags().StringP("bridge", "b", "", "The local IP of your Philips Hue Bridge (example '192.168.1.68')")
-	_ = setupCmd.MarkFlagRequired("ip")
-	_ = viper.BindPFlag("ip", setupCmd.Flags().Lookup("ip"))
+	_ = setupCmd.MarkFlagRequired("bridge")
+	_ = viper.BindPFlag("bridge", setupCmd.Flags().Lookup("bridge"))
 
 	setupCmd.Flags().StringP("key", "k", "", "Your Hue Application Key")
 	_ = setupCmd.MarkFlagRequired("key")
