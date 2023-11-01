@@ -40,6 +40,8 @@ dockers:
 brews:
   - name: openhue-cli
     homepage: https://github.com/openhue/homebrew-cli
+    description: OpenHue CLI is a command-line interface for interacting with Philips Hue smart lighting systems
+    license: Apache License 2.0
     repository:
       owner: openhue
       name: homebrew-cli
