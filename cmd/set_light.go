@@ -13,7 +13,7 @@ var (
 
 // setLightCmd represents the setLight command
 var setLightCmd = &cobra.Command{
-	Use:   "light",
+	Use:   "light [lightId]",
 	Short: "Update one or multiple lights",
 	Long: `
 Update one or multiple lights (max is 10 lights simultaneously). Allows to turn on or off a light.
