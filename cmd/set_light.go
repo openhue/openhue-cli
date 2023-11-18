@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"openhue-cli/openhue"
 )
 
 var (
-	OnOff bool
+	On  bool
+	Off bool
 )
 
 // setLightCmd represents the setLight command
@@ -23,6 +23,16 @@ Update one or multiple lights (max is 10 lights simultaneously). Allows to turn 
 
 		request := &openhue.UpdateLightJSONRequestBody{}
 
+		OnOff := true
+
+		if On {
+			OnOff = true
+		}
+
+		if Off {
+			OnOff = false
+		}
+
 		request.On = &openhue.On{
 			On: &OnOff,
 		}
@@ -30,9 +40,7 @@ Update one or multiple lights (max is 10 lights simultaneously). Allows to turn 
 		for _, id := range args {
 			_, err := openhue.Api.UpdateLight(context.Background(), id, *request)
 			cobra.CheckErr(err)
-			fmt.Println("Light", id, "successfully updated")
 		}
-
 	},
 }
 
@@ -40,5 +48,7 @@ func init() {
 	setCmd.AddCommand(setLightCmd)
 
 	// local flags
-	setLightCmd.Flags().BoolVar(&OnOff, "on", true, "Turn on or off the lights")
+	setLightCmd.Flags().BoolVar(&On, "on", false, "Turn on the lights")
+	setLightCmd.Flags().BoolVar(&Off, "off", false, "Turn off the lights")
+	setLightCmd.MarkFlagsMutuallyExclusive("on", "off")
 }
