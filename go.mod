@@ -6,7 +6,7 @@ require (
 	github.com/brutella/dnssd v1.2.9
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/fatih/color v1.15.0
-	github.com/oapi-codegen/runtime v1.0.0
+	github.com/oapi-codegen/runtime v1.1.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.17.0
 	golang.org/x/net v0.17.0
@@ -15,7 +15,7 @@ require (
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/google/uuid v1.3.1 // indirect
+	github.com/google/uuid v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
