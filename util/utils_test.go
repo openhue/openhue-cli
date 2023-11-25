@@ -1,4 +1,4 @@
-package openhue
+package util
 
 import "testing"
 

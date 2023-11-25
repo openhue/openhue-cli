@@ -36,6 +36,34 @@ const (
 	BridgePutTypeBridge BridgePutType = "bridge"
 )
 
+// Defines values for DeviceGetType.
+const (
+	DeviceGetTypeDevice DeviceGetType = "device"
+)
+
+// Defines values for DeviceGetUsertestStatus.
+const (
+	Changing DeviceGetUsertestStatus = "changing"
+	Set      DeviceGetUsertestStatus = "set"
+)
+
+// Defines values for DevicePowerGetPowerStateBatteryState.
+const (
+	DevicePowerGetPowerStateBatteryStateCritical DevicePowerGetPowerStateBatteryState = "critical"
+	DevicePowerGetPowerStateBatteryStateLow      DevicePowerGetPowerStateBatteryState = "low"
+	DevicePowerGetPowerStateBatteryStateNormal   DevicePowerGetPowerStateBatteryState = "normal"
+)
+
+// Defines values for DevicePutIdentifyAction.
+const (
+	Identify DevicePutIdentifyAction = "identify"
+)
+
+// Defines values for DevicePutType.
+const (
+	DevicePutTypeDevice DevicePutType = "device"
+)
+
 // Defines values for GroupedLightPutColorTemperatureDeltaAction.
 const (
 	GroupedLightPutColorTemperatureDeltaActionDown GroupedLightPutColorTemperatureDeltaAction = "down"
@@ -65,55 +93,55 @@ const (
 
 // Defines values for LightArchetype.
 const (
-	Bollard           LightArchetype = "bollard"
-	CandleBulb        LightArchetype = "candle_bulb"
-	CeilingHorizontal LightArchetype = "ceiling_horizontal"
-	CeilingRound      LightArchetype = "ceiling_round"
-	CeilingSquare     LightArchetype = "ceiling_square"
-	CeilingTube       LightArchetype = "ceiling_tube"
-	ChristmasTree     LightArchetype = "christmas_tree"
-	ClassicBulb       LightArchetype = "classic_bulb"
-	DoubleSpot        LightArchetype = "double_spot"
-	EdisonBulb        LightArchetype = "edison_bulb"
-	EllipseBulb       LightArchetype = "ellipse_bulb"
-	FlexibleLamp      LightArchetype = "flexible_lamp"
-	FloodBulb         LightArchetype = "flood_bulb"
-	FloorLantern      LightArchetype = "floor_lantern"
-	FloorShade        LightArchetype = "floor_shade"
-	GroundSpot        LightArchetype = "ground_spot"
-	HueBloom          LightArchetype = "hue_bloom"
-	HueCentris        LightArchetype = "hue_centris"
-	HueGo             LightArchetype = "hue_go"
-	HueIris           LightArchetype = "hue_iris"
-	HueLightstrip     LightArchetype = "hue_lightstrip"
-	HueLightstripPc   LightArchetype = "hue_lightstrip_pc"
-	HueLightstripTv   LightArchetype = "hue_lightstrip_tv"
-	HuePlay           LightArchetype = "hue_play"
-	HueSigne          LightArchetype = "hue_signe"
-	HueTube           LightArchetype = "hue_tube"
-	LargeGlobeBulb    LightArchetype = "large_globe_bulb"
-	LusterBulb        LightArchetype = "luster_bulb"
-	PendantLong       LightArchetype = "pendant_long"
-	PendantRound      LightArchetype = "pendant_round"
-	PendantSpot       LightArchetype = "pendant_spot"
-	Plug              LightArchetype = "plug"
-	RecessedCeiling   LightArchetype = "recessed_ceiling"
-	RecessedFloor     LightArchetype = "recessed_floor"
-	SingleSpot        LightArchetype = "single_spot"
-	SmallGlobeBulb    LightArchetype = "small_globe_bulb"
-	SpotBulb          LightArchetype = "spot_bulb"
-	StringLight       LightArchetype = "string_light"
-	SultanBulb        LightArchetype = "sultan_bulb"
-	TableShade        LightArchetype = "table_shade"
-	TableWash         LightArchetype = "table_wash"
-	TriangleBulb      LightArchetype = "triangle_bulb"
-	UnknownArchetype  LightArchetype = "unknown_archetype"
-	VintageBulb       LightArchetype = "vintage_bulb"
-	VintageCandleBulb LightArchetype = "vintage_candle_bulb"
-	WallLantern       LightArchetype = "wall_lantern"
-	WallShade         LightArchetype = "wall_shade"
-	WallSpot          LightArchetype = "wall_spot"
-	WallWasher        LightArchetype = "wall_washer"
+	LightArchetypeBollard           LightArchetype = "bollard"
+	LightArchetypeCandleBulb        LightArchetype = "candle_bulb"
+	LightArchetypeCeilingHorizontal LightArchetype = "ceiling_horizontal"
+	LightArchetypeCeilingRound      LightArchetype = "ceiling_round"
+	LightArchetypeCeilingSquare     LightArchetype = "ceiling_square"
+	LightArchetypeCeilingTube       LightArchetype = "ceiling_tube"
+	LightArchetypeChristmasTree     LightArchetype = "christmas_tree"
+	LightArchetypeClassicBulb       LightArchetype = "classic_bulb"
+	LightArchetypeDoubleSpot        LightArchetype = "double_spot"
+	LightArchetypeEdisonBulb        LightArchetype = "edison_bulb"
+	LightArchetypeEllipseBulb       LightArchetype = "ellipse_bulb"
+	LightArchetypeFlexibleLamp      LightArchetype = "flexible_lamp"
+	LightArchetypeFloodBulb         LightArchetype = "flood_bulb"
+	LightArchetypeFloorLantern      LightArchetype = "floor_lantern"
+	LightArchetypeFloorShade        LightArchetype = "floor_shade"
+	LightArchetypeGroundSpot        LightArchetype = "ground_spot"
+	LightArchetypeHueBloom          LightArchetype = "hue_bloom"
+	LightArchetypeHueCentris        LightArchetype = "hue_centris"
+	LightArchetypeHueGo             LightArchetype = "hue_go"
+	LightArchetypeHueIris           LightArchetype = "hue_iris"
+	LightArchetypeHueLightstrip     LightArchetype = "hue_lightstrip"
+	LightArchetypeHueLightstripPc   LightArchetype = "hue_lightstrip_pc"
+	LightArchetypeHueLightstripTv   LightArchetype = "hue_lightstrip_tv"
+	LightArchetypeHuePlay           LightArchetype = "hue_play"
+	LightArchetypeHueSigne          LightArchetype = "hue_signe"
+	LightArchetypeHueTube           LightArchetype = "hue_tube"
+	LightArchetypeLargeGlobeBulb    LightArchetype = "large_globe_bulb"
+	LightArchetypeLusterBulb        LightArchetype = "luster_bulb"
+	LightArchetypePendantLong       LightArchetype = "pendant_long"
+	LightArchetypePendantRound      LightArchetype = "pendant_round"
+	LightArchetypePendantSpot       LightArchetype = "pendant_spot"
+	LightArchetypePlug              LightArchetype = "plug"
+	LightArchetypeRecessedCeiling   LightArchetype = "recessed_ceiling"
+	LightArchetypeRecessedFloor     LightArchetype = "recessed_floor"
+	LightArchetypeSingleSpot        LightArchetype = "single_spot"
+	LightArchetypeSmallGlobeBulb    LightArchetype = "small_globe_bulb"
+	LightArchetypeSpotBulb          LightArchetype = "spot_bulb"
+	LightArchetypeStringLight       LightArchetype = "string_light"
+	LightArchetypeSultanBulb        LightArchetype = "sultan_bulb"
+	LightArchetypeTableShade        LightArchetype = "table_shade"
+	LightArchetypeTableWash         LightArchetype = "table_wash"
+	LightArchetypeTriangleBulb      LightArchetype = "triangle_bulb"
+	LightArchetypeUnknownArchetype  LightArchetype = "unknown_archetype"
+	LightArchetypeVintageBulb       LightArchetype = "vintage_bulb"
+	LightArchetypeVintageCandleBulb LightArchetype = "vintage_candle_bulb"
+	LightArchetypeWallLantern       LightArchetype = "wall_lantern"
+	LightArchetypeWallShade         LightArchetype = "wall_shade"
+	LightArchetypeWallSpot          LightArchetype = "wall_spot"
+	LightArchetypeWallWasher        LightArchetype = "wall_washer"
 )
 
 // Defines values for LightGetColorGamutType.
@@ -174,8 +202,8 @@ const (
 
 // Defines values for LightPutMode.
 const (
-	LightPutModeNormal    LightPutMode = "normal"
-	LightPutModeStreaming LightPutMode = "streaming"
+	Normal    LightPutMode = "normal"
+	Streaming LightPutMode = "streaming"
 )
 
 // Defines values for LightPutPowerupDimmingColorMode.
@@ -212,6 +240,60 @@ const (
 	LightPutSignalingSignalNoSignal    LightPutSignalingSignal = "no_signal"
 	LightPutSignalingSignalOnOff       LightPutSignalingSignal = "on_off"
 	LightPutSignalingSignalOnOffColor  LightPutSignalingSignal = "on_off_color"
+)
+
+// Defines values for ProductArchetype.
+const (
+	ProductArchetypeBollard           ProductArchetype = "bollard"
+	ProductArchetypeCandleBulb        ProductArchetype = "candle_bulb"
+	ProductArchetypeCeilingHorizontal ProductArchetype = "ceiling_horizontal"
+	ProductArchetypeCeilingRound      ProductArchetype = "ceiling_round"
+	ProductArchetypeCeilingSquare     ProductArchetype = "ceiling_square"
+	ProductArchetypeCeilingTube       ProductArchetype = "ceiling_tube"
+	ProductArchetypeChristmasTree     ProductArchetype = "christmas_tree"
+	ProductArchetypeClassicBulb       ProductArchetype = "classic_bulb"
+	ProductArchetypeDoubleSpot        ProductArchetype = "double_spot"
+	ProductArchetypeEdisonBulb        ProductArchetype = "edison_bulb"
+	ProductArchetypeEllipseBulb       ProductArchetype = "ellipse_bulb"
+	ProductArchetypeFlexibleLamp      ProductArchetype = "flexible_lamp"
+	ProductArchetypeFloodBulb         ProductArchetype = "flood_bulb"
+	ProductArchetypeFloorLantern      ProductArchetype = "floor_lantern"
+	ProductArchetypeFloorShade        ProductArchetype = "floor_shade"
+	ProductArchetypeGroundSpot        ProductArchetype = "ground_spot"
+	ProductArchetypeHueBloom          ProductArchetype = "hue_bloom"
+	ProductArchetypeHueCentris        ProductArchetype = "hue_centris"
+	ProductArchetypeHueGo             ProductArchetype = "hue_go"
+	ProductArchetypeHueIris           ProductArchetype = "hue_iris"
+	ProductArchetypeHueLightstrip     ProductArchetype = "hue_lightstrip"
+	ProductArchetypeHueLightstripPc   ProductArchetype = "hue_lightstrip_pc"
+	ProductArchetypeHueLightstripTv   ProductArchetype = "hue_lightstrip_tv"
+	ProductArchetypeHuePlay           ProductArchetype = "hue_play"
+	ProductArchetypeHueSigne          ProductArchetype = "hue_signe"
+	ProductArchetypeHueTube           ProductArchetype = "hue_tube"
+	ProductArchetypeLargeGlobeBulb    ProductArchetype = "large_globe_bulb"
+	ProductArchetypeLusterBulb        ProductArchetype = "luster_bulb"
+	ProductArchetypeOneOfBridgeV2     ProductArchetype = "one of bridge_v2"
+	ProductArchetypePendantLong       ProductArchetype = "pendant_long"
+	ProductArchetypePendantRound      ProductArchetype = "pendant_round"
+	ProductArchetypePendantSpot       ProductArchetype = "pendant_spot"
+	ProductArchetypePlug              ProductArchetype = "plug"
+	ProductArchetypeRecessedCeiling   ProductArchetype = "recessed_ceiling"
+	ProductArchetypeRecessedFloor     ProductArchetype = "recessed_floor"
+	ProductArchetypeSingleSpot        ProductArchetype = "single_spot"
+	ProductArchetypeSmallGlobeBulb    ProductArchetype = "small_globe_bulb"
+	ProductArchetypeSpotBulb          ProductArchetype = "spot_bulb"
+	ProductArchetypeStringLight       ProductArchetype = "string_light"
+	ProductArchetypeSultanBulb        ProductArchetype = "sultan_bulb"
+	ProductArchetypeTableShade        ProductArchetype = "table_shade"
+	ProductArchetypeTableWash         ProductArchetype = "table_wash"
+	ProductArchetypeTriangleBulb      ProductArchetype = "triangle_bulb"
+	ProductArchetypeUnknownArchetype  ProductArchetype = "unknown_archetype"
+	ProductArchetypeVintageBulb       ProductArchetype = "vintage_bulb"
+	ProductArchetypeVintageCandleBulb ProductArchetype = "vintage_candle_bulb"
+	ProductArchetypeWallLantern       ProductArchetype = "wall_lantern"
+	ProductArchetypeWallShade         ProductArchetype = "wall_shade"
+	ProductArchetypeWallSpot          ProductArchetype = "wall_spot"
+	ProductArchetypeWallWasher        ProductArchetype = "wall_washer"
 )
 
 // Defines values for ResourceGetType.
@@ -466,8 +548,8 @@ type ActionPost struct {
 
 // ApiResponse defines model for ApiResponse.
 type ApiResponse struct {
-	Data   *[]interface{} `json:"data,omitempty"`
-	Errors *[]Error       `json:"errors,omitempty"`
+	Data   *[]map[string]interface{} `json:"data,omitempty"`
+	Errors *[]Error                  `json:"errors,omitempty"`
 }
 
 // BridgeGet defines model for BridgeGet.
@@ -554,6 +636,104 @@ type ColorTemperaturePalettePost struct {
 	} `json:"color_temperature,omitempty"`
 	Dimming *Dimming `json:"dimming,omitempty"`
 }
+
+// DeviceGet defines model for DeviceGet.
+type DeviceGet struct {
+	// Id Unique identifier representing a specific resource instance
+	Id *string `json:"id,omitempty"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1     *string `json:"id_v1,omitempty"`
+	Metadata *struct {
+		Archetype *ProductData `json:"archetype,omitempty"`
+
+		// Name Human readable name of a resource
+		Name *string `json:"name,omitempty"`
+	} `json:"metadata,omitempty"`
+	Owner       *ResourceIdentifier `json:"owner,omitempty"`
+	ProductData *ProductData        `json:"product_data,omitempty"`
+
+	// Services References all services providing control and state of the device.
+	Services *[]ResourceIdentifier `json:"services,omitempty"`
+	Type     *DeviceGetType        `json:"type,omitempty"`
+	Usertest *struct {
+		Status *DeviceGetUsertestStatus `json:"status,omitempty"`
+
+		// Usertest Activates or extends user usertest mode of device for 120 seconds.
+		// `false` deactivates usertest mode.
+		// In usertest mode, devices report changes in state faster and indicate state changes on device LED (if applicable)
+		Usertest *bool `json:"usertest,omitempty"`
+	} `json:"usertest,omitempty"`
+}
+
+// DeviceGetType defines model for DeviceGet.Type.
+type DeviceGetType string
+
+// DeviceGetUsertestStatus defines model for DeviceGet.Usertest.Status.
+type DeviceGetUsertestStatus string
+
+// DevicePowerGet defines model for DevicePowerGet.
+type DevicePowerGet struct {
+	// Id Unique identifier representing a specific resource instance
+	Id *string `json:"id,omitempty"`
+
+	// IdV1 Clip v1 resource identifier
+	IdV1       *string             `json:"id_v1,omitempty"`
+	Owner      *ResourceIdentifier `json:"owner,omitempty"`
+	PowerState *struct {
+		// BatteryLevel The current battery state in percent, only for battery powered devices.
+		BatteryLevel *int `json:"battery_level,omitempty"`
+
+		// BatteryState Status of the power source of a device, only for battery powered devices.
+		//
+		// - `normal` – battery level is sufficient
+		// - `low` – battery level low, some features (e.g. software update) might stop working, please change battery soon
+		// - `critical` – battery level critical, device can fail any moment
+		BatteryState *DevicePowerGetPowerStateBatteryState `json:"battery_state,omitempty"`
+	} `json:"power_state,omitempty"`
+
+	// Type Type of the supported resources
+	Type *string `json:"type,omitempty"`
+}
+
+// DevicePowerGetPowerStateBatteryState Status of the power source of a device, only for battery powered devices.
+//
+// - `normal` – battery level is sufficient
+// - `low` – battery level low, some features (e.g. software update) might stop working, please change battery soon
+// - `critical` – battery level critical, device can fail any moment
+type DevicePowerGetPowerStateBatteryState string
+
+// DevicePut defines model for DevicePut.
+type DevicePut struct {
+	Identify *struct {
+		// Action Triggers a visual identification sequence, current implemented as (which can change in the future):
+		// Bridge performs Zigbee LED identification cycles for 5 seconds Lights perform one breathe cycle Sensors
+		// perform LED identification cycles for 15 seconds
+		Action *DevicePutIdentifyAction `json:"action,omitempty"`
+	} `json:"identify,omitempty"`
+	Metadata *struct {
+		// Archetype Archetype of the product
+		Archetype *ProductArchetype `json:"archetype,omitempty"`
+
+		// Name Human readable name of a resource
+		Name *string `json:"name,omitempty"`
+	} `json:"metadata,omitempty"`
+	Type     *DevicePutType `json:"type,omitempty"`
+	Usertest *struct {
+		// Usertest Activates or extends user usertest mode of device for 120 seconds.
+		// `false` deactivates usertest mode. In usertest mode, devices report changes in state faster and indicate
+		// state changes on device LED (if applicable)
+		Usertest *bool `json:"usertest,omitempty"`
+	} `json:"usertest,omitempty"`
+}
+
+// DevicePutIdentifyAction Triggers a visual identification sequence, current implemented as (which can change in the future):
+// Bridge performs Zigbee LED identification cycles for 5 seconds Lights perform one breathe cycle Sensors
+// perform LED identification cycles for 15 seconds
+type DevicePutIdentifyAction string
+
+// DevicePutType defines model for DevicePut.Type.
+type DevicePutType string
 
 // Dimming defines model for Dimming.
 type Dimming struct {
@@ -1073,6 +1253,33 @@ type On struct {
 	On *bool `json:"on,omitempty"`
 }
 
+// ProductArchetype Archetype of the product
+type ProductArchetype string
+
+// ProductData defines model for ProductData.
+type ProductData struct {
+	// Certified This device is Hue certified
+	Certified *bool `json:"certified,omitempty"`
+
+	// HardwarePlatformType Hardware type; identified by Manufacturer code and ImageType
+	HardwarePlatformType *string `json:"hardware_platform_type,omitempty"`
+
+	// ManufacturerName Name of device manufacturer
+	ManufacturerName *string `json:"manufacturer_name,omitempty"`
+
+	// ModelId Unique identification of device model
+	ModelId *string `json:"model_id,omitempty"`
+
+	// ProductArchetype Archetype of the product
+	ProductArchetype *ProductArchetype `json:"product_archetype,omitempty"`
+
+	// ProductName Name of the product
+	ProductName *string `json:"product_name,omitempty"`
+
+	// SoftwareVersion Software version of the product
+	SoftwareVersion *string `json:"software_version,omitempty"`
+}
+
 // Resource Common resource properties
 type Resource struct {
 	// Id Unique identifier representing a specific resource instance
@@ -1415,6 +1622,9 @@ type AuthenticateJSONBody struct {
 // AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
 type AuthenticateJSONRequestBody AuthenticateJSONBody
 
+// UpdateDeviceJSONRequestBody defines body for UpdateDevice for application/json ContentType.
+type UpdateDeviceJSONRequestBody = DevicePut
+
 // UpdateBridgeJSONRequestBody defines body for UpdateBridge for application/json ContentType.
 type UpdateBridgeJSONRequestBody = BridgePut
 
@@ -1525,6 +1735,26 @@ type ClientInterface interface {
 	AuthenticateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	Authenticate(ctx context.Context, body AuthenticateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDevices request
+	GetDevices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteDevice request
+	DeleteDevice(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDevice request
+	GetDevice(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateDeviceWithBody request with any body
+	UpdateDeviceWithBody(ctx context.Context, deviceId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateDevice(ctx context.Context, deviceId string, body UpdateDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDevicePowers request
+	GetDevicePowers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetDevicePower request
+	GetDevicePower(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetResources request
 	GetResources(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1662,6 +1892,90 @@ func (c *Client) AuthenticateWithBody(ctx context.Context, contentType string, b
 
 func (c *Client) Authenticate(ctx context.Context, body AuthenticateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAuthenticateRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetDevices(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDevicesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteDevice(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteDeviceRequest(c.Server, deviceId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetDevice(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDeviceRequest(c.Server, deviceId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateDeviceWithBody(ctx context.Context, deviceId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDeviceRequestWithBody(c.Server, deviceId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateDevice(ctx context.Context, deviceId string, body UpdateDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateDeviceRequest(c.Server, deviceId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetDevicePowers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDevicePowersRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetDevicePower(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetDevicePowerRequest(c.Server, deviceId)
 	if err != nil {
 		return nil, err
 	}
@@ -2236,6 +2550,209 @@ func NewAuthenticateRequestWithBody(server string, contentType string, body io.R
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetDevicesRequest generates requests for GetDevices
+func NewGetDevicesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/device")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteDeviceRequest generates requests for DeleteDevice
+func NewDeleteDeviceRequest(server string, deviceId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deviceId", runtime.ParamLocationPath, deviceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/device/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetDeviceRequest generates requests for GetDevice
+func NewGetDeviceRequest(server string, deviceId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deviceId", runtime.ParamLocationPath, deviceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/device/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateDeviceRequest calls the generic UpdateDevice builder with application/json body
+func NewUpdateDeviceRequest(server string, deviceId string, body UpdateDeviceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateDeviceRequestWithBody(server, deviceId, "application/json", bodyReader)
+}
+
+// NewUpdateDeviceRequestWithBody generates requests for UpdateDevice with any type of body
+func NewUpdateDeviceRequestWithBody(server string, deviceId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deviceId", runtime.ParamLocationPath, deviceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/device/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetDevicePowersRequest generates requests for GetDevicePowers
+func NewGetDevicePowersRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/device_power")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetDevicePowerRequest generates requests for GetDevicePower
+func NewGetDevicePowerRequest(server string, deviceId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deviceId", runtime.ParamLocationPath, deviceId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/clip/v2/device_power/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -3462,6 +3979,26 @@ type ClientWithResponsesInterface interface {
 
 	AuthenticateWithResponse(ctx context.Context, body AuthenticateJSONRequestBody, reqEditors ...RequestEditorFn) (*AuthenticateResponse, error)
 
+	// GetDevicesWithResponse request
+	GetDevicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetDevicesResponse, error)
+
+	// DeleteDeviceWithResponse request
+	DeleteDeviceWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*DeleteDeviceResponse, error)
+
+	// GetDeviceWithResponse request
+	GetDeviceWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*GetDeviceResponse, error)
+
+	// UpdateDeviceWithBodyWithResponse request with any body
+	UpdateDeviceWithBodyWithResponse(ctx context.Context, deviceId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDeviceResponse, error)
+
+	UpdateDeviceWithResponse(ctx context.Context, deviceId string, body UpdateDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDeviceResponse, error)
+
+	// GetDevicePowersWithResponse request
+	GetDevicePowersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetDevicePowersResponse, error)
+
+	// GetDevicePowerWithResponse request
+	GetDevicePowerWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*GetDevicePowerResponse, error)
+
 	// GetResourcesWithResponse request
 	GetResourcesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetResourcesResponse, error)
 
@@ -3601,6 +4138,216 @@ func (r AuthenticateResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r AuthenticateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetDevicesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]DeviceGet `json:"data,omitempty"`
+		Errors *[]Error     `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDevicesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDevicesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteDeviceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteDeviceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteDeviceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetDeviceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]DeviceGet `json:"data,omitempty"`
+		Errors *[]Error     `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDeviceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDeviceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateDeviceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]ResourceIdentifier `json:"data,omitempty"`
+		Errors *[]Error              `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateDeviceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateDeviceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetDevicePowersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]DevicePowerGet `json:"data,omitempty"`
+		Errors *[]Error          `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDevicePowersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDevicePowersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetDevicePowerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data   *[]DevicePowerGet `json:"data,omitempty"`
+		Errors *[]Error          `json:"errors,omitempty"`
+	}
+	JSON401 *Unauthorized
+	JSON403 *Forbidden
+	JSON404 *NotFound
+	JSON405 *MethodNotAllowed
+	JSON406 *NotAcceptable
+	JSON409 *Conflict
+	JSON429 *TooManyRequests
+	JSON500 *InternalServerError
+	JSON503 *ServiceUnavailable
+	JSON507 *InsufficientStorage
+}
+
+// Status returns HTTPResponse.Status
+func (r GetDevicePowerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetDevicePowerResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4779,6 +5526,68 @@ func (c *ClientWithResponses) AuthenticateWithResponse(ctx context.Context, body
 	return ParseAuthenticateResponse(rsp)
 }
 
+// GetDevicesWithResponse request returning *GetDevicesResponse
+func (c *ClientWithResponses) GetDevicesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetDevicesResponse, error) {
+	rsp, err := c.GetDevices(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDevicesResponse(rsp)
+}
+
+// DeleteDeviceWithResponse request returning *DeleteDeviceResponse
+func (c *ClientWithResponses) DeleteDeviceWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*DeleteDeviceResponse, error) {
+	rsp, err := c.DeleteDevice(ctx, deviceId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteDeviceResponse(rsp)
+}
+
+// GetDeviceWithResponse request returning *GetDeviceResponse
+func (c *ClientWithResponses) GetDeviceWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*GetDeviceResponse, error) {
+	rsp, err := c.GetDevice(ctx, deviceId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDeviceResponse(rsp)
+}
+
+// UpdateDeviceWithBodyWithResponse request with arbitrary body returning *UpdateDeviceResponse
+func (c *ClientWithResponses) UpdateDeviceWithBodyWithResponse(ctx context.Context, deviceId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateDeviceResponse, error) {
+	rsp, err := c.UpdateDeviceWithBody(ctx, deviceId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDeviceResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateDeviceWithResponse(ctx context.Context, deviceId string, body UpdateDeviceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateDeviceResponse, error) {
+	rsp, err := c.UpdateDevice(ctx, deviceId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateDeviceResponse(rsp)
+}
+
+// GetDevicePowersWithResponse request returning *GetDevicePowersResponse
+func (c *ClientWithResponses) GetDevicePowersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetDevicePowersResponse, error) {
+	rsp, err := c.GetDevicePowers(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDevicePowersResponse(rsp)
+}
+
+// GetDevicePowerWithResponse request returning *GetDevicePowerResponse
+func (c *ClientWithResponses) GetDevicePowerWithResponse(ctx context.Context, deviceId string, reqEditors ...RequestEditorFn) (*GetDevicePowerResponse, error) {
+	rsp, err := c.GetDevicePower(ctx, deviceId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetDevicePowerResponse(rsp)
+}
+
 // GetResourcesWithResponse request returning *GetResourcesResponse
 func (c *ClientWithResponses) GetResourcesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetResourcesResponse, error) {
 	rsp, err := c.GetResources(ctx, reqEditors...)
@@ -5191,6 +6000,600 @@ func ParseAuthenticateResponse(rsp *http.Response) (*AuthenticateResponse, error
 			return nil, err
 		}
 		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDevicesResponse parses an HTTP response from a GetDevicesWithResponse call
+func ParseGetDevicesResponse(rsp *http.Response) (*GetDevicesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDevicesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]DeviceGet `json:"data,omitempty"`
+			Errors *[]Error     `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteDeviceResponse parses an HTTP response from a DeleteDeviceWithResponse call
+func ParseDeleteDeviceResponse(rsp *http.Response) (*DeleteDeviceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteDeviceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDeviceResponse parses an HTTP response from a GetDeviceWithResponse call
+func ParseGetDeviceResponse(rsp *http.Response) (*GetDeviceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDeviceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]DeviceGet `json:"data,omitempty"`
+			Errors *[]Error     `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateDeviceResponse parses an HTTP response from a UpdateDeviceWithResponse call
+func ParseUpdateDeviceResponse(rsp *http.Response) (*UpdateDeviceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateDeviceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]ResourceIdentifier `json:"data,omitempty"`
+			Errors *[]Error              `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDevicePowersResponse parses an HTTP response from a GetDevicePowersWithResponse call
+func ParseGetDevicePowersResponse(rsp *http.Response) (*GetDevicePowersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDevicePowersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]DevicePowerGet `json:"data,omitempty"`
+			Errors *[]Error          `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetDevicePowerResponse parses an HTTP response from a GetDevicePowerWithResponse call
+func ParseGetDevicePowerResponse(rsp *http.Response) (*GetDevicePowerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetDevicePowerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data   *[]DevicePowerGet `json:"data,omitempty"`
+			Errors *[]Error          `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest MethodNotAllowed
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest NotAcceptable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest TooManyRequests
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalServerError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ServiceUnavailable
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 507:
+		var dest InsufficientStorage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON507 = &dest
 
 	}
 
