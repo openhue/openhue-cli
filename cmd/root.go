@@ -5,7 +5,9 @@ import (
 	"openhue-cli/cmd/get"
 	"openhue-cli/cmd/set"
 	"openhue-cli/cmd/setup"
+	"openhue-cli/cmd/version"
 	"openhue-cli/config"
+	"openhue-cli/util"
 )
 
 // NewCmdOpenHue represents the `openhue` base command, AKA entry point of the CLI
@@ -25,7 +27,7 @@ openhue controls your Philips Hue lighting system
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(buildInfo *util.BuildInfo) {
 
 	// load the configuration
 	c := config.Config{}
@@ -41,6 +43,7 @@ func Execute() {
 	initGroups(cmd)
 
 	// add sub commands
+	cmd.AddCommand(version.NewCmdVersion(buildInfo))
 	cmd.AddCommand(setup.NewCmdAuth())
 	cmd.AddCommand(setup.NewCmdDiscover())
 	cmd.AddCommand(setup.NewCmdConfigure())
