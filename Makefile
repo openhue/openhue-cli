@@ -28,6 +28,12 @@ tidy: ## Tidy makes sure go.mod matches the source code in the module
 	@$(GO) mod tidy
 	@echo "\n${GREEN}${BOLD}go.mod successfully cleaned 🧽${RESET}"
 
+.PHONY: test
+test: ## Tidy makes sure go.mod matches the source code in the module
+	@$(GO) test ./...
+	@echo "\n${GREEN}${BOLD}all tests successfully passed ✅ ${RESET}"
+
+
 .PHONY: clean
 clean: ##
 	@rm -rf ./dist

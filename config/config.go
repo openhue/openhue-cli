@@ -1,4 +1,4 @@
-package openhue
+package config
 
 import (
 	"crypto/tls"
@@ -7,12 +7,11 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
+	"openhue-cli/openhue"
 	"os"
 	"path/filepath"
 	"slices"
 )
-
-var Api *ClientWithResponses
 
 type Config struct {
 	// The IP of the Philips HUE bridge
@@ -21,13 +20,7 @@ type Config struct {
 	key string
 }
 
-func Init() {
-	config := Load()
-	Api = NewOpenHueClient(config)
-}
-
-func Load() *Config {
-	c := new(Config)
+func (c *Config) Load() {
 
 	// Find home directory.
 	home, err := os.UserHomeDir()
@@ -52,20 +45,18 @@ func Load() *Config {
 
 	c.bridge = viper.GetString("bridge")
 	c.key = viper.GetString("key")
-
-	return c
 }
 
 // NewOpenHueClient Creates a new NewClientWithResponses for a given server and hueApplicationKey.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
-func NewOpenHueClient(c *Config) *ClientWithResponses {
+func (c *Config) NewOpenHueClient() *openhue.ClientWithResponses {
 	p, err := sp.NewSecurityProviderApiKey("header", "hue-application-key", c.key)
 	cobra.CheckErr(err)
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := NewClientWithResponses("https://"+c.bridge, WithRequestEditorFn(p.Intercept))
+	client, err := openhue.NewClientWithResponses("https://"+c.bridge, openhue.WithRequestEditorFn(p.Intercept))
 	cobra.CheckErr(err)
 
 	return client
@@ -73,12 +64,12 @@ func NewOpenHueClient(c *Config) *ClientWithResponses {
 
 // NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application key.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
-func NewOpenHueClientNoAuth(ip string) *ClientWithResponses {
+func NewOpenHueClientNoAuth(ip string) *openhue.ClientWithResponses {
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := NewClientWithResponses("https://" + ip)
+	client, err := openhue.NewClientWithResponses("https://" + ip)
 	cobra.CheckErr(err)
 
 	return client
