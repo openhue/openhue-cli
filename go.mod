@@ -3,7 +3,7 @@ module openhue-cli
 go 1.21
 
 require (
-	github.com/brutella/dnssd v1.2.9
+	github.com/brutella/dnssd v1.2.10
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/fatih/color v1.16.0
 	github.com/oapi-codegen/runtime v1.1.0
