@@ -42,8 +42,8 @@ github.com/RaveNoX/go-jsoncommentstrip v1.0.0/go.mod h1:78ihd09MekBnJnxpICcwzCMz
 github.com/apapsch/go-jsonmerge/v2 v2.0.0 h1:axGnT1gRIfimI7gJifB699GoE/oq+F2MU7Dml6nw9rQ=
 github.com/apapsch/go-jsonmerge/v2 v2.0.0/go.mod h1:lvDnEdqiQrp0O42VQGgmlKpxL1AP2+08jFMw88y4klk=
 github.com/bmatcuk/doublestar v1.1.1/go.mod h1:UD6OnuiIn0yFxxA2le/rnRU1G4RaI4UvFv1sNto9p6w=
-github.com/brutella/dnssd v1.2.9 h1:eUqO0qXZAMaFN4W4Ms1AAO/OtAbNoh9U87GAlN+1FCs=
-github.com/brutella/dnssd v1.2.9/go.mod h1:yZ+GHHbGhtp5yJeKTnppdFGiy6OhiPoxs0WHW1KUcFA=
+github.com/brutella/dnssd v1.2.10 h1:Gg0k7+NtJp7TbOMS0eUVg0VEjSdftzKOTQ8QQTzQ0x4=
+github.com/brutella/dnssd v1.2.10/go.mod h1:yZ+GHHbGhtp5yJeKTnppdFGiy6OhiPoxs0WHW1KUcFA=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
