@@ -7,7 +7,7 @@ require (
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/fatih/color v1.16.0
 	github.com/oapi-codegen/runtime v1.1.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
 	golang.org/x/net v0.18.0
 )
