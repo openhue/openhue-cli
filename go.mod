@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/brutella/dnssd v1.2.9
 	github.com/deepmap/oapi-codegen v1.16.2
-	github.com/fatih/color v1.15.0
+	github.com/fatih/color v1.16.0
 	github.com/oapi-codegen/runtime v1.1.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.17.0
@@ -20,7 +20,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/miekg/dns v1.1.54 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
