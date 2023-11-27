@@ -619,6 +619,12 @@ type ColorPaletteGet struct {
 	Dimming *Dimming `json:"dimming,omitempty"`
 }
 
+// ColorTemperature defines model for ColorTemperature.
+type ColorTemperature struct {
+	// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
+	Mirek *Mirek `json:"mirek,omitempty"`
+}
+
 // ColorTemperaturePaletteGet defines model for ColorTemperaturePaletteGet.
 type ColorTemperaturePaletteGet struct {
 	ColorTemperature *struct {
@@ -1114,13 +1120,8 @@ type LightPut struct {
 	Alert *struct {
 		Action *string `json:"action,omitempty"`
 	} `json:"alert,omitempty"`
-
-	// Color CIE XY gamut position
-	Color            *GamutPosition `json:"color,omitempty"`
-	ColorTemperature *struct {
-		// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
-		Mirek *Mirek `json:"mirek,omitempty"`
-	} `json:"color_temperature,omitempty"`
+	Color                 *Color            `json:"color,omitempty"`
+	ColorTemperature      *ColorTemperature `json:"color_temperature,omitempty"`
 	ColorTemperatureDelta *struct {
 		Action *LightPutColorTemperatureDeltaAction `json:"action,omitempty"`
 
