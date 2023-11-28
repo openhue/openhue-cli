@@ -30,5 +30,8 @@ jobs:
         with:
           coverageCommand: make test
           debug: true
+          prefix: ${{ github.event.repository.name }}
+          coverageLocations:
+            "${{github.workspace}}/c.out:gocov"
 
 
