@@ -36,6 +36,13 @@ const (
 	BridgePutTypeBridge BridgePutType = "bridge"
 )
 
+// Defines values for ColorTemperatureDeltaAction.
+const (
+	ColorTemperatureDeltaActionDown ColorTemperatureDeltaAction = "down"
+	ColorTemperatureDeltaActionStop ColorTemperatureDeltaAction = "stop"
+	ColorTemperatureDeltaActionUp   ColorTemperatureDeltaAction = "up"
+)
+
 // Defines values for DeviceGetType.
 const (
 	DeviceGetTypeDevice DeviceGetType = "device"
@@ -62,6 +69,13 @@ const (
 // Defines values for DevicePutType.
 const (
 	DevicePutTypeDevice DevicePutType = "device"
+)
+
+// Defines values for DimmingDeltaAction.
+const (
+	DimmingDeltaActionDown DimmingDeltaAction = "down"
+	DimmingDeltaActionStop DimmingDeltaAction = "stop"
+	DimmingDeltaActionUp   DimmingDeltaAction = "up"
 )
 
 // Defines values for GroupedLightPutColorTemperatureDeltaAction.
@@ -186,60 +200,38 @@ const (
 	LightGetPowerupPresetSafety      LightGetPowerupPreset = "safety"
 )
 
-// Defines values for LightPutColorTemperatureDeltaAction.
-const (
-	LightPutColorTemperatureDeltaActionDown LightPutColorTemperatureDeltaAction = "down"
-	LightPutColorTemperatureDeltaActionStop LightPutColorTemperatureDeltaAction = "stop"
-	LightPutColorTemperatureDeltaActionUp   LightPutColorTemperatureDeltaAction = "up"
-)
-
-// Defines values for LightPutDimmingDeltaAction.
-const (
-	LightPutDimmingDeltaActionDown LightPutDimmingDeltaAction = "down"
-	LightPutDimmingDeltaActionStop LightPutDimmingDeltaAction = "stop"
-	LightPutDimmingDeltaActionUp   LightPutDimmingDeltaAction = "up"
-)
-
 // Defines values for LightPutMode.
 const (
 	Normal    LightPutMode = "normal"
 	Streaming LightPutMode = "streaming"
 )
 
-// Defines values for LightPutPowerupDimmingColorMode.
+// Defines values for PowerupDimmingColorMode.
 const (
-	LightPutPowerupDimmingColorModeColor            LightPutPowerupDimmingColorMode = "color"
-	LightPutPowerupDimmingColorModeColorTemperature LightPutPowerupDimmingColorMode = "color_temperature"
-	LightPutPowerupDimmingColorModePrevious         LightPutPowerupDimmingColorMode = "previous"
+	PowerupDimmingColorModeColor            PowerupDimmingColorMode = "color"
+	PowerupDimmingColorModeColorTemperature PowerupDimmingColorMode = "color_temperature"
+	PowerupDimmingColorModePrevious         PowerupDimmingColorMode = "previous"
 )
 
-// Defines values for LightPutPowerupDimmingMode.
+// Defines values for PowerupDimmingMode.
 const (
-	LightPutPowerupDimmingModeDimming  LightPutPowerupDimmingMode = "dimming"
-	LightPutPowerupDimmingModePrevious LightPutPowerupDimmingMode = "previous"
+	PowerupDimmingModeDimming  PowerupDimmingMode = "dimming"
+	PowerupDimmingModePrevious PowerupDimmingMode = "previous"
 )
 
-// Defines values for LightPutPowerupOnMode.
+// Defines values for PowerupOnMode.
 const (
-	LightPutPowerupOnModeOn       LightPutPowerupOnMode = "on"
-	LightPutPowerupOnModePrevious LightPutPowerupOnMode = "previous"
-	LightPutPowerupOnModeToggle   LightPutPowerupOnMode = "toggle"
+	PowerupOnModeOn       PowerupOnMode = "on"
+	PowerupOnModePrevious PowerupOnMode = "previous"
+	PowerupOnModeToggle   PowerupOnMode = "toggle"
 )
 
-// Defines values for LightPutPowerupPreset.
+// Defines values for PowerupPreset.
 const (
-	LightPutPowerupPresetCustom      LightPutPowerupPreset = "custom"
-	LightPutPowerupPresetLastOnState LightPutPowerupPreset = "last_on_state"
-	LightPutPowerupPresetPowerfail   LightPutPowerupPreset = "powerfail"
-	LightPutPowerupPresetSafety      LightPutPowerupPreset = "safety"
-)
-
-// Defines values for LightPutSignalingSignal.
-const (
-	LightPutSignalingSignalAlternating LightPutSignalingSignal = "alternating"
-	LightPutSignalingSignalNoSignal    LightPutSignalingSignal = "no_signal"
-	LightPutSignalingSignalOnOff       LightPutSignalingSignal = "on_off"
-	LightPutSignalingSignalOnOffColor  LightPutSignalingSignal = "on_off_color"
+	PowerupPresetCustom      PowerupPreset = "custom"
+	PowerupPresetLastOnState PowerupPreset = "last_on_state"
+	PowerupPresetPowerfail   PowerupPreset = "powerfail"
+	PowerupPresetSafety      PowerupPreset = "safety"
 )
 
 // Defines values for ProductArchetype.
@@ -445,6 +437,14 @@ const (
 	Scene ScenePutType = "scene"
 )
 
+// Defines values for SignalingSignal.
+const (
+	SignalingSignalAlternating SignalingSignal = "alternating"
+	SignalingSignalNoSignal    SignalingSignal = "no_signal"
+	SignalingSignalOnOff       SignalingSignal = "on_off"
+	SignalingSignalOnOffColor  SignalingSignal = "on_off_color"
+)
+
 // Defines values for SupportedDynamicStatus.
 const (
 	DynamicPalette SupportedDynamicStatus = "dynamic_palette"
@@ -625,6 +625,17 @@ type ColorTemperature struct {
 	Mirek *Mirek `json:"mirek,omitempty"`
 }
 
+// ColorTemperatureDelta defines model for ColorTemperatureDelta.
+type ColorTemperatureDelta struct {
+	Action *ColorTemperatureDeltaAction `json:"action,omitempty"`
+
+	// MirekDelta Mirek delta to current mirek. Clip at mirek_minimum and mirek_maximum of mirek_schema.
+	MirekDelta *int `json:"mirek_delta,omitempty"`
+}
+
+// ColorTemperatureDeltaAction defines model for ColorTemperatureDelta.Action.
+type ColorTemperatureDeltaAction string
+
 // ColorTemperaturePaletteGet defines model for ColorTemperaturePaletteGet.
 type ColorTemperaturePaletteGet struct {
 	ColorTemperature *struct {
@@ -745,6 +756,33 @@ type DevicePutType string
 type Dimming struct {
 	// Brightness Brightness percentage. value cannot be 0, writing 0 changes it to lowest possible brightness
 	Brightness *Brightness `json:"brightness,omitempty"`
+}
+
+// DimmingDelta defines model for DimmingDelta.
+type DimmingDelta struct {
+	Action *DimmingDeltaAction `json:"action,omitempty"`
+
+	// BrightnessDelta Brightness percentage of full-scale increase delta to current dimlevel. Clip at Max-level or Min-level.
+	BrightnessDelta *float32 `json:"brightness_delta,omitempty"`
+}
+
+// DimmingDeltaAction defines model for DimmingDelta.Action.
+type DimmingDeltaAction string
+
+// Dynamics defines model for Dynamics.
+type Dynamics struct {
+	// Duration Duration of a light transition or timed effects in ms.
+	Duration *int `json:"duration,omitempty"`
+
+	// Speed Speed of dynamic palette or effect.
+	// The speed is valid for the dynamic palette if the status is `dynamic_palette` or for the corresponding effect listed in status.
+	// In case of status `none`, the speed is not valid.
+	Speed *float32 `json:"speed,omitempty"`
+}
+
+// Effects Basic feature containing effect properties.
+type Effects struct {
+	Effect *SupportedEffects `json:"effect,omitempty"`
 }
 
 // Error defines model for Error.
@@ -1120,33 +1158,15 @@ type LightPut struct {
 	Alert *struct {
 		Action *string `json:"action,omitempty"`
 	} `json:"alert,omitempty"`
-	Color                 *Color            `json:"color,omitempty"`
-	ColorTemperature      *ColorTemperature `json:"color_temperature,omitempty"`
-	ColorTemperatureDelta *struct {
-		Action *LightPutColorTemperatureDeltaAction `json:"action,omitempty"`
-
-		// MirekDelta Mirek delta to current mirek. Clip at mirek_minimum and mirek_maximum of mirek_schema.
-		MirekDelta *int `json:"mirek_delta,omitempty"`
-	} `json:"color_temperature_delta,omitempty"`
-	Dimming      *Dimming `json:"dimming,omitempty"`
-	DimmingDelta *struct {
-		Action *LightPutDimmingDeltaAction `json:"action,omitempty"`
-
-		// BrightnessDelta Brightness percentage of full-scale increase delta to current dimlevel. Clip at Max-level or Min-level.
-		BrightnessDelta *float32 `json:"brightness_delta,omitempty"`
-	} `json:"dimming_delta,omitempty"`
-	Dynamics *struct {
-		// Duration Duration of a light transition or timed effects in ms.
-		Duration *int `json:"duration,omitempty"`
-
-		// Speed speed of dynamic palette or effect. The speed is valid for the dynamic palette if the status is dynamic_palette or for the corresponding effect listed in status. In case of status none, the speed is not valid
-		Speed *float32 `json:"speed,omitempty"`
-	} `json:"dynamics,omitempty"`
+	Color                 *Color                 `json:"color,omitempty"`
+	ColorTemperature      *ColorTemperature      `json:"color_temperature,omitempty"`
+	ColorTemperatureDelta *ColorTemperatureDelta `json:"color_temperature_delta,omitempty"`
+	Dimming               *Dimming               `json:"dimming,omitempty"`
+	DimmingDelta          *DimmingDelta          `json:"dimming_delta,omitempty"`
+	Dynamics              *Dynamics              `json:"dynamics,omitempty"`
 
 	// Effects Basic feature containing effect properties.
-	Effects *struct {
-		Effect *SupportedEffects `json:"effect,omitempty"`
-	} `json:"effects,omitempty"`
+	Effects *Effects `json:"effects,omitempty"`
 
 	// Gradient Basic feature containing gradient properties.
 	Gradient *Gradient     `json:"gradient,omitempty"`
@@ -1154,53 +1174,10 @@ type LightPut struct {
 	On       *On           `json:"on,omitempty"`
 
 	// Powerup Feature containing properties to configure powerup behaviour of a lightsource.
-	Powerup *struct {
-		// Configured Indicates if the shown values have been configured in the lightsource.
-		Configured *bool `json:"configured,omitempty"`
-		Dimming    *struct {
-			Color *struct {
-				ColorTemperature *struct {
-					Color *Color `json:"color,omitempty"`
-
-					// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
-					Mirek *Mirek `json:"mirek,omitempty"`
-				} `json:"color_temperature,omitempty"`
-
-				// Mode State to activate after powerup. Availability of “color_temperature” and “color” modes depend on the capabilities of the lamp. Colortemperature will set the colortemperature to the specified value after power up. When setting color_temperature, the color_temperature property must be included Color will set the color tot he specified value after power up. When setting color mode, the color property must be included Previous will set color to the state it was in before powering off.
-				Mode *LightPutPowerupDimmingColorMode `json:"mode,omitempty"`
-			} `json:"color,omitempty"`
-
-			// Dimming Brightness percentage. value cannot be 0, writing 0 changes it to lowest possible brightness
-			Dimming *Brightness `json:"dimming,omitempty"`
-
-			// Mode Dimming will set the brightness to the specified value after power up.
-			// When setting mode “dimming”, the dimming property must be included.
-			// Previous will set brightness to the state it was in before powering off.
-			Mode *LightPutPowerupDimmingMode `json:"mode,omitempty"`
-		} `json:"dimming,omitempty"`
-		On *struct {
-			// Mode State to activate after powerup.
-			// On will use the value specified in the “on” property.
-			// When setting mode “on”, the on property must be included.
-			// Toggle will alternate between on and off on each subsequent power toggle.
-			// Previous will return to the state it was in before powering off.
-			Mode *LightPutPowerupOnMode `json:"mode,omitempty"`
-			On   *On                    `json:"on,omitempty"`
-		} `json:"on,omitempty"`
-
-		// Preset When setting the custom preset the additional properties can be set. For all other presets, no other properties can be included.
-		Preset *LightPutPowerupPreset `json:"preset,omitempty"`
-	} `json:"powerup,omitempty"`
+	Powerup *Powerup `json:"powerup,omitempty"`
 
 	// Signaling Feature containing signaling properties.
-	Signaling *struct {
-		// Colors Colors that were provided for the active effect.
-		Colors *[]Color `json:"colors,omitempty"`
-
-		// Duration Duration has a max of 65534000 ms and a stepsize of 1 second. Values inbetween steps will be rounded. Duration is ignored for no_signal.
-		Duration *int                     `json:"duration,omitempty"`
-		Signal   *LightPutSignalingSignal `json:"signal,omitempty"`
-	} `json:"signaling,omitempty"`
+	Signaling *Signaling `json:"signaling,omitempty"`
 
 	// TimedEffects Basic feature containing timed effect properties.
 	TimedEffects *struct {
@@ -1215,35 +1192,8 @@ type LightPut struct {
 	Type *string `json:"type,omitempty"`
 }
 
-// LightPutColorTemperatureDeltaAction defines model for LightPut.ColorTemperatureDelta.Action.
-type LightPutColorTemperatureDeltaAction string
-
-// LightPutDimmingDeltaAction defines model for LightPut.DimmingDelta.Action.
-type LightPutDimmingDeltaAction string
-
 // LightPutMode defines model for LightPut.Mode.
 type LightPutMode string
-
-// LightPutPowerupDimmingColorMode State to activate after powerup. Availability of “color_temperature” and “color” modes depend on the capabilities of the lamp. Colortemperature will set the colortemperature to the specified value after power up. When setting color_temperature, the color_temperature property must be included Color will set the color tot he specified value after power up. When setting color mode, the color property must be included Previous will set color to the state it was in before powering off.
-type LightPutPowerupDimmingColorMode string
-
-// LightPutPowerupDimmingMode Dimming will set the brightness to the specified value after power up.
-// When setting mode “dimming”, the dimming property must be included.
-// Previous will set brightness to the state it was in before powering off.
-type LightPutPowerupDimmingMode string
-
-// LightPutPowerupOnMode State to activate after powerup.
-// On will use the value specified in the “on” property.
-// When setting mode “on”, the on property must be included.
-// Toggle will alternate between on and off on each subsequent power toggle.
-// Previous will return to the state it was in before powering off.
-type LightPutPowerupOnMode string
-
-// LightPutPowerupPreset When setting the custom preset the additional properties can be set. For all other presets, no other properties can be included.
-type LightPutPowerupPreset string
-
-// LightPutSignalingSignal defines model for LightPut.Signaling.Signal.
-type LightPutSignalingSignal string
 
 // Mirek color temperature in mirek or null when the light color is not in the ct spectrum
 type Mirek = int
@@ -1253,6 +1203,63 @@ type On struct {
 	// On On/Off state of the light on=true, off=false
 	On *bool `json:"on,omitempty"`
 }
+
+// Powerup Feature containing properties to configure powerup behaviour of a lightsource.
+type Powerup struct {
+	// Configured Indicates if the shown values have been configured in the lightsource.
+	Configured *bool `json:"configured,omitempty"`
+	Dimming    *struct {
+		Color *struct {
+			ColorTemperature *struct {
+				Color *Color `json:"color,omitempty"`
+
+				// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
+				Mirek *Mirek `json:"mirek,omitempty"`
+			} `json:"color_temperature,omitempty"`
+
+			// Mode State to activate after powerup. Availability of “color_temperature” and “color” modes depend on the capabilities of the lamp. Colortemperature will set the colortemperature to the specified value after power up. When setting color_temperature, the color_temperature property must be included Color will set the color tot he specified value after power up. When setting color mode, the color property must be included Previous will set color to the state it was in before powering off.
+			Mode *PowerupDimmingColorMode `json:"mode,omitempty"`
+		} `json:"color,omitempty"`
+
+		// Dimming Brightness percentage. value cannot be 0, writing 0 changes it to lowest possible brightness
+		Dimming *Brightness `json:"dimming,omitempty"`
+
+		// Mode Dimming will set the brightness to the specified value after power up.
+		// When setting mode “dimming”, the dimming property must be included.
+		// Previous will set brightness to the state it was in before powering off.
+		Mode *PowerupDimmingMode `json:"mode,omitempty"`
+	} `json:"dimming,omitempty"`
+	On *struct {
+		// Mode State to activate after powerup.
+		// On will use the value specified in the “on” property.
+		// When setting mode “on”, the on property must be included.
+		// Toggle will alternate between on and off on each subsequent power toggle.
+		// Previous will return to the state it was in before powering off.
+		Mode *PowerupOnMode `json:"mode,omitempty"`
+		On   *On            `json:"on,omitempty"`
+	} `json:"on,omitempty"`
+
+	// Preset When setting the custom preset the additional properties can be set. For all other presets, no other properties can be included.
+	Preset *PowerupPreset `json:"preset,omitempty"`
+}
+
+// PowerupDimmingColorMode State to activate after powerup. Availability of “color_temperature” and “color” modes depend on the capabilities of the lamp. Colortemperature will set the colortemperature to the specified value after power up. When setting color_temperature, the color_temperature property must be included Color will set the color tot he specified value after power up. When setting color mode, the color property must be included Previous will set color to the state it was in before powering off.
+type PowerupDimmingColorMode string
+
+// PowerupDimmingMode Dimming will set the brightness to the specified value after power up.
+// When setting mode “dimming”, the dimming property must be included.
+// Previous will set brightness to the state it was in before powering off.
+type PowerupDimmingMode string
+
+// PowerupOnMode State to activate after powerup.
+// On will use the value specified in the “on” property.
+// When setting mode “on”, the on property must be included.
+// Toggle will alternate between on and off on each subsequent power toggle.
+// Previous will return to the state it was in before powering off.
+type PowerupOnMode string
+
+// PowerupPreset When setting the custom preset the additional properties can be set. For all other presets, no other properties can be included.
+type PowerupPreset string
 
 // ProductArchetype Archetype of the product
 type ProductArchetype string
@@ -1513,6 +1520,19 @@ type ScenePutRecallAction string
 
 // ScenePutType defines model for ScenePut.Type.
 type ScenePutType string
+
+// Signaling Feature containing signaling properties.
+type Signaling struct {
+	// Colors Colors that were provided for the active effect.
+	Colors *[]Color `json:"colors,omitempty"`
+
+	// Duration Duration has a max of 65534000 ms and a stepsize of 1 second. Values inbetween steps will be rounded. Duration is ignored for no_signal.
+	Duration *int             `json:"duration,omitempty"`
+	Signal   *SignalingSignal `json:"signal,omitempty"`
+}
+
+// SignalingSignal defines model for Signaling.Signal.
+type SignalingSignal string
 
 // SupportedDynamicStatus Current status of the lamp with dynamics.
 type SupportedDynamicStatus string
