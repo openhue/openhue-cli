@@ -3,10 +3,14 @@ package version
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"openhue-cli/util"
+	"openhue-cli/openhue"
 )
 
-func NewCmdVersion(buildInfo *util.BuildInfo) *cobra.Command {
+const (
+	BaseCommitUrl = "https://github.com/openhue/openhue-cli/commit/"
+)
+
+func NewCmdVersion(ctx *openhue.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "version",
@@ -18,12 +22,11 @@ openhue version
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 
-			fmt.Println("\n# Version\t", buildInfo.Version)
-			fmt.Println("#  Commit\t", buildInfo.Commit)
-			fmt.Println("#    Time\t", buildInfo.Date)
+			fmt.Fprintln(ctx.Io.Out, "\n#  Version\t", ctx.BuildInfo.Version)
+			fmt.Fprintln(ctx.Io.Out, "#   Commit\t", BaseCommitUrl+ctx.BuildInfo.Commit)
+			fmt.Fprintln(ctx.Io.Out, "# Built at\t", ctx.BuildInfo.Date)
 		},
 	}
 
 	return cmd
-
 }

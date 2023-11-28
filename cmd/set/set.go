@@ -6,7 +6,7 @@ import (
 )
 
 // NewCmdSet returns an initialized Command instance for 'set' sub command
-func NewCmdSet(api *openhue.ClientWithResponses) *cobra.Command {
+func NewCmdSet(ctx *openhue.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "set",
@@ -17,7 +17,7 @@ Set the values for a specific resource
 `,
 	}
 
-	cmd.AddCommand(NewCmdSetLight(api))
+	cmd.AddCommand(NewCmdSetLight(ctx))
 
 	return cmd
 }

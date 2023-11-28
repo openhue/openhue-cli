@@ -1,10 +1,10 @@
 package main
 
-//go:generate oapi-codegen --package=openhue -generate=client,types -o ./openhue/openhue.gen.go https://api.redocly.com/registry/bundle/openhue/openhue/v2/openapi.yaml?branch=main
+//go:generate oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.gen.go https://api.redocly.com/registry/bundle/openhue/openhue/v2/openapi.yaml?branch=main
 
 import (
 	"openhue-cli/cmd"
-	"openhue-cli/util"
+	"openhue-cli/openhue"
 )
 
 var (
@@ -14,5 +14,5 @@ var (
 )
 
 func main() {
-	cmd.Execute(util.NewBuildInfo(version, commit, date))
+	cmd.Execute(openhue.NewBuildInfo(version, commit, date))
 }

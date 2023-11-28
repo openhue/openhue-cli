@@ -1,6 +1,8 @@
-package testing
+package test
 
-import "math"
+import (
+	"math"
+)
 
 // AlmostEqual32 returns true if a and b are equal within a relative error of e.
 // See http://floating-point-gui.de/errors/comparison/ for the details of the applied method.

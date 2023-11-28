@@ -6,8 +6,7 @@ import (
 	"openhue-cli/cmd/set"
 	"openhue-cli/cmd/setup"
 	"openhue-cli/cmd/version"
-	"openhue-cli/config"
-	"openhue-cli/util"
+	"openhue-cli/openhue"
 )
 
 // NewCmdOpenHue represents the `openhue` base command, AKA entry point of the CLI
@@ -27,31 +26,32 @@ openhue controls your Philips Hue lighting system
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(buildInfo *util.BuildInfo) {
+func Execute(buildInfo *openhue.BuildInfo) {
 
 	// load the configuration
-	c := config.Config{}
-	c.Load()
+	c := openhue.Config{}
+	c.LoadConfig()
 
 	// get the API Client
 	api := c.NewOpenHueClient()
+	ctx := openhue.NewContext(openhue.NewIOSteams(), buildInfo, api)
 
 	// create the root command
-	cmd := NewCmdOpenHue()
+	root := NewCmdOpenHue()
 
 	// init groups
-	initGroups(cmd)
+	initGroups(root)
 
 	// add sub commands
-	cmd.AddCommand(version.NewCmdVersion(buildInfo))
-	cmd.AddCommand(setup.NewCmdAuth())
-	cmd.AddCommand(setup.NewCmdDiscover())
-	cmd.AddCommand(setup.NewCmdConfigure())
-	cmd.AddCommand(set.NewCmdSet(api))
-	cmd.AddCommand(get.NewCmdGet(api))
+	root.AddCommand(version.NewCmdVersion(ctx))
+	root.AddCommand(setup.NewCmdAuth())
+	root.AddCommand(setup.NewCmdDiscover())
+	root.AddCommand(setup.NewCmdConfigure())
+	root.AddCommand(set.NewCmdSet(ctx))
+	root.AddCommand(get.NewCmdGet(ctx))
 
 	// execute the root command
-	err := cmd.Execute()
+	err := root.Execute()
 	cobra.CheckErr(err)
 }
 

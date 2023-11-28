@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"openhue-cli/openhue"
+	"openhue-cli/openhue/gen"
 	"openhue-cli/util"
 )
 
@@ -14,7 +15,7 @@ type GetFlags struct {
 var GetConfig GetFlags
 
 // NewCmdGet returns an initialized Command instance for 'get' sub command
-func NewCmdGet(api *openhue.ClientWithResponses) *cobra.Command {
+func NewCmdGet(ctx *openhue.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "get",
 		Short:   "Display one or many resources",
@@ -23,7 +24,7 @@ func NewCmdGet(api *openhue.ClientWithResponses) *cobra.Command {
 Retrieve information for any kind of resources exposed by your Hue Bridge: lights, rooms, scenes, etc.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			resp, err := api.GetResourcesWithResponse(context.Background())
+			resp, err := ctx.Api.GetResourcesWithResponse(context.Background())
 			cobra.CheckErr(err)
 			resources := *(*resp.JSON200).Data
 
@@ -33,7 +34,7 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 				// filter resources by type
 				n := 0
 				for _, r := range resources {
-					if *r.Type == openhue.ResourceGetType(typeFlag) {
+					if *r.Type == gen.ResourceGetType(typeFlag) {
 						resources[n] = r
 						n++
 					}
@@ -42,9 +43,9 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 			}
 
 			if GetConfig.Json {
-				util.PrintJson(resources)
+				util.PrintJson(ctx.Io, resources)
 			} else {
-				util.PrintTable(resources, PrintResource, "Resource ID", "Resource Type")
+				util.PrintTable(ctx.Io, resources, PrintResource, "Resource ID", "Resource Type")
 			}
 		},
 	}
@@ -56,12 +57,12 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 	cmd.PersistentFlags().BoolVar(&GetConfig.Json, "json", false, "Format output as JSON")
 
 	// sub commands
-	cmd.AddCommand(NewCmdGetLight(api))
-	cmd.AddCommand(NewCmdGetRoom(api))
+	cmd.AddCommand(NewCmdGetLight(ctx))
+	cmd.AddCommand(NewCmdGetRoom(ctx))
 
 	return cmd
 }
 
-func PrintResource(resource openhue.ResourceGet) string {
+func PrintResource(resource gen.ResourceGet) string {
 	return *resource.Id + "\t" + string(*resource.Type)
 }
