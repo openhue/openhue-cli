@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/spf13/cobra"
-	"openhue-cli/config"
 	"openhue-cli/openhue"
+	"openhue-cli/openhue/gen"
 	"os"
 )
 
@@ -25,9 +25,9 @@ func NewCmdAuth() *cobra.Command {
 		Long:    `Authenticate to retrieve the Hue Application Key. Requires to go and press the button on the bridge`,
 		Run: func(cmd *cobra.Command, args []string) {
 
-			client := config.NewOpenHueClientNoAuth(bridge)
+			client := openhue.NewOpenHueClientNoAuth(bridge)
 
-			body := new(openhue.AuthenticateJSONRequestBody)
+			body := new(gen.AuthenticateJSONRequestBody)
 			body.Devicetype = &deviceType
 			body.Generateclientkey = &generateClientKey
 			resp, err := client.AuthenticateWithResponse(context.Background(), *body)

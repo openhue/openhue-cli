@@ -1,4 +1,4 @@
-package config
+package openhue
 
 import (
 	"crypto/tls"
@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
-	"openhue-cli/openhue"
+	"openhue-cli/openhue/gen"
 	"os"
 	"path/filepath"
 	"slices"
@@ -20,7 +20,7 @@ type Config struct {
 	key string
 }
 
-func (c *Config) Load() {
+func (c *Config) LoadConfig() {
 
 	// Find home directory.
 	home, err := os.UserHomeDir()
@@ -49,14 +49,14 @@ func (c *Config) Load() {
 
 // NewOpenHueClient Creates a new NewClientWithResponses for a given server and hueApplicationKey.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
-func (c *Config) NewOpenHueClient() *openhue.ClientWithResponses {
+func (c *Config) NewOpenHueClient() *gen.ClientWithResponses {
 	p, err := sp.NewSecurityProviderApiKey("header", "hue-application-key", c.key)
 	cobra.CheckErr(err)
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := openhue.NewClientWithResponses("https://"+c.bridge, openhue.WithRequestEditorFn(p.Intercept))
+	client, err := gen.NewClientWithResponses("https://"+c.bridge, gen.WithRequestEditorFn(p.Intercept))
 	cobra.CheckErr(err)
 
 	return client
@@ -64,12 +64,12 @@ func (c *Config) NewOpenHueClient() *openhue.ClientWithResponses {
 
 // NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application key.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
-func NewOpenHueClientNoAuth(ip string) *openhue.ClientWithResponses {
+func NewOpenHueClientNoAuth(ip string) *gen.ClientWithResponses {
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := openhue.NewClientWithResponses("https://" + ip)
+	client, err := gen.NewClientWithResponses("https://" + ip)
 	cobra.CheckErr(err)
 
 	return client

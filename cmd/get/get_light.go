@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"openhue-cli/openhue"
+	"openhue-cli/openhue/gen"
 	"openhue-cli/util"
 	"os"
 )
@@ -34,7 +35,7 @@ func NewGetLightOptions() *LightOptions {
 }
 
 // NewCmdGetLight returns initialized Command instance for the 'get light' sub command
-func NewCmdGetLight(api *openhue.ClientWithResponses) *cobra.Command {
+func NewCmdGetLight(ctx *openhue.Context) *cobra.Command {
 
 	o := NewGetLightOptions()
 
@@ -46,7 +47,7 @@ func NewCmdGetLight(api *openhue.ClientWithResponses) *cobra.Command {
 		Args:    cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
 			o.PrepareGetRoomCmd(args)
-			o.RunGetLightCmd(api)
+			o.RunGetLightCmd(ctx)
 		},
 	}
 
@@ -59,11 +60,11 @@ func (o *LightOptions) PrepareGetRoomCmd(args []string) {
 	}
 }
 
-func (o *LightOptions) RunGetLightCmd(api *openhue.ClientWithResponses) {
-	var lights *[]openhue.LightGet
+func (o *LightOptions) RunGetLightCmd(ctx *openhue.Context) {
+	var lights *[]gen.LightGet
 
 	if len(o.LightId) > 0 {
-		resp, err := api.GetLightWithResponse(context.Background(), o.LightId)
+		resp, err := ctx.Api.GetLightWithResponse(context.Background(), o.LightId)
 		cobra.CheckErr(err)
 
 		if resp.JSON200 == nil {
@@ -73,19 +74,19 @@ func (o *LightOptions) RunGetLightCmd(api *openhue.ClientWithResponses) {
 
 		lights = (*resp.JSON200).Data
 	} else {
-		resp, err := api.GetLightsWithResponse(context.Background())
+		resp, err := ctx.Api.GetLightsWithResponse(context.Background())
 		cobra.CheckErr(err)
 		lights = (*resp.JSON200).Data
 	}
 
 	if !GetConfig.Json {
-		util.PrintTable(*lights, PrintLight, "ID", "Name", "Type", "Status", "Brightness")
+		util.PrintTable(ctx.Io, *lights, PrintLight, "ID", "Name", "Type", "Status", "Brightness")
 	} else {
-		util.PrintJsonArray(*lights)
+		util.PrintJsonArray(ctx.Io, *lights)
 	}
 }
 
-func PrintLight(light openhue.LightGet) string {
+func PrintLight(light gen.LightGet) string {
 
 	status := "[  ]"
 	brightness := "N/A"

@@ -1,7 +1,7 @@
 package color
 
 import (
-	test "openhue-cli/testing"
+	"openhue-cli/openhue/test"
 	"testing"
 )
 

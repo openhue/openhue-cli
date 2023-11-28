@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"openhue-cli/openhue"
+	"openhue-cli/openhue/gen"
 	"openhue-cli/util/color"
 )
 
@@ -66,7 +67,7 @@ func NewSetLightOptions() *LightOptions {
 }
 
 // NewCmdSetLight returns initialized Command instance for the 'set light' sub command
-func NewCmdSetLight(api *openhue.ClientWithResponses) *cobra.Command {
+func NewCmdSetLight(ctx *openhue.Context) *cobra.Command {
 
 	o := NewSetLightOptions()
 	f := LightFlags{}
@@ -79,7 +80,7 @@ func NewCmdSetLight(api *openhue.ClientWithResponses) *cobra.Command {
 		Args:    cobra.MatchAll(cobra.RangeArgs(1, 10), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
 			cobra.CheckErr(o.PrepareCmdSetLight(&f))
-			cobra.CheckErr(o.RunCmdSetLight(api, args))
+			cobra.CheckErr(o.RunCmdSetLight(ctx.Api, args))
 		},
 	}
 
@@ -168,25 +169,25 @@ func (o *LightOptions) PrepareCmdSetLight(flags *LightFlags) error {
 }
 
 // RunCmdSetLight executes the light update command logic
-func (o *LightOptions) RunCmdSetLight(api *openhue.ClientWithResponses, args []string) error {
+func (o *LightOptions) RunCmdSetLight(api *gen.ClientWithResponses, args []string) error {
 
-	request := &openhue.UpdateLightJSONRequestBody{}
+	request := &gen.UpdateLightJSONRequestBody{}
 
 	if o.Status != Undefined {
-		request.On = &openhue.On{
+		request.On = &gen.On{
 			On: ToBool(o.Status),
 		}
 	}
 
 	if o.Brightness >= 0 && o.Brightness <= 100.0 {
-		request.Dimming = &openhue.Dimming{
+		request.Dimming = &gen.Dimming{
 			Brightness: &o.Brightness,
 		}
 	}
 
 	if o.Color != color.UndefinedColor {
-		request.Color = &openhue.Color{
-			Xy: &openhue.GamutPosition{
+		request.Color = &gen.Color{
+			Xy: &gen.GamutPosition{
 				X: &o.Color.X,
 				Y: &o.Color.Y,
 			},

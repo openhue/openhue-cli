@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"openhue-cli/openhue"
+	"openhue-cli/openhue/gen"
 	"openhue-cli/util"
 	"os"
 )
@@ -34,7 +35,7 @@ func NewGetRoomOptions() *RoomOptions {
 }
 
 // NewCmdGetRoom returns initialized Command instance for the 'get light' sub command
-func NewCmdGetRoom(api *openhue.ClientWithResponses) *cobra.Command {
+func NewCmdGetRoom(ctx *openhue.Context) *cobra.Command {
 
 	o := NewGetRoomOptions()
 
@@ -46,7 +47,7 @@ func NewCmdGetRoom(api *openhue.ClientWithResponses) *cobra.Command {
 		Args:    cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
 			o.PrepareGetRoomCmd(args)
-			o.RunGetRoomCmd(api)
+			o.RunGetRoomCmd(ctx)
 		},
 	}
 
@@ -59,11 +60,11 @@ func (o *RoomOptions) PrepareGetRoomCmd(args []string) {
 	}
 }
 
-func (o *RoomOptions) RunGetRoomCmd(api *openhue.ClientWithResponses) {
-	var rooms *[]openhue.RoomGet
+func (o *RoomOptions) RunGetRoomCmd(ctx *openhue.Context) {
+	var rooms *[]gen.RoomGet
 
 	if len(o.RoomId) > 0 {
-		resp, err := api.GetRoomWithResponse(context.Background(), o.RoomId)
+		resp, err := ctx.Api.GetRoomWithResponse(context.Background(), o.RoomId)
 		cobra.CheckErr(err)
 
 		if resp.JSON200 == nil {
@@ -73,18 +74,18 @@ func (o *RoomOptions) RunGetRoomCmd(api *openhue.ClientWithResponses) {
 
 		rooms = (*resp.JSON200).Data
 	} else {
-		resp, err := api.GetRoomsWithResponse(context.Background())
+		resp, err := ctx.Api.GetRoomsWithResponse(context.Background())
 		cobra.CheckErr(err)
 		rooms = (*resp.JSON200).Data
 	}
 
 	if !GetConfig.Json {
-		util.PrintTable(*rooms, PrintRoom, "ID", "Name", "Type")
+		util.PrintTable(ctx.Io, *rooms, PrintRoom, "ID", "Name", "Type")
 	} else {
-		util.PrintJsonArray(*rooms)
+		util.PrintJsonArray(ctx.Io, *rooms)
 	}
 }
 
-func PrintRoom(room openhue.RoomGet) string {
+func PrintRoom(room gen.RoomGet) string {
 	return *room.Id + "\t" + *room.Metadata.Name + "\t" + string(*room.Metadata.Archetype)
 }
