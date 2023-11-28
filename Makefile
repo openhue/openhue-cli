@@ -30,7 +30,7 @@ tidy: ## Tidy makes sure go.mod matches the source code in the module
 
 .PHONY: test
 test: ## Tidy makes sure go.mod matches the source code in the module
-	@$(GO) test ./...
+	@$(GO) test ./... -coverprofile=c.out
 	@echo "\n${GREEN}${BOLD}all tests successfully passed ✅ ${RESET}"
 
 
