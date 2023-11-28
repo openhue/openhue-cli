@@ -6,4 +6,4 @@ plugins:
 
 # We don't want the scan and analyze generated code
 exclude_patterns:
-  - openhue/openhue.gen.go
+  - openhue/gen/openhue.gen.go
