@@ -58,7 +58,7 @@ If you want, you can also run the following command to visualize the coverage an
 ```shell
 make coverage
 ```
-> or use `make coverage display=true` to save the report instead of opening it in the browser
+> or use `make coverage html=true` to visualize the HTML report in your default web browser
 
 ### Generate the OpenHue API Client
 Run the following command to generate the [OpenHue API Client](https://github.com/openhue/openhue-api): 
