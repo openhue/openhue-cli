@@ -1,12 +1,15 @@
 package setup
 
-import "testing"
+import (
+	"openhue-cli/openhue/test/assert"
+	"testing"
+)
 
 func TestNewCmdConfigure(t *testing.T) {
 
 	cmd := NewCmdConfigure()
 
-	if cmd.Use != "configure" {
-		t.Fatalf("The configure 'command' name has changed to '%s'", cmd.Use)
-	}
+	assert.ThatCmdUseIs(t, cmd, "configure")
+	assert.ThatCmdGroupIs(t, cmd, "config")
+
 }

@@ -17,8 +17,8 @@ type IOStreams struct {
 	ErrOut io.Writer
 }
 
-// NewIOSteams returns a valid IOStreams with the default os.Stdin, os.Stdout and os.Stderr thinks
-func NewIOSteams() IOStreams {
+// NewIOStreams returns a valid IOStreams with the default os.Stdin, os.Stdout and os.Stderr thinks
+func NewIOStreams() IOStreams {
 	return IOStreams{
 		In:     os.Stdin,
 		Out:    os.Stdout,

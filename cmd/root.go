@@ -30,11 +30,11 @@ func Execute(buildInfo *openhue.BuildInfo) {
 
 	// load the configuration
 	c := openhue.Config{}
-	c.LoadConfig()
+	c.Load()
 
 	// get the API Client
 	api := c.NewOpenHueClient()
-	ctx := openhue.NewContext(openhue.NewIOSteams(), buildInfo, api)
+	ctx := openhue.NewContext(openhue.NewIOStreams(), buildInfo, api)
 
 	// create the root command
 	root := NewCmdOpenHue()
@@ -44,9 +44,10 @@ func Execute(buildInfo *openhue.BuildInfo) {
 
 	// add sub commands
 	root.AddCommand(version.NewCmdVersion(ctx))
-	root.AddCommand(setup.NewCmdAuth())
-	root.AddCommand(setup.NewCmdDiscover())
+	root.AddCommand(setup.NewCmdAuth(ctx.Io))
+	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
 	root.AddCommand(setup.NewCmdConfigure())
+
 	root.AddCommand(set.NewCmdSet(ctx))
 	root.AddCommand(get.NewCmdGet(ctx))
 

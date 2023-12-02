@@ -29,10 +29,19 @@ tidy: ## Tidy makes sure go.mod matches the source code in the module
 	@echo "\n${GREEN}${BOLD}go.mod successfully cleaned 🧽${RESET}"
 
 .PHONY: test
-test: ## Tidy makes sure go.mod matches the source code in the module
-	@$(GO) test ./... -coverprofile=c.out
+test: ## Run the tests
+	@$(GO) test ./...
 	@echo "\n${GREEN}${BOLD}all tests successfully passed ✅ ${RESET}"
 
+.PHONY: coverage
+coverage: ## Run the tests with coverage. Usage: make coverage [html=true]
+	@$(GO) test ./... -coverprofile=c.out
+ifdef html
+	@$(GO) tool cover -html="c.out"
+else
+	@$(GO) tool cover -func="c.out"
+endif
+	@echo "\n${GREEN}${BOLD}all tests successfully passed ✅ ${RESET}"
 
 .PHONY: clean
 clean: ##
