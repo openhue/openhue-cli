@@ -49,6 +49,17 @@ cd openhue-cli
 make build
 ```
 
+### Test
+Run the following command to execute all the tests and calculate the code coverage:
+```shell
+make test
+```
+If you want, you can also run the following command to visualize the coverage analysis in your browser: 
+```shell
+make coverage
+```
+> or use `make coverage display=true` to save the report instead of opening it in the browser
+
 ### Generate the OpenHue API Client
 Run the following command to generate the [OpenHue API Client](https://github.com/openhue/openhue-api): 
 ```shell

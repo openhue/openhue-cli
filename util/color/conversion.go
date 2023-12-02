@@ -36,7 +36,7 @@ func (c *RGB) ToXY() *XY {
 // Example: #FF0000 will return RGB{255, 0, 0}
 func NewRGBFomHex(hex string) (*RGB, error) {
 
-	if !(hex[0:1] == "#") && len(hex) != 7 {
+	if !(hex[0:1] == "#") || len(hex) != 7 {
 		return nil, errors.New("wrong format for the input hexadecimal string")
 	}
 

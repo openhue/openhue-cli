@@ -28,7 +28,7 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: 64da8b499e15dc84234cbe4ff019d5d533718ca6768807d2aa0057f56add2e8c
         with:
-          coverageCommand: make test
+          coverageCommand: make coverage
           debug: true
           prefix: ${{ github.event.repository.name }}
           coverageLocations:

@@ -2,7 +2,7 @@ package version
 
 import (
 	"openhue-cli/openhue"
-	"openhue-cli/openhue/test"
+	"openhue-cli/openhue/test/assert"
 	"strings"
 	"testing"
 )
@@ -25,8 +25,8 @@ func TestNewCmdVersion(t *testing.T) {
 
 	lines := strings.Split(out.String(), "\n")
 
-	test.AssertThatLineEqualsTo(t, lines, 1, Line1)
-	test.AssertThatLineEqualsTo(t, lines, 2, Line2)
-	test.AssertThatLineEqualsTo(t, lines, 3, Line3)
+	assert.ThatLineEqualsTo(t, lines, 1, Line1)
+	assert.ThatLineEqualsTo(t, lines, 2, Line2)
+	assert.ThatLineEqualsTo(t, lines, 3, Line3)
 
 }

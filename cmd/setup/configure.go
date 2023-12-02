@@ -2,7 +2,7 @@ package setup
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"openhue-cli/openhue"
 )
 
 const (
@@ -13,8 +13,15 @@ The setup command must be run as a prerequisite for all resource related command
 It allows to store your Philips Hue Bridge IP and application key in the configuration file (~/.openhue/config.yaml).`
 )
 
+type Options struct {
+	bridge string
+	key    string
+}
+
 // NewCmdConfigure creates the configure command
 func NewCmdConfigure() *cobra.Command {
+
+	o := Options{}
 
 	cmd := &cobra.Command{
 		Use:     "configure",
@@ -22,21 +29,22 @@ func NewCmdConfigure() *cobra.Command {
 		Short:   docShortConfigure,
 		Long:    docLongConfigure,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := viper.SafeWriteConfig()
-			if err != nil {
-				err := viper.WriteConfig()
-				cobra.CheckErr(err)
+
+			c := openhue.Config{
+				Bridge: o.bridge,
+				Key:    o.key,
 			}
+
+			err := c.Save()
+			cobra.CheckErr(err)
 		},
 	}
 
-	cmd.Flags().StringP("bridge", "b", "", "The local IP of your Philips Hue Bridge (example '192.168.1.68')")
+	cmd.Flags().StringVarP(&o.bridge, "bridge", "b", "", "The local IP of your Philips Hue Bridge (example '192.168.1.68')")
 	_ = cmd.MarkFlagRequired("bridge")
-	_ = viper.BindPFlag("bridge", cmd.Flags().Lookup("bridge"))
 
-	cmd.Flags().StringP("key", "k", "", "Your Hue Application Key")
+	cmd.Flags().StringVarP(&o.key, "key", "k", "", "Your Hue Application Key")
 	_ = cmd.MarkFlagRequired("key")
-	_ = viper.BindPFlag("key", cmd.Flags().Lookup("key"))
 
 	return cmd
 }

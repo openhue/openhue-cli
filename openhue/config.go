@@ -2,8 +2,9 @@ package openhue
 
 import (
 	"crypto/tls"
+	"errors"
+	"fmt"
 	sp "github.com/deepmap/oapi-codegen/pkg/securityprovider"
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
@@ -13,14 +14,17 @@ import (
 	"slices"
 )
 
+// CommandsWithNoConfig contains the list of commands that don't require the configuration to exist
+var CommandsWithNoConfig = []string{"configure", "help", "discover", "auth", "version", "completion"}
+
 type Config struct {
-	// The IP of the Philips HUE bridge
-	bridge string
+	// The IP of the Philips HUE Bridge
+	Bridge string
 	// The HUE Application Key
-	key string
+	Key string
 }
 
-func (c *Config) LoadConfig() {
+func (c *Config) Load() {
 
 	// Find home directory.
 	home, err := os.UserHomeDir()
@@ -34,35 +38,54 @@ func (c *Config) LoadConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
-	// List of commands that does not require configuration
-	ignoredCmds := []string{"setup", "help", "discover", "auth"}
-
 	// When trying to run CLI without configuration
-	if err := viper.ReadInConfig(); err != nil && !slices.Contains(ignoredCmds, os.Args[1]) {
-		color.New(color.FgRed).Add(color.Bold).Println("\nopenhue-cli not configured yet, please run the 'setup' command")
+	configDoesNotExist := viper.ReadInConfig() != nil
+	if configDoesNotExist && len(os.Args) > 1 && !slices.Contains(CommandsWithNoConfig, os.Args[1]) {
+		fmt.Println("\nopenhue-cli not configured yet, please run the 'configure' command")
 		os.Exit(0)
 	}
 
-	c.bridge = viper.GetString("bridge")
-	c.key = viper.GetString("key")
+	c.Bridge = viper.GetString("Bridge")
+	c.Key = viper.GetString("Key")
+}
+
+func (c *Config) Save() error {
+
+	if len(c.Bridge) == 0 {
+		return errors.New("'bridge' value not set in config")
+	}
+
+	if len(c.Key) == 0 {
+		return errors.New("'key' value not set in config")
+	}
+
+	viper.Set("Bridge", c.Bridge)
+	viper.Set("Key", c.Key)
+
+	err := viper.SafeWriteConfig()
+	if err != nil {
+		return viper.WriteConfig()
+	}
+
+	return nil
 }
 
 // NewOpenHueClient Creates a new NewClientWithResponses for a given server and hueApplicationKey.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
 func (c *Config) NewOpenHueClient() *gen.ClientWithResponses {
-	p, err := sp.NewSecurityProviderApiKey("header", "hue-application-key", c.key)
+	p, err := sp.NewSecurityProviderApiKey("header", "hue-application-Key", c.Key)
 	cobra.CheckErr(err)
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := gen.NewClientWithResponses("https://"+c.bridge, gen.WithRequestEditorFn(p.Intercept))
+	client, err := gen.NewClientWithResponses("https://"+c.Bridge, gen.WithRequestEditorFn(p.Intercept))
 	cobra.CheckErr(err)
 
 	return client
 }
 
-// NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application key.
+// NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application Key.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
 func NewOpenHueClientNoAuth(ip string) *gen.ClientWithResponses {
 

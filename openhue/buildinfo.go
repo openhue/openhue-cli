@@ -17,9 +17,5 @@ func NewBuildInfo(version string, commit string, date string) *BuildInfo {
 
 // NewTestBuildInfo returns a valid openhue.BuildInfo just for testing
 func NewTestBuildInfo() *BuildInfo {
-	return &BuildInfo{
-		Version: "1.0.0",
-		Commit:  "1234",
-		Date:    "now",
-	}
+	return NewBuildInfo("1.0.0", "1234", "now")
 }
