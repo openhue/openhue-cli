@@ -10,6 +10,7 @@ type Context struct {
 	Io        IOStreams
 	BuildInfo *BuildInfo
 	Api       *gen.ClientWithResponses
+	Home      *Home
 }
 
 // NewContext returns an initialized Context from a given gen.ClientWithResponses API with default IOStreams
