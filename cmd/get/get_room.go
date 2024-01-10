@@ -3,11 +3,8 @@ package get
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"golang.org/x/net/context"
 	"openhue-cli/openhue"
-	"openhue-cli/openhue/gen"
 	"openhue-cli/util"
-	"os"
 )
 
 const (
@@ -23,21 +20,29 @@ openhue get room --json
 
 # Get details for a single room
 openhue get room aa31ba26-98a7-4830-8ae9-1b7caa8b5700 --json
+
+# Get room by name
+openhue get room -n "Studio"
 `
 )
 
 type RoomOptions struct {
-	RoomId string
+	RoomParam string
+	Json      *bool
+	Name      *bool
 }
 
-func NewGetRoomOptions() *RoomOptions {
-	return &RoomOptions{}
+func NewGetRoomOptions(co *CmdGetOptions) *RoomOptions {
+	return &RoomOptions{
+		Json: &co.Json,
+		Name: &co.Name,
+	}
 }
 
 // NewCmdGetRoom returns initialized Command instance for the 'get light' sub command
-func NewCmdGetRoom(ctx *openhue.Context) *cobra.Command {
+func NewCmdGetRoom(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 
-	o := NewGetRoomOptions()
+	o := NewGetRoomOptions(co)
 
 	cmd := &cobra.Command{
 		Use:     "room [roomId]",
@@ -56,36 +61,45 @@ func NewCmdGetRoom(ctx *openhue.Context) *cobra.Command {
 
 func (o *RoomOptions) PrepareGetRoomCmd(args []string) {
 	if len(args) > 0 {
-		o.RoomId = args[0]
+		o.RoomParam = args[0]
 	}
 }
 
 func (o *RoomOptions) RunGetRoomCmd(ctx *openhue.Context) {
-	var rooms *[]gen.RoomGet
 
-	if len(o.RoomId) > 0 {
-		resp, err := ctx.Api.GetRoomWithResponse(context.Background(), o.RoomId)
-		cobra.CheckErr(err)
+	var rooms []openhue.Room
 
-		if resp.JSON200 == nil {
-			fmt.Println("\nNot room found with ID", o.RoomId)
-			os.Exit(0)
+	if len(o.RoomParam) > 0 {
+
+		if *o.Name {
+			rooms = openhue.FindRoomByName(ctx.Home, o.RoomParam)
+		} else {
+			rooms = openhue.FindRoomById(ctx.Home, o.RoomParam)
 		}
 
-		rooms = (*resp.JSON200).Data
 	} else {
-		resp, err := ctx.Api.GetRoomsWithResponse(context.Background())
-		cobra.CheckErr(err)
-		rooms = (*resp.JSON200).Data
+		rooms = openhue.FindAllRooms(ctx.Home)
 	}
 
-	if !GetConfig.Json {
-		util.PrintTable(ctx.Io, *rooms, PrintRoom, "ID", "Name", "Type")
+	if *o.Json {
+		util.PrintJsonArray(ctx.Io, rooms)
 	} else {
-		util.PrintJsonArray(ctx.Io, *rooms)
+		util.PrintTable(ctx.Io, rooms, PrintRoom, "ID", "Name", "Type", "Status", "Brightness")
 	}
 }
 
-func PrintRoom(room gen.RoomGet) string {
-	return *room.Id + "\t" + *room.Metadata.Name + "\t" + string(*room.Metadata.Archetype)
+func PrintRoom(room openhue.Room) string {
+
+	status := "[  ]"
+	brightness := "N/A"
+
+	if room.GroupedLight.IsOn() {
+		status = "[on]"
+	}
+
+	if room.GroupedLight.HueData.Dimming != nil {
+		brightness = fmt.Sprint(*room.GroupedLight.HueData.Dimming.Brightness) + "%"
+	}
+
+	return room.Id + "\t" + room.Name + "\t" + string(*room.HueData.Metadata.Archetype) + "\t" + status + "\t" + brightness
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"net/http"
 	"openhue-cli/openhue/gen"
+	"openhue-cli/util/logger"
 	"os"
 	"path/filepath"
 	"slices"
@@ -32,6 +33,8 @@ func (c *Config) Load() {
 
 	var configPath = filepath.Join(home, "/.openhue")
 	_ = os.MkdirAll(configPath, os.ModePerm)
+
+	logger.Init(configPath)
 
 	// Search config in home directory with name ".openhue" (without an extension).
 	viper.AddConfigPath(configPath)

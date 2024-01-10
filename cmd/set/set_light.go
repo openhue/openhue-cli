@@ -3,9 +3,7 @@ package set
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"golang.org/x/net/context"
 	"openhue-cli/openhue"
-	"openhue-cli/openhue/gen"
 	"openhue-cli/util/color"
 )
 
@@ -42,12 +40,6 @@ openhue set light 15f51223-1e83-4e48-9158-0c20dbd5734e --on --color powder_blue
 `
 )
 
-type LightOptions struct {
-	Status     LightStatus
-	Brightness float32
-	Color      color.XY
-}
-
 type LightFlags struct {
 	On         bool
 	Off        bool
@@ -58,18 +50,9 @@ type LightFlags struct {
 	ColorName  string
 }
 
-func NewSetLightOptions() *LightOptions {
-	return &LightOptions{
-		Status:     Undefined,
-		Brightness: -1,
-		Color:      color.UndefinedColor,
-	}
-}
-
 // NewCmdSetLight returns initialized Command instance for the 'set light' sub command
 func NewCmdSetLight(ctx *openhue.Context) *cobra.Command {
 
-	o := NewSetLightOptions()
 	f := LightFlags{}
 
 	cmd := &cobra.Command{
@@ -79,8 +62,14 @@ func NewCmdSetLight(ctx *openhue.Context) *cobra.Command {
 		Example: docExample,
 		Args:    cobra.MatchAll(cobra.RangeArgs(1, 10), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
-			cobra.CheckErr(o.PrepareCmdSetLight(&f))
-			cobra.CheckErr(o.RunCmdSetLight(ctx.Api, args))
+			o, err := PrepareCmdSetLight(&f)
+			cobra.CheckErr(err)
+
+			lights := openhue.FindLightsByIds(ctx.Home, args)
+
+			for _, light := range lights {
+				light.Set(o)
+			}
 		},
 	}
 
@@ -121,19 +110,21 @@ func (f *LightFlags) InitFlags(cmd *cobra.Command) {
 }
 
 // PrepareCmdSetLight makes sure provided values for LightOptions are valid
-func (o *LightOptions) PrepareCmdSetLight(flags *LightFlags) error {
+func PrepareCmdSetLight(flags *LightFlags) (*openhue.SetLightOptions, error) {
+
+	o := openhue.NewSetLightOptions()
 
 	if flags.On {
-		o.Status = On
+		o.Status = openhue.LightStatusOn
 	}
 
 	if flags.Off {
-		o.Status = Off
+		o.Status = openhue.LightStatusOff
 	}
 
 	// validate the --brightness flag
 	if flags.Brightness > 100.0 || (flags.Brightness != -1 && flags.Brightness < 0) {
-		return fmt.Errorf("--brightness flag must be greater than 0.0 and lower than 100.0, current value is %.2f", o.Brightness)
+		return nil, fmt.Errorf("--brightness flag must be greater than 0.0 and lower than 100.0, current value is %.2f", o.Brightness)
 	} else {
 		o.Brightness = flags.Brightness
 	}
@@ -142,7 +133,7 @@ func (o *LightOptions) PrepareCmdSetLight(flags *LightFlags) error {
 	if flags.Rgb != "" {
 		rgb, err := color.NewRGBFomHex(flags.Rgb)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		o.Color = *rgb.ToXY()
 	}
@@ -165,39 +156,5 @@ func (o *LightOptions) PrepareCmdSetLight(flags *LightFlags) error {
 		}
 	}
 
-	return nil
-}
-
-// RunCmdSetLight executes the light update command logic
-func (o *LightOptions) RunCmdSetLight(api *gen.ClientWithResponses, args []string) error {
-
-	request := &gen.UpdateLightJSONRequestBody{}
-
-	if o.Status != Undefined {
-		request.On = &gen.On{
-			On: ToBool(o.Status),
-		}
-	}
-
-	if o.Brightness >= 0 && o.Brightness <= 100.0 {
-		request.Dimming = &gen.Dimming{
-			Brightness: &o.Brightness,
-		}
-	}
-
-	if o.Color != color.UndefinedColor {
-		request.Color = &gen.Color{
-			Xy: &gen.GamutPosition{
-				X: &o.Color.X,
-				Y: &o.Color.Y,
-			},
-		}
-	}
-
-	for _, lightId := range args {
-		_, err := api.UpdateLight(context.Background(), lightId, *request)
-		cobra.CheckErr(err)
-	}
-
-	return nil
+	return o, nil
 }

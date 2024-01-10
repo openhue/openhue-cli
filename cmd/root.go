@@ -1,12 +1,15 @@
 package cmd
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"openhue-cli/cmd/get"
 	"openhue-cli/cmd/set"
 	"openhue-cli/cmd/setup"
 	"openhue-cli/cmd/version"
 	"openhue-cli/openhue"
+	"os"
+	"time"
 )
 
 // NewCmdOpenHue represents the `openhue` base command, AKA entry point of the CLI
@@ -36,8 +39,16 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	api := c.NewOpenHueClient()
 	ctx := openhue.NewContext(openhue.NewIOStreams(), buildInfo, api)
 
+	// load the home context
+	t0 := time.Now()
+	home, err := openhue.LoadHome(api)
+	cobra.CheckErr(err)
+	ctx.Home = home
+	log.Infof("It took %dms to load the Home Context", time.Since(t0).Milliseconds())
+
 	// create the root command
 	root := NewCmdOpenHue()
+	log.Infof("Running the '%s' command", os.Args)
 
 	// init groups
 	initGroups(root)
@@ -52,7 +63,7 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	root.AddCommand(get.NewCmdGet(ctx))
 
 	// execute the root command
-	err := root.Execute()
+	err = root.Execute()
 	cobra.CheckErr(err)
 }
 
