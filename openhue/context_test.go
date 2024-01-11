@@ -1,18 +1,18 @@
 package openhue
 
 import (
+	"github.com/stretchr/testify/assert"
 	"openhue-cli/openhue/gen"
-	"openhue-cli/openhue/test/assert"
 	"testing"
 )
 
 func TestNewContext(t *testing.T) {
 	ctx := NewContext(NewTestIOStreamsDiscard(), NewTestBuildInfo(), &gen.ClientWithResponses{})
-	assert.NotNil(t, ctx)
+	assert.NotNil(t, ctx, "Context should not be nil")
 }
 
 func TestNewTestContextWithoutApi(t *testing.T) {
 	ctx, out := NewTestContextWithoutApi()
-	assert.NotNil(t, ctx)
-	assert.NotNil(t, out)
+	assert.NotNil(t, ctx, "Context should not be nil")
+	assert.NotNil(t, out, "Out buffer should not be nil")
 }

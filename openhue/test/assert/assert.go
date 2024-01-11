@@ -25,15 +25,3 @@ func ThatCmdGroupIs(t *testing.T, cmd *cobra.Command, expectedGroup string) {
 		t.Fatalf("wrong command group. Expected '%s', got '%s'", expectedGroup, cmd.Use)
 	}
 }
-
-func Equals(t *testing.T, expected string, actual string) {
-	if expected != actual {
-		t.Fatalf("expected '%s' but got  '%s'", expected, actual)
-	}
-}
-
-func NotNil(t *testing.T, value interface{}) {
-	if value == nil {
-		t.Fatalf("value is nil")
-	}
-}
