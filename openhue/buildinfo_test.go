@@ -1,7 +1,7 @@
 package openhue
 
 import (
-	"openhue-cli/openhue/test/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -9,7 +9,7 @@ func TestNewTestBuildInfo(t *testing.T) {
 
 	info := NewTestBuildInfo()
 
-	assert.Equals(t, "1.0.0", info.Version)
-	assert.Equals(t, "1234", info.Commit)
-	assert.Equals(t, "now", info.Date)
+	assert.Equal(t, "1.0.0", info.Version)
+	assert.Equal(t, "1234", info.Commit)
+	assert.Equal(t, "now", info.Date)
 }
