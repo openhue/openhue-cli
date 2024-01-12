@@ -10,6 +10,7 @@ func NewCmdSet(ctx *openhue.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "set",
+		Aliases: []string{"s"},
 		Short:   "Set specific features on resources",
 		GroupID: "hue",
 		Long: `
