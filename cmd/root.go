@@ -36,6 +36,16 @@ openhue controls your Philips Hue lighting system
 		},
 	}
 
+	cmd.AddGroup(&cobra.Group{
+		ID:    string(OpenHueCmdGroupConfig),
+		Title: "Configuration",
+	})
+
+	cmd.AddGroup(&cobra.Group{
+		ID:    string(OpenHueCmdGroupHue),
+		Title: "Philips Hue",
+	})
+
 	return cmd
 }
 
@@ -66,9 +76,6 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	// create the root command
 	root := NewCmdOpenHue(ctx)
 
-	// init groups
-	initGroups(root)
-
 	// add sub commands
 	root.AddCommand(version.NewCmdVersion(ctx))
 	root.AddCommand(setup.NewCmdAuth(ctx.Io))
@@ -83,19 +90,8 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	cobra.CheckErr(err)
 }
 
-func initGroups(rootCmd *cobra.Command) {
-	rootCmd.AddGroup(&cobra.Group{
-		ID:    string(OpenHueCmdGroupConfig),
-		Title: "Configuration",
-	})
-
-	rootCmd.AddGroup(&cobra.Group{
-		ID:    string(OpenHueCmdGroupHue),
-		Title: "Philips Hue",
-	})
-}
-
-// isCmdInGroup verifies if a given cobra.Command belongs to a certain OpenHueCmdGroup
+// isCmdInGroup verifies if a given cobra.Command belongs to a certain OpenHueCmdGroup.
+// This function will recursively command parents until the root one (e.g. parent is nil)
 func isCmdInGroup(cmd *cobra.Command, id OpenHueCmdGroup) bool {
 
 	if cmd.GroupID == string(id) {
