@@ -51,7 +51,7 @@ openhue controls your Philips Hue lighting system
 
 // LoadHomeIfNeeded checks if the command requires loading the openhue.Home context
 func LoadHomeIfNeeded(ctx *openhue.Context, cmd *cobra.Command) {
-	if isCmdInGroup(cmd, OpenHueCmdGroupHue) {
+	if OpenHueCmdGroupHue.containsCmd(cmd) {
 		log.Infof("The '%s' command is in the '%s' group so we are loading the Home Context", cmd.Name(), OpenHueCmdGroupHue)
 		timer := util.NewTimer()
 		home, err := openhue.LoadHome(ctx.Api)
@@ -90,14 +90,13 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	cobra.CheckErr(err)
 }
 
-// isCmdInGroup verifies if a given cobra.Command belongs to a certain OpenHueCmdGroup.
-// This function will recursively command parents until the root one (e.g. parent is nil)
-func isCmdInGroup(cmd *cobra.Command, id OpenHueCmdGroup) bool {
+// containsCmd verifies if the given cobra.Command is contained in the group.
+func (g OpenHueCmdGroup) containsCmd(cmd *cobra.Command) bool {
 
-	if cmd.GroupID == string(id) {
+	if cmd.GroupID == string(g) {
 		return true
 	} else if cmd.Parent() != nil {
-		return isCmdInGroup(cmd.Parent(), id)
+		return g.containsCmd(cmd.Parent())
 	}
 
 	return false
