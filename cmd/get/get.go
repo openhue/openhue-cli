@@ -20,6 +20,7 @@ func NewCmdGet(ctx *openhue.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "get",
+		Aliases: []string{"g"},
 		Short:   "Display one or many resources",
 		GroupID: "hue",
 		Long: `
