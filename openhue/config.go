@@ -16,7 +16,7 @@ import (
 )
 
 // CommandsWithNoConfig contains the list of commands that don't require the configuration to exist
-var CommandsWithNoConfig = []string{"configure", "help", "discover", "auth", "version", "completion"}
+var CommandsWithNoConfig = []string{"setup", "config", "help", "discover", "auth", "version", "completion"}
 
 type Config struct {
 	// The IP of the Philips HUE Bridge
@@ -44,7 +44,7 @@ func (c *Config) Load() {
 	// When trying to run CLI without configuration
 	configDoesNotExist := viper.ReadInConfig() != nil
 	if configDoesNotExist && len(os.Args) > 1 && !slices.Contains(CommandsWithNoConfig, os.Args[1]) {
-		fmt.Println("\nopenhue-cli not configured yet, please run the 'configure' command")
+		fmt.Println("\nopenhue-cli not configured yet, please run the 'setup' command")
 		os.Exit(0)
 	}
 
@@ -52,14 +52,14 @@ func (c *Config) Load() {
 	c.Key = viper.GetString("Key")
 }
 
-func (c *Config) Save() error {
+func (c *Config) Save() (string, error) {
 
 	if len(c.Bridge) == 0 {
-		return errors.New("'bridge' value not set in config")
+		return "", errors.New("'bridge' value not set in config")
 	}
 
 	if len(c.Key) == 0 {
-		return errors.New("'key' value not set in config")
+		return "", errors.New("'key' value not set in config")
 	}
 
 	viper.Set("Bridge", c.Bridge)
@@ -67,10 +67,10 @@ func (c *Config) Save() error {
 
 	err := viper.SafeWriteConfig()
 	if err != nil {
-		return viper.WriteConfig()
+		return viper.ConfigFileUsed(), viper.WriteConfig()
 	}
 
-	return nil
+	return viper.ConfigFileUsed(), nil
 }
 
 // NewOpenHueClient Creates a new NewClientWithResponses for a given server and hueApplicationKey.

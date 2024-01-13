@@ -6,10 +6,11 @@ import (
 	"testing"
 )
 
-func TestNewCmdAuth(t *testing.T) {
+func TestNewCmdSetup(t *testing.T) {
 
-	cmd := NewCmdAuth(openhue.NewTestIOStreamsDiscard())
+	cmd := NewCmdSetup(openhue.NewTestIOStreamsDiscard())
 
-	assert.ThatCmdUseIs(t, cmd, "auth")
+	assert.ThatCmdUseIs(t, cmd, "setup")
 	assert.ThatCmdGroupIs(t, cmd, "config")
+
 }
