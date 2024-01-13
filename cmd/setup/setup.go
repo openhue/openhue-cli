@@ -48,15 +48,15 @@ func startSetup(io openhue.IOStreams, o *CmdSetupOptions) {
 	ip := <-ipChan
 
 	if ip == nil {
-		fmt.Fprintf(io.ErrOut, "❌  Unable to discover your Hue Bridge on your local network\n")
+		fmt.Fprintf(io.ErrOut, "❌ Unable to discover your Hue Bridge on your local network\n")
 		return
 	}
 
-	fmt.Fprintf(io.Out, "✅  Found Hue Bridge with IP '%s'\n", ip)
+	fmt.Fprintf(io.Out, "[OK] Found Hue Bridge with IP '%s'\n", ip)
 
 	client := openhue.NewOpenHueClientNoAuth(ip.String())
 
-	fmt.Fprintln(io.Out, "🔄 Please push the button on your Hue Bridge...")
+	fmt.Fprintln(io.Out, "[..] Please push the button on your Hue Bridge")
 	done := false
 	for done == false {
 		fmt.Fprintf(io.Out, ".")
@@ -68,12 +68,12 @@ func startSetup(io openhue.IOStreams, o *CmdSetupOptions) {
 		done = true
 		fmt.Fprintf(io.Out, "\n")
 		log.Info("Hue Application Key is ", key)
-		fmt.Fprintln(io.Out, "✅  Successfully paired openhue with your Hue Bridge!")
+		fmt.Fprintln(io.Out, "[OK] Successfully paired openhue with your Hue Bridge!")
 		path, err := saveConfig(ip.String(), key)
 		if err != nil {
-			fmt.Fprintf(io.ErrOut, "❌  Unable to save config")
+			fmt.Fprintf(io.ErrOut, "[KO] Unable to save config")
 		}
-		fmt.Fprintln(io.Out, "✅  Configuration saved in file", path)
+		fmt.Fprintln(io.Out, "[OK] Configuration saved in file", path)
 	}
 }
 
