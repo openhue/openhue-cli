@@ -80,7 +80,7 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	root.AddCommand(version.NewCmdVersion(ctx))
 	root.AddCommand(setup.NewCmdSetup(ctx.Io))
 	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
-	root.AddCommand(setup.NewCmdConfigure())
+	root.AddCommand(setup.NewCmdConfigure(ctx.Io))
 
 	root.AddCommand(set.NewCmdSet(ctx))
 	root.AddCommand(get.NewCmdGet(ctx))

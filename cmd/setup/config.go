@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 )
@@ -19,7 +20,7 @@ type Options struct {
 }
 
 // NewCmdConfigure creates the configure command
-func NewCmdConfigure() *cobra.Command {
+func NewCmdConfigure(io openhue.IOStreams) *cobra.Command {
 
 	o := Options{}
 
@@ -35,8 +36,9 @@ func NewCmdConfigure() *cobra.Command {
 				Key:    o.key,
 			}
 
-			_, err := c.Save()
+			path, err := c.Save()
 			cobra.CheckErr(err)
+			fmt.Fprintln(io.Out, "[OK] Configuration saved in file", path)
 		},
 	}
 
