@@ -12,6 +12,8 @@
 OpenHue CLI is a command-line interface for interacting with Philips Hue smart lighting systems. 
 This tool provides a convenient way to control your Philips Hue lights and perform various tasks using the command line.
 
+[![How to setup OpenHue CLI](./docs/images/openhue_setup.gif)](https://www.openhue.io/cli/setup)
+
 ## Features
 
 - Discover and connect to Philips Hue bridges.
