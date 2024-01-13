@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	docShortConfigure = `Configure your local Philips Hue environment`
+	docShortConfigure = `Manual openhue CLI setup`
 	docLongConfigure  = `
 The setup command must be run as a prerequisite for all resource related commands (controlling lights, rooms, scenes, etc.)
 
@@ -24,7 +24,7 @@ func NewCmdConfigure() *cobra.Command {
 	o := Options{}
 
 	cmd := &cobra.Command{
-		Use:     "configure",
+		Use:     "config",
 		GroupID: "config",
 		Short:   docShortConfigure,
 		Long:    docLongConfigure,
@@ -35,7 +35,7 @@ func NewCmdConfigure() *cobra.Command {
 				Key:    o.key,
 			}
 
-			err := c.Save()
+			_, err := c.Save()
 			cobra.CheckErr(err)
 		},
 	}

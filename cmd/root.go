@@ -78,7 +78,7 @@ func Execute(buildInfo *openhue.BuildInfo) {
 
 	// add sub commands
 	root.AddCommand(version.NewCmdVersion(ctx))
-	root.AddCommand(setup.NewCmdAuth(ctx.Io))
+	root.AddCommand(setup.NewCmdSetup(ctx.Io))
 	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
 	root.AddCommand(setup.NewCmdConfigure())
 

@@ -9,7 +9,7 @@ func TestNewCmdConfigure(t *testing.T) {
 
 	cmd := NewCmdConfigure()
 
-	assert.ThatCmdUseIs(t, cmd, "configure")
+	assert.ThatCmdUseIs(t, cmd, "config")
 	assert.ThatCmdGroupIs(t, cmd, "config")
 
 }
