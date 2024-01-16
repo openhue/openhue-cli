@@ -5,7 +5,6 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fb934bb37c36a04f8efd/test_coverage)](https://codeclimate.com/github/openhue/openhue-cli/test_coverage)
 [![Docker Image Size (tag)](https://img.shields.io/docker/image-size/openhue/cli/latest)](https://hub.docker.com/r/openhue/cli)
 [![GitHub Repo stars](https://img.shields.io/github/stars/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/stargazers)
-[![GitHub](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
 
 ## Overview
 
@@ -72,6 +71,7 @@ the [`./openhue/openhue.gen.go`](./openhue/openhue.gen.go) file.
 Please note that this file must never be manually edited!
 
 ## License
+[![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
 
 Open-Hue is distributed under the [Apache License 2.0](http://www.apache.org/licenses/),
 making it open and free for anyone to use and contribute to.
