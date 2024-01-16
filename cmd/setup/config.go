@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 )
@@ -38,7 +37,7 @@ func NewCmdConfigure(io openhue.IOStreams) *cobra.Command {
 
 			path, err := c.Save()
 			cobra.CheckErr(err)
-			fmt.Fprintln(io.Out, "[OK] Configuration saved in file", path)
+			io.Println("[OK] Configuration saved in file", path)
 		},
 	}
 

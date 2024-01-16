@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"net"
 	"openhue-cli/openhue"
@@ -21,7 +20,7 @@ func NewCmdDiscover(io openhue.IOStreams) *cobra.Command {
 
 			ip := make(chan *net.IP)
 			go mdns.DiscoverBridge(ip, 5*time.Second)
-			fmt.Fprintf(io.Out, "%s\n", <-ip)
+			io.Printf("%s\n", <-ip)
 		},
 	}
 
