@@ -39,6 +39,7 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 	cmd.PersistentFlags().BoolVarP(&o.Name, "name", "n", false, "Get resource(s) by name")
 
 	// sub commands
+	cmd.AddCommand(NewCmdGetEvents(ctx, &o))
 	cmd.AddCommand(NewCmdGetLight(ctx, &o))
 	cmd.AddCommand(NewCmdGetRoom(ctx, &o))
 
