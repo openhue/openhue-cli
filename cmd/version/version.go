@@ -1,7 +1,6 @@
 package version
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 )
@@ -22,9 +21,9 @@ openhue version
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 
-			fmt.Fprintln(ctx.Io.Out, "\n#  Version\t", ctx.BuildInfo.Version)
-			fmt.Fprintln(ctx.Io.Out, "#   Commit\t", BaseCommitUrl+ctx.BuildInfo.Commit)
-			fmt.Fprintln(ctx.Io.Out, "# Built at\t", ctx.BuildInfo.Date)
+			ctx.Io.Println("\n#  Version\t", ctx.BuildInfo.Version)
+			ctx.Io.Println("#   Commit\t", BaseCommitUrl+ctx.BuildInfo.Commit)
+			ctx.Io.Println("# Built at\t", ctx.BuildInfo.Date)
 		},
 	}
 

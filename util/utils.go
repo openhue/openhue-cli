@@ -17,16 +17,16 @@ func PrintJsonArray[T any](streams openhue.IOStreams, array []T) {
 	}
 }
 
-func PrintJson[T any](streams openhue.IOStreams, array T) {
+func PrintJson[T any](io openhue.IOStreams, array T) {
 	var out []byte
 	out, _ = json.MarshalIndent(array, "", "  ")
-	fmt.Fprintln(streams.Out, string(out))
+	io.Println(string(out))
 }
 
 // PrintTable prints each line of the objects contained in the table value
-func PrintTable[T any](streams openhue.IOStreams, table []T, lineFn func(T) string, header ...string) {
+func PrintTable[T any](io openhue.IOStreams, table []T, lineFn func(T) string, header ...string) {
 
-	w := tabwriter.NewWriter(streams.Out, 0, 0, 3, ' ', 0)
+	w := tabwriter.NewWriter(io.Out, 0, 0, 3, ' ', 0)
 
 	for _, h := range header {
 		_, _ = fmt.Fprint(w, h+"\t")
