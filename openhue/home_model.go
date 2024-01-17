@@ -147,7 +147,7 @@ func (groupedLight *GroupedLight) IsOn() bool {
 	return *groupedLight.HueData.On.On
 }
 
-func (groupedLight *GroupedLight) Set(o SetLightOptions) {
+func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 	request := &gen.UpdateGroupedLightJSONRequestBody{}
 
 	if o.Status != LightStatusUndefined {

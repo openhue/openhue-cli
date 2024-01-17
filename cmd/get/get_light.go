@@ -46,6 +46,7 @@ func NewCmdGetLight(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "light [lightId]",
+		Aliases: []string{"lights"},
 		Short:   "Get light",
 		Long:    docLongGetLight,
 		Example: docExampleGetLight,
@@ -71,7 +72,7 @@ func (o *LightOptions) RunGetLightCmd(ctx *openhue.Context) {
 	if len(o.LightParam) > 0 {
 
 		if *o.Name {
-			lights = openhue.FindLightByName(ctx.Home, o.LightParam)
+			lights = openhue.FindLightsByName(ctx.Home, []string{o.LightParam})
 		} else {
 			lights = openhue.FindLightsByIds(ctx.Home, []string{o.LightParam})
 		}
