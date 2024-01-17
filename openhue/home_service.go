@@ -47,20 +47,21 @@ func FindAllLights(home *Home) []Light {
 	return lights
 }
 
-// FindLightByName returns a slice containing a single Light. The slice will be empty if no light was found.
-func FindLightByName(home *Home, name string) []Light {
+func FindLightsByName(home *Home, ids []string) []Light {
+
+	var lights []Light
+
 	for _, room := range home.Rooms {
 		for _, device := range room.Devices {
 			if device.Light != nil {
-				if device.Light.Name == name {
-					return []Light{*device.Light}
+				if slices.Contains(ids, device.Light.Name) {
+					lights = append(lights, *device.Light)
 				}
 			}
 		}
 	}
 
-	log.Warn("no light found with name ", name)
-	return []Light{}
+	return lights
 }
 
 func FindLightsByIds(home *Home, ids []string) []Light {
@@ -94,26 +95,30 @@ func FindAllRooms(home *Home) []Room {
 	return rooms
 }
 
-func FindRoomById(home *Home, id string) []Room {
+func FindRoomsByIds(home *Home, ids []string) []Room {
+
+	var rooms []Room
+
 	for _, room := range home.Rooms {
-		if room.Id == id {
-			return []Room{room}
+		if slices.Contains(ids, room.Id) {
+			rooms = append(rooms, room)
 		}
 	}
 
-	log.Warn("no light found with ID ", id)
-	return []Room{}
+	return rooms
 }
 
-func FindRoomByName(home *Home, name string) []Room {
+func FindRoomsByName(home *Home, names []string) []Room {
+
+	var rooms []Room
+
 	for _, room := range home.Rooms {
-		if room.Name == name {
-			return []Room{room}
+		if slices.Contains(names, room.Name) {
+			rooms = append(rooms, room)
 		}
 	}
 
-	log.Warn("no room found with name ", name)
-	return []Room{}
+	return rooms
 }
 
 //

@@ -46,5 +46,7 @@ endif
 .PHONY: clean
 clean: ##
 	@rm -rf ./dist
+	@rm -f c.out
+	@rm -f coverage.html
 	@$(GO) clean
 	@echo "\n${GREEN}${BOLD}Project successfully cleaned 🧹${RESET} (removed ./dist folder + go clean)"

@@ -46,6 +46,7 @@ func NewCmdGetRoom(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "room [roomId]",
+		Aliases: []string{"rooms"},
 		Short:   "Get room",
 		Long:    docLongGetRoom,
 		Example: docExampleGetRoom,
@@ -72,9 +73,9 @@ func (o *RoomOptions) RunGetRoomCmd(ctx *openhue.Context) {
 	if len(o.RoomParam) > 0 {
 
 		if *o.Name {
-			rooms = openhue.FindRoomByName(ctx.Home, o.RoomParam)
+			rooms = openhue.FindRoomsByName(ctx.Home, []string{o.RoomParam})
 		} else {
-			rooms = openhue.FindRoomById(ctx.Home, o.RoomParam)
+			rooms = openhue.FindRoomsByIds(ctx.Home, []string{o.RoomParam})
 		}
 
 	} else {

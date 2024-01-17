@@ -13,10 +13,10 @@ func TestFindAllLights(t *testing.T) {
 	assert.Len(t, lights, 4, "Home should contain 4 lights")
 }
 
-func TestFindLightByName(t *testing.T) {
-	lights := FindLightByName(home, "room1_light2")
+func TestFindLightsByName(t *testing.T) {
+	lights := FindLightsByName(home, []string{"room1_light2"})
 	assert.Len(t, lights, 1, "Home should contain 1 single light for this name")
-	assert.Empty(t, FindLightByName(home, "foo"), "Home should not contain any light with name 'foo'")
+	assert.Empty(t, FindLightsByName(home, []string{"foo"}), "Home should not contain any light with name 'foo'")
 }
 
 func TestFindLightsByIds(t *testing.T) {
@@ -29,16 +29,16 @@ func TestFindAllRooms(t *testing.T) {
 	assert.Len(t, rooms, 2, "Home should contain 2 rooms")
 }
 
-func TestFindRoomByName(t *testing.T) {
-	rooms := FindRoomByName(home, "room1")
+func TestFindRoomsByName(t *testing.T) {
+	rooms := FindRoomsByName(home, []string{"room1"})
 	assert.Len(t, rooms, 1, "Home should contain 1 single room for this name")
-	assert.Empty(t, FindRoomByName(home, "foo"), "Home should not contain any room with name 'foo'")
+	assert.Empty(t, FindRoomsByName(home, []string{"foo"}), "Home should not contain any room with name 'foo'")
 }
 
 func TestFindRoomById(t *testing.T) {
-	rooms := FindRoomById(home, "room2")
+	rooms := FindRoomsByIds(home, []string{"room2"})
 	assert.Len(t, rooms, 1, "Home should contain 1 single room for this name")
-	assert.Empty(t, FindRoomById(home, "foo"), "Home should not contain any room with ID 'foo'")
+	assert.Empty(t, FindRoomsByIds(home, []string{"foo"}), "Home should not contain any room with ID 'foo'")
 }
 
 //
