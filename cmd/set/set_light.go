@@ -19,11 +19,11 @@ Use "openhue get light" for a complete list of available lights.
 # Turn on a light
 openhue set light 15f51223-1e83-4e48-9158-0c20dbd5734e --on
 
-# Turn on multiple lights
-openhue set light 83111103-a3eb-40c5-b22a-02deedd21fcb 8f0a7b52-df25-4bc7-b94d-0dd1a88068ff --on
+# Turn on multiple lights, using either their ID or their name
+openhue set light 83111103-a3eb-40c5-b22a-02deedd21fcb "Hue Play TV" --on
 
-# Turn off a light identified by its name
-openhue set light -n "Hue Play TV" --off
+# Turn off a light identified by its name in a given room. This is useful when there are multiple lights with the same name.
+openhue set light --room "Living Room" "Hue Play Right" --off
 
 # Set brightness of a single light
 openhue set light 15f51223-1e83-4e48-9158-0c20dbd5734e --on --brightness 42.65
@@ -39,8 +39,10 @@ openhue set light 15f51223-1e83-4e48-9158-0c20dbd5734e --on --color powder_blue
 `
 )
 
+var room = ""
+
 // NewCmdSetLight returns initialized Command instance for the 'set light' sub command
-func NewCmdSetLight(ctx *openhue.Context, setOpt *CmdSetOptions) *cobra.Command {
+func NewCmdSetLight(ctx *openhue.Context) *cobra.Command {
 
 	f := CmdSetLightFlags{}
 
@@ -55,16 +57,11 @@ func NewCmdSetLight(ctx *openhue.Context, setOpt *CmdSetOptions) *cobra.Command 
 			o, err := f.toSetLightOptions()
 			cobra.CheckErr(err)
 
-			var lights []openhue.Light
-
-			if setOpt.Name {
-				lights = openhue.FindLightsByName(ctx.Home, args)
-			} else {
-				lights = openhue.FindLightsByIds(ctx.Home, args)
-			}
+			lights := openhue.SearchLights(ctx.Home, room, args)
 
 			if len(lights) == 0 {
-				ctx.Io.ErrPrintln("no light(s) found for given ID(s)", args)
+				ctx.Io.ErrPrintln("no light(s) found for", args, "in room", room)
+				return
 			}
 
 			for _, light := range lights {
@@ -75,6 +72,8 @@ func NewCmdSetLight(ctx *openhue.Context, setOpt *CmdSetOptions) *cobra.Command 
 	}
 
 	f.initCmd(cmd)
+
+	cmd.Flags().StringVarP(&room, "room", "r", "", "Force the room of the light(s). Useful when there are multiple lights with the same name.")
 
 	return cmd
 }

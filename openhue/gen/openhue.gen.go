@@ -492,11 +492,9 @@ const (
 type ActionGet struct {
 	// Action The action to be executed on recall
 	Action *struct {
-		Color *Color `json:"color,omitempty"`
-
-		// ColorTemperature color temperature in mirek or null when the light color is not in the ct spectrum
-		ColorTemperature *Mirek   `json:"color_temperature,omitempty"`
-		Dimming          *Dimming `json:"dimming,omitempty"`
+		Color            *Color            `json:"color,omitempty"`
+		ColorTemperature *ColorTemperature `json:"color_temperature,omitempty"`
+		Dimming          *Dimming          `json:"dimming,omitempty"`
 
 		// Effects Basic feature containing effect properties.
 		Effects *struct {
@@ -524,12 +522,13 @@ type ActionGet struct {
 type ActionPost struct {
 	// Action The action to be executed on recall
 	Action struct {
-		Color *Color `json:"color,omitempty"`
-
-		// ColorTemperature color temperature in mirek or null when the light color is not in the ct spectrum
-		ColorTemperature *Mirek   `json:"color_temperature,omitempty"`
-		Dimming          *Dimming `json:"dimming,omitempty"`
-		Dynamics         *struct {
+		Color            *Color `json:"color,omitempty"`
+		ColorTemperature *struct {
+			// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
+			Mirek *Mirek `json:"mirek,omitempty"`
+		} `json:"color_temperature,omitempty"`
+		Dimming  *Dimming `json:"dimming,omitempty"`
+		Dynamics *struct {
 			// Duration Duration of a light transition or timed effects in ms.
 			Duration *int `json:"duration,omitempty"`
 		} `json:"dynamics,omitempty"`
@@ -1401,7 +1400,8 @@ type SceneGet struct {
 	Actions *[]ActionGet `json:"actions,omitempty"`
 
 	// AutoDynamic Indicates whether to automatically start the scene dynamically on active recall
-	AutoDynamic *bool `json:"auto_dynamic,omitempty"`
+	AutoDynamic *bool               `json:"auto_dynamic,omitempty"`
+	Group       *ResourceIdentifier `json:"group,omitempty"`
 
 	// Id Unique identifier representing a specific resource instance
 	Id *string `json:"id,omitempty"`

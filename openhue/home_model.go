@@ -18,6 +18,15 @@ type Resource struct {
 	ctx *hueHomeCtx
 }
 
+// matchesNameOrId returns true of the given parameter equals either the Resource Name or Id.
+// If the parameter is empty, true is returned.
+func (r *Resource) matchesNameOrId(nameOrId string) bool {
+	if len(nameOrId) == 0 {
+		return true
+	}
+	return r.Name == nameOrId || r.Id == nameOrId
+}
+
 //
 // Home
 //
@@ -36,6 +45,7 @@ type Home struct {
 type Room struct {
 	Resource
 	Devices []Device
+	Scenes  []Scene
 	HueData *gen.RoomGet
 
 	// Services
@@ -173,4 +183,13 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 
 	_, err := groupedLight.ctx.api.UpdateGroupedLight(context.Background(), groupedLight.Id, *request)
 	cobra.CheckErr(err)
+}
+
+//
+// Scene
+//
+
+type Scene struct {
+	Resource
+	HueData *gen.SceneGet
 }
