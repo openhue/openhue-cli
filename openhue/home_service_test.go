@@ -9,36 +9,36 @@ import (
 var home = mockHome()
 
 func TestFindAllLights(t *testing.T) {
-	lights := FindAllLights(home)
+	lights := SearchLights(home, "", []string{})
 	assert.Len(t, lights, 4, "Home should contain 4 lights")
 }
 
 func TestFindLightsByName(t *testing.T) {
-	lights := FindLightsByName(home, []string{"room1_light2"})
+	lights := SearchLights(home, "", []string{"room1_light2"})
 	assert.Len(t, lights, 1, "Home should contain 1 single light for this name")
-	assert.Empty(t, FindLightsByName(home, []string{"foo"}), "Home should not contain any light with name 'foo'")
+	assert.Empty(t, SearchLights(home, "", []string{"foo"}), "Home should not contain any light with name 'foo'")
 }
 
 func TestFindLightsByIds(t *testing.T) {
-	lights := FindLightsByIds(home, []string{"room1_light2", "room2_light1"})
+	lights := SearchLights(home, "", []string{"room1_light2", "room2_light1"})
 	assert.Len(t, lights, 2, "Home should contain 2 lights for this name")
 }
 
 func TestFindAllRooms(t *testing.T) {
-	rooms := FindAllRooms(home)
+	rooms := SearchRooms(home, []string{})
 	assert.Len(t, rooms, 2, "Home should contain 2 rooms")
 }
 
 func TestFindRoomsByName(t *testing.T) {
-	rooms := FindRoomsByName(home, []string{"room1"})
+	rooms := SearchRooms(home, []string{"room1"})
 	assert.Len(t, rooms, 1, "Home should contain 1 single room for this name")
-	assert.Empty(t, FindRoomsByName(home, []string{"foo"}), "Home should not contain any room with name 'foo'")
+	assert.Empty(t, SearchRooms(home, []string{"foo"}), "Home should not contain any room with name 'foo'")
 }
 
 func TestFindRoomById(t *testing.T) {
-	rooms := FindRoomsByIds(home, []string{"room2"})
+	rooms := SearchRooms(home, []string{"room2"})
 	assert.Len(t, rooms, 1, "Home should contain 1 single room for this name")
-	assert.Empty(t, FindRoomsByIds(home, []string{"foo"}), "Home should not contain any room with ID 'foo'")
+	assert.Empty(t, SearchRooms(home, []string{"foo"}), "Home should not contain any room with ID 'foo'")
 }
 
 //

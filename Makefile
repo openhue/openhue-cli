@@ -8,13 +8,21 @@ GREEN = "\\033[0\;32m"
 BOLD = "\\033[1m"
 RESET = "\\033[0m"
 
+SPEC_URL = "https://api.redocly.com/registry/bundle/openhue/openhue/v2/openapi.yaml?branch=main"
+
 .PHONY: help
 help:
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "make \033[36m%-10s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: generate
-generate: ## Generates the openhue.gen.go client from the latest https://github.com/openhue/openhue-api specification
-	@$(GO) generate
+generate: ## Generates the openhue/gen/openhue.gen.go client. Usage: make generate [spec=/path/to/openhue.yaml]
+ifdef spec
+	@echo "Code generation from $(spec)"
+	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.gen.go "$(spec)"
+else
+	@echo "Code generation from $(SPEC_URL)"
+	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.gen.go "$(SPEC_URL)"
+endif
 	@echo "\n${GREEN}${BOLD}./openhue/openhue.gen.go successfully generated 🚀${RESET}"
 
 .PHONY: build

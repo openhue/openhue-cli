@@ -26,23 +26,8 @@ openhue get room -n "Studio"
 `
 )
 
-type RoomOptions struct {
-	RoomParam string
-	Json      *bool
-	Name      *bool
-}
-
-func NewGetRoomOptions(co *CmdGetOptions) *RoomOptions {
-	return &RoomOptions{
-		Json: &co.Json,
-		Name: &co.Name,
-	}
-}
-
 // NewCmdGetRoom returns initialized Command instance for the 'get light' sub command
-func NewCmdGetRoom(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
-
-	o := NewGetRoomOptions(co)
+func NewCmdGetRoom(ctx *openhue.Context, o *CmdGetOptions) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "room [roomId]",
@@ -52,37 +37,18 @@ func NewCmdGetRoom(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 		Example: docExampleGetRoom,
 		Args:    cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
-			o.PrepareGetRoomCmd(args)
-			o.RunGetRoomCmd(ctx)
+			RunGetRoomCmd(ctx, o, args)
 		},
 	}
 
 	return cmd
 }
 
-func (o *RoomOptions) PrepareGetRoomCmd(args []string) {
-	if len(args) > 0 {
-		o.RoomParam = args[0]
-	}
-}
+func RunGetRoomCmd(ctx *openhue.Context, o *CmdGetOptions, args []string) {
 
-func (o *RoomOptions) RunGetRoomCmd(ctx *openhue.Context) {
+	rooms := openhue.SearchRooms(ctx.Home, args)
 
-	var rooms []openhue.Room
-
-	if len(o.RoomParam) > 0 {
-
-		if *o.Name {
-			rooms = openhue.FindRoomsByName(ctx.Home, []string{o.RoomParam})
-		} else {
-			rooms = openhue.FindRoomsByIds(ctx.Home, []string{o.RoomParam})
-		}
-
-	} else {
-		rooms = openhue.FindAllRooms(ctx.Home)
-	}
-
-	if *o.Json {
+	if o.Json {
 		util.PrintJsonArray(ctx.Io, rooms)
 	} else {
 		util.PrintTable(ctx.Io, rooms, PrintRoom, "ID", "Name", "Type", "Status", "Brightness")

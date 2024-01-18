@@ -16,6 +16,7 @@ type hueHomeCtx struct {
 	devices       map[string]gen.DeviceGet
 	lights        map[string]gen.LightGet
 	groupedLights map[string]gen.GroupedLightGet
+	scenes        map[string]gen.SceneGet
 }
 
 func loadHueHomeCtx(api *gen.ClientWithResponses) (*hueHomeCtx, error) {
@@ -45,6 +46,13 @@ func loadHueHomeCtx(api *gen.ClientWithResponses) (*hueHomeCtx, error) {
 		return nil, err
 	}
 
+	scenes, err := fetchScenes(api)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Info("Home loaded")
+
 	return &hueHomeCtx{
 		api:           api,
 		home:          hueHome,
@@ -52,6 +60,7 @@ func loadHueHomeCtx(api *gen.ClientWithResponses) (*hueHomeCtx, error) {
 		devices:       devices,
 		lights:        lights,
 		groupedLights: groupedLights,
+		scenes:        scenes,
 	}, nil
 }
 
@@ -140,4 +149,22 @@ func fetchGroupedLights(api *gen.ClientWithResponses) (map[string]gen.GroupedLig
 	}
 
 	return groupedLights, err
+}
+
+func fetchScenes(api *gen.ClientWithResponses) (map[string]gen.SceneGet, error) {
+	log.Info("Fetching scenes...")
+
+	resp, err := api.GetScenesWithResponse(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	scenes := make(map[string]gen.SceneGet)
+	hueScenes := (*resp.JSON200).Data
+
+	for _, scene := range *hueScenes {
+		scenes[*scene.Id] = scene
+	}
+
+	return scenes, err
 }

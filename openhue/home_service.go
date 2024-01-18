@@ -4,7 +4,6 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"openhue-cli/openhue/gen"
-	"slices"
 )
 
 func LoadHome(api *gen.ClientWithResponses) (*Home, error) {
@@ -32,47 +31,27 @@ func LoadHome(api *gen.ClientWithResponses) (*Home, error) {
 	return &home, nil
 }
 
-// FindAllLights returns all the lights that belong to a Home
-func FindAllLights(home *Home) []Light {
+//
+// Light
+//
+
+// SearchLights returns a slice of Light optionally filtered by their room and their IDs or names
+func SearchLights(home *Home, roomNameOrId string, nameOrIds []string) []Light {
 	var lights []Light
 
 	for _, room := range home.Rooms {
-		for _, device := range room.Devices {
-			if device.Light != nil {
-				lights = append(lights, *device.Light)
-			}
-		}
-	}
-
-	return lights
-}
-
-func FindLightsByName(home *Home, ids []string) []Light {
-
-	var lights []Light
-
-	for _, room := range home.Rooms {
-		for _, device := range room.Devices {
-			if device.Light != nil {
-				if slices.Contains(ids, device.Light.Name) {
-					lights = append(lights, *device.Light)
-				}
-			}
-		}
-	}
-
-	return lights
-}
-
-func FindLightsByIds(home *Home, ids []string) []Light {
-
-	var lights []Light
-
-	for _, room := range home.Rooms {
-		for _, device := range room.Devices {
-			if device.Light != nil {
-				if slices.Contains(ids, device.Light.Id) {
-					lights = append(lights, *device.Light)
+		if room.matchesNameOrId(roomNameOrId) {
+			for _, device := range room.Devices {
+				if device.Light != nil {
+					if len(nameOrIds) == 0 {
+						lights = append(lights, *device.Light)
+					} else {
+						for _, nameOrId := range nameOrIds {
+							if device.Light.matchesNameOrId(nameOrId) {
+								lights = append(lights, *device.Light)
+							}
+						}
+					}
 				}
 			}
 		}
@@ -85,40 +64,49 @@ func FindLightsByIds(home *Home, ids []string) []Light {
 // Room
 //
 
-func FindAllRooms(home *Home) []Room {
+func SearchRooms(home *Home, nameOrIds []string) []Room {
 	var rooms []Room
 
 	for _, room := range home.Rooms {
-		rooms = append(rooms, room)
-	}
-
-	return rooms
-}
-
-func FindRoomsByIds(home *Home, ids []string) []Room {
-
-	var rooms []Room
-
-	for _, room := range home.Rooms {
-		if slices.Contains(ids, room.Id) {
+		if len(nameOrIds) == 0 {
 			rooms = append(rooms, room)
+		} else {
+			for _, nameOrId := range nameOrIds {
+				if room.matchesNameOrId(nameOrId) {
+					rooms = append(rooms, room)
+				}
+			}
 		}
 	}
 
 	return rooms
 }
 
-func FindRoomsByName(home *Home, names []string) []Room {
+//
+// Scene
+//
 
-	var rooms []Room
+// SearchScenes returns a slice of Scene filtered by the room
+func SearchScenes(home *Home, roomNameOrId string, nameOrIds []string) []Scene {
+	var scenes []Scene
 
 	for _, room := range home.Rooms {
-		if slices.Contains(names, room.Name) {
-			rooms = append(rooms, room)
+		if len(roomNameOrId) == 0 || (len(roomNameOrId) > 0 && room.matchesNameOrId(roomNameOrId)) {
+			for _, scene := range room.Scenes {
+				if len(nameOrIds) == 0 {
+					scenes = append(scenes, scene)
+				} else {
+					for _, nameOrId := range nameOrIds {
+						if scene.Resource.matchesNameOrId(nameOrId) {
+							scenes = append(scenes, scene)
+						}
+					}
+				}
+			}
 		}
 	}
 
-	return rooms
+	return scenes
 }
 
 //
@@ -154,6 +142,7 @@ func getRooms(ctx *hueHomeCtx, parent *Resource, children *[]gen.ResourceIdentif
 			}
 
 			room.Devices = getDevices(ctx, &room.Resource, hueRoom.Children)
+			room.Scenes = getScenes(ctx, &room.Resource)
 
 			groupedLight, err := getGroupedLight(ctx, &room.Resource, hueRoom.Services)
 			if err != nil {
@@ -167,6 +156,29 @@ func getRooms(ctx *hueHomeCtx, parent *Resource, children *[]gen.ResourceIdentif
 	}
 
 	return rooms
+}
+
+// getScenes returns a slice of Scene that belong to a given Room
+func getScenes(ctx *hueHomeCtx, room *Resource) []Scene {
+	var scenes []Scene
+
+	for _, scene := range ctx.scenes {
+		hueScene := scene
+		if *scene.Group.Rid == room.Id {
+			scenes = append(scenes, Scene{
+				Resource: Resource{
+					Id:     *scene.Id,
+					Name:   *scene.Metadata.Name,
+					Type:   HomeResourceType(gen.ResourceIdentifierRtypeScene),
+					Parent: room,
+					ctx:    ctx,
+				},
+				HueData: &hueScene,
+			})
+		}
+	}
+
+	return scenes
 }
 
 func getDevices(ctx *hueHomeCtx, parent *Resource, children *[]gen.ResourceIdentifier) []Device {

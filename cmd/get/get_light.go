@@ -13,36 +13,33 @@ Fetches and displays all available lights
 `
 	docExampleGetLight = `
 # List all lights as a table
-openhue get light
+openhue get lights
 
 # List all lights as JSON
-openhue get light --json
+openhue get lights --json
 
 # Get details for a single light
 openhue get light aa31ba26-98a7-4830-8ae9-1b7caa8b5700 --json
 
 # Get light by name
-openhue get light -n "Hue Go"
+openhue get light "Hue Go"
+
+# List all lights for a specific room
+openhue get light --room "Living Room"
 `
 )
 
 type LightOptions struct {
-	LightParam string // ID or Name
-	Json       *bool
-	Name       *bool
-}
-
-func NewGetLightOptions(co *CmdGetOptions) *LightOptions {
-	return &LightOptions{
-		Json: &co.Json,
-		Name: &co.Name,
-	}
+	*CmdGetOptions
+	Room string
 }
 
 // NewCmdGetLight returns initialized Command instance for the 'get light' sub command
 func NewCmdGetLight(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 
-	o := NewGetLightOptions(co)
+	o := LightOptions{
+		CmdGetOptions: co,
+	}
 
 	cmd := &cobra.Command{
 		Use:     "light [lightId]",
@@ -52,36 +49,20 @@ func NewCmdGetLight(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 		Example: docExampleGetLight,
 		Args:    cobra.MatchAll(cobra.RangeArgs(0, 1), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
-			o.PrepareGetLightCmd(args)
-			o.RunGetLightCmd(ctx)
+			o.RunGetLightCmd(ctx, args)
 		},
 	}
+
+	cmd.Flags().StringVarP(&o.Room, "room", "r", "", "Filter scenes by room (name or ID)")
 
 	return cmd
 }
 
-func (o *LightOptions) PrepareGetLightCmd(args []string) {
-	if len(args) > 0 {
-		o.LightParam = args[0]
-	}
-}
+func (o *LightOptions) RunGetLightCmd(ctx *openhue.Context, args []string) {
 
-func (o *LightOptions) RunGetLightCmd(ctx *openhue.Context) {
-	var lights []openhue.Light
+	lights := openhue.SearchLights(ctx.Home, o.Room, args)
 
-	if len(o.LightParam) > 0 {
-
-		if *o.Name {
-			lights = openhue.FindLightsByName(ctx.Home, []string{o.LightParam})
-		} else {
-			lights = openhue.FindLightsByIds(ctx.Home, []string{o.LightParam})
-		}
-
-	} else {
-		lights = openhue.FindAllLights(ctx.Home)
-	}
-
-	if *o.Json {
+	if o.Json {
 		util.PrintJsonArray(ctx.Io, lights)
 	} else {
 		util.PrintTable(ctx.Io, lights, PrintLight, "ID", "Name", "Type", "Status", "Brightness", "Room")
@@ -102,5 +83,10 @@ func PrintLight(light openhue.Light) string {
 		brightness = fmt.Sprint(*light.HueData.Dimming.Brightness) + "%"
 	}
 
-	return light.Id + "\t" + light.Name + "\t" + string(*light.HueData.Metadata.Archetype) + "\t" + status + "\t" + brightness + "\t" + room
+	return light.Id +
+		"\t" + light.Name +
+		"\t" + string(*light.HueData.Metadata.Archetype) +
+		"\t" + status +
+		"\t" + brightness +
+		"\t" + room
 }

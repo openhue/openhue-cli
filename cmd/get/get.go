@@ -10,7 +10,6 @@ import (
 
 type CmdGetOptions struct {
 	Json bool
-	Name bool
 }
 
 // NewCmdGet returns an initialized Command instance for 'get' sub command
@@ -36,12 +35,12 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 
 	// persistence flags
 	cmd.PersistentFlags().BoolVarP(&o.Json, "json", "j", false, "Format output as JSON")
-	cmd.PersistentFlags().BoolVarP(&o.Name, "name", "n", false, "Get resource(s) by name")
 
 	// sub commands
 	cmd.AddCommand(NewCmdGetEvents(ctx, &o))
 	cmd.AddCommand(NewCmdGetLight(ctx, &o))
 	cmd.AddCommand(NewCmdGetRoom(ctx, &o))
+	cmd.AddCommand(NewCmdGetScene(ctx, &o))
 
 	return cmd
 }

@@ -22,7 +22,7 @@ openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on
 openhue set room 83111103-a3eb-40c5-b22a-02deedd21fcb 8f0a7b52-df25-4bc7-b94d-0dd1a88068ff --on
 
 # Turn off a room identified by its name
-openhue set room -n Studio --off
+openhue set room Studio --off
 
 # Set brightness of a single room
 openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on --brightness 42.65
@@ -39,7 +39,7 @@ openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on --color powder_blue
 )
 
 // NewCmdSetRoom returns initialized cobra.Command instance for the 'set room' sub command
-func NewCmdSetRoom(ctx *openhue.Context, setOpt *CmdSetOptions) *cobra.Command {
+func NewCmdSetRoom(ctx *openhue.Context) *cobra.Command {
 
 	f := CmdSetLightFlags{}
 
@@ -54,13 +54,7 @@ func NewCmdSetRoom(ctx *openhue.Context, setOpt *CmdSetOptions) *cobra.Command {
 			o, err := f.toSetLightOptions()
 			cobra.CheckErr(err)
 
-			var rooms []openhue.Room
-
-			if setOpt.Name {
-				rooms = openhue.FindRoomsByName(ctx.Home, args)
-			} else {
-				rooms = openhue.FindRoomsByIds(ctx.Home, args)
-			}
+			rooms := openhue.SearchRooms(ctx.Home, args)
 
 			if len(rooms) == 0 {
 				ctx.Io.ErrPrintln("no room(s) found for given ID(s)", args)
