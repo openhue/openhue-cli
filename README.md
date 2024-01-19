@@ -71,9 +71,9 @@ the [`./openhue/gen/openhue.gen.go`](./openhue/gen/openhue.gen.go) file.
 Please note that this file must never be manually edited!
 
 You also generate the client from another spec location:
-``ˋ
+```
 make generate spec=/path/to/local/openhue.yaml
-ˋ`ˋ
+```
 
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
