@@ -67,8 +67,13 @@ Run the following command to generate the [OpenHue API Client](https://github.co
 make generate
 ```
 If there was any OpenAPI specification change, this command will update 
-the [`./openhue/openhue.gen.go`](./openhue/openhue.gen.go) file. 
+the [`./openhue/gen/openhue.gen.go`](./openhue/gen/openhue.gen.go) file. 
 Please note that this file must never be manually edited!
+
+You also generate the client from another spec location:
+``ˋ
+make generate spec=/path/to/local/openhue.yaml
+ˋ`ˋ
 
 ## License
 [![GitHub License](https://img.shields.io/github/license/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/blob/main/LICENSE)
