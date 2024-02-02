@@ -20,7 +20,7 @@ func NewCmdGetScene(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "scene [sceneId]",
+		Use:     "scene [sceneId|sceneName]",
 		Aliases: []string{"scenes"},
 		Short:   "Get scenes",
 		Long: `
