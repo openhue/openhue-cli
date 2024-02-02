@@ -46,6 +46,7 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 }
 
 func RunGetAllResources(ctx *openhue.Context, typeFlag string, o *CmdGetOptions) {
+
 	resp, err := ctx.Api.GetResourcesWithResponse(context.Background())
 	cobra.CheckErr(err)
 	resources := *(*resp.JSON200).Data

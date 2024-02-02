@@ -2,6 +2,7 @@ package openhue
 
 import (
 	"context"
+	"errors"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue/gen"
 	"openhue-cli/util/color"
@@ -189,7 +190,27 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 // Scene
 //
 
+type SceneService interface {
+	Activate()
+}
+
 type Scene struct {
 	Resource
+	SceneService
 	HueData *gen.SceneGet
+}
+
+func (scene *Scene) Activate(action gen.SceneRecallAction) error {
+	body := gen.UpdateSceneJSONRequestBody{
+		Recall: &gen.SceneRecall{
+			Action: &action,
+		},
+	}
+	res, err := scene.ctx.api.UpdateSceneWithResponse(context.Background(), scene.Id, body)
+	cobra.CheckErr(err)
+
+	if res.JSON200 == nil {
+		return errors.New("failed to activate scene " + scene.Id)
+	}
+	return nil
 }

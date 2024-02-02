@@ -20,7 +20,7 @@ func NewCmdGetScene(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "scene [sceneId]",
+		Use:     "scene [sceneId|sceneName]",
 		Aliases: []string{"scenes"},
 		Short:   "Get scenes",
 		Long: `
@@ -40,8 +40,7 @@ openhue get scenes --room "Living Room"
 openhue get scenes -r 878a65d6-613b-4239-8b77-588b535bfb4a
 
 # List multiple scenes using either the ID or the name of the scene
-openhue get scenes "Palm Beach" Nebula 462e54d9-ec5d-4bf6-879d-ad34cb9a692e
-`,
+openhue get scenes "Palm Beach" Nebula 462e54d9-ec5d-4bf6-879d-ad34cb9a692e`,
 		Args: cobra.MatchAll(cobra.RangeArgs(0, 100), cobra.OnlyValidArgs),
 		Run: func(cmd *cobra.Command, args []string) {
 			o.RunGetSceneCmd(ctx, args)

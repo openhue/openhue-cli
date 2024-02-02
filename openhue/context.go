@@ -15,16 +15,21 @@ type Context struct {
 }
 
 // NewContext returns an initialized Context from a given gen.ClientWithResponses API with default IOStreams
-func NewContext(io IOStreams, buildInfo *BuildInfo, api *gen.ClientWithResponses) *Context {
+func NewContext(io IOStreams, buildInfo *BuildInfo, api *gen.ClientWithResponses, config *Config) *Context {
 	return &Context{
 		Io:        io,
 		BuildInfo: buildInfo,
 		Api:       api,
+		Config:    config,
 	}
 }
 
-func NewTestContextWithoutApi() (*Context, *bytes.Buffer) {
+// NewTestContext returns a Context for testing usage only and the out buffer to validate
+// the command output.
+// The Api field of the returned Context is not set.
+func NewTestContext(home *Home) (*Context, *bytes.Buffer) {
 	streams, _, out, _ := NewTestIOStreams()
-	ctx := NewContext(streams, NewTestBuildInfo(), nil)
+	ctx := NewContext(streams, NewTestBuildInfo(), nil, nil)
+	ctx.Home = home
 	return ctx, out
 }

@@ -71,8 +71,7 @@ func Execute(buildInfo *openhue.BuildInfo) {
 
 	// get the API Client
 	api := c.NewOpenHueClient()
-	ctx := openhue.NewContext(openhue.NewIOStreams(), buildInfo, api)
-	ctx.Config = &c
+	ctx := openhue.NewContext(openhue.NewIOStreams(), buildInfo, api, &c)
 
 	// create the root command
 	root := NewCmdOpenHue(ctx)
