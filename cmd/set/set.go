@@ -14,12 +14,13 @@ func NewCmdSet(ctx *openhue.Context) *cobra.Command {
 		Short:   "Set specific features on resources",
 		GroupID: "hue",
 		Long: `
-Set the values for a specific resource
+Set the values for specific resources.
 `,
 	}
 
 	cmd.AddCommand(NewCmdSetLight(ctx))
 	cmd.AddCommand(NewCmdSetRoom(ctx))
+	cmd.AddCommand(NewCmdSetScene(ctx))
 
 	return cmd
 }

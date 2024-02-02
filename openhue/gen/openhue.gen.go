@@ -425,16 +425,16 @@ const (
 	ScenePostTypeScene ScenePostType = "scene"
 )
 
-// Defines values for ScenePutRecallAction.
-const (
-	ScenePutRecallActionActive         ScenePutRecallAction = "active"
-	ScenePutRecallActionDynamicPalette ScenePutRecallAction = "dynamic_palette"
-	ScenePutRecallActionStatic         ScenePutRecallAction = "static"
-)
-
 // Defines values for ScenePutType.
 const (
 	Scene ScenePutType = "scene"
+)
+
+// Defines values for SceneRecallAction.
+const (
+	SceneRecallActionActive         SceneRecallAction = "active"
+	SceneRecallActionDynamicPalette SceneRecallAction = "dynamic_palette"
+	SceneRecallActionStatic         SceneRecallAction = "static"
 )
 
 // Defines values for SignalingSignal.
@@ -634,15 +634,6 @@ type ColorTemperatureDelta struct {
 
 // ColorTemperatureDeltaAction defines model for ColorTemperatureDelta.Action.
 type ColorTemperatureDeltaAction string
-
-// ColorTemperaturePaletteGet defines model for ColorTemperaturePaletteGet.
-type ColorTemperaturePaletteGet struct {
-	ColorTemperature *struct {
-		// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
-		Mirek *Mirek `json:"mirek,omitempty"`
-	} `json:"color_temperature,omitempty"`
-	Dimming *Dimming `json:"dimming,omitempty"`
-}
 
 // ColorTemperaturePalettePost defines model for ColorTemperaturePalettePost.
 type ColorTemperaturePalettePost struct {
@@ -1407,26 +1398,12 @@ type SceneGet struct {
 	Id *string `json:"id,omitempty"`
 
 	// IdV1 Clip v1 resource identifier
-	IdV1     *string `json:"id_v1,omitempty"`
-	Metadata *struct {
-		// Appdata Application specific data. Free format string.
-		Appdata *string             `json:"appdata,omitempty"`
-		Image   *ResourceIdentifier `json:"image,omitempty"`
-
-		// Name Human readable name of a resource
-		Name *string `json:"name,omitempty"`
-	} `json:"metadata,omitempty"`
-	Owner *ResourceIdentifier `json:"owner,omitempty"`
+	IdV1     *string             `json:"id_v1,omitempty"`
+	Metadata *SceneMetadata      `json:"metadata,omitempty"`
+	Owner    *ResourceIdentifier `json:"owner,omitempty"`
 
 	// Palette Group of colors that describe the palette of colors to be used when playing dynamics
-	Palette *struct {
-		Color            *[]ColorPaletteGet            `json:"color,omitempty"`
-		ColorTemperature *[]ColorTemperaturePaletteGet `json:"color_temperature,omitempty"`
-		Dimming          *[]Dimming                    `json:"dimming,omitempty"`
-		Effects          *[]struct {
-			Effect *SupportedEffects `json:"effect,omitempty"`
-		} `json:"effects,omitempty"`
-	} `json:"palette,omitempty"`
+	Palette *ScenePalette `json:"palette,omitempty"`
 
 	// Speed Speed of dynamic palette for this scene
 	Speed  *float32 `json:"speed,omitempty"`
@@ -1442,6 +1419,26 @@ type SceneGetStatusActive string
 // SceneGetType defines model for SceneGet.Type.
 type SceneGetType string
 
+// SceneMetadata defines model for SceneMetadata.
+type SceneMetadata struct {
+	// Appdata Application specific data. Free format string.
+	Appdata *string             `json:"appdata,omitempty"`
+	Image   *ResourceIdentifier `json:"image,omitempty"`
+
+	// Name Human readable name of a resource
+	Name *string `json:"name,omitempty"`
+}
+
+// ScenePalette Group of colors that describe the palette of colors to be used when playing dynamics
+type ScenePalette struct {
+	Color            *[]ColorPaletteGet             `json:"color,omitempty"`
+	ColorTemperature *[]ColorTemperaturePalettePost `json:"color_temperature,omitempty"`
+	Dimming          *[]Dimming                     `json:"dimming,omitempty"`
+	Effects          *[]struct {
+		Effect *SupportedEffects `json:"effect,omitempty"`
+	} `json:"effects,omitempty"`
+}
+
 // ScenePost defines model for ScenePost.
 type ScenePost struct {
 	// Actions List of actions to be executed synchronously on recall
@@ -1450,24 +1447,10 @@ type ScenePost struct {
 	// AutoDynamic Indicates whether to automatically start the scene dynamically on active recall
 	AutoDynamic *bool              `json:"auto_dynamic,omitempty"`
 	Group       ResourceIdentifier `json:"group"`
-	Metadata    struct {
-		// Appdata Application specific data. Free format string.
-		Appdata *string             `json:"appdata,omitempty"`
-		Image   *ResourceIdentifier `json:"image,omitempty"`
-
-		// Name Human readable name of a resource
-		Name *string `json:"name,omitempty"`
-	} `json:"metadata"`
+	Metadata    SceneMetadata      `json:"metadata"`
 
 	// Palette Group of colors that describe the palette of colors to be used when playing dynamics
-	Palette *struct {
-		Color            *[]ColorPaletteGet             `json:"color,omitempty"`
-		ColorTemperature *[]ColorTemperaturePalettePost `json:"color_temperature,omitempty"`
-		Dimming          *[]Dimming                     `json:"dimming,omitempty"`
-		Effects          *[]struct {
-			Effect *SupportedEffects `json:"effect,omitempty"`
-		} `json:"effects,omitempty"`
-	} `json:"palette,omitempty"`
+	Palette *ScenePalette `json:"palette,omitempty"`
 
 	// Speed Speed of dynamic palette for this scene
 	Speed *float32       `json:"speed,omitempty"`
@@ -1480,47 +1463,36 @@ type ScenePostType string
 // ScenePut defines model for ScenePut.
 type ScenePut struct {
 	// Actions List of actions to be executed synchronously on recall
-	Actions []ActionPost `json:"actions"`
+	Actions *[]ActionPost `json:"actions,omitempty"`
 
 	// AutoDynamic Indicates whether to automatically start the scene dynamically on active recall
-	AutoDynamic *bool `json:"auto_dynamic,omitempty"`
-	Metadata    struct {
-		// Appdata Application specific data. Free format string.
-		Appdata *string             `json:"appdata,omitempty"`
-		Image   *ResourceIdentifier `json:"image,omitempty"`
-
-		// Name Human readable name of a resource
-		Name *string `json:"name,omitempty"`
-	} `json:"metadata"`
+	AutoDynamic *bool          `json:"auto_dynamic,omitempty"`
+	Metadata    *SceneMetadata `json:"metadata,omitempty"`
 
 	// Palette Group of colors that describe the palette of colors to be used when playing dynamics
-	Palette *struct {
-		Color            *[]ColorPaletteGet             `json:"color,omitempty"`
-		ColorTemperature *[]ColorTemperaturePalettePost `json:"color_temperature,omitempty"`
-		Dimming          *[]Dimming                     `json:"dimming,omitempty"`
-		Effects          *[]struct {
-			Effect *SupportedEffects `json:"effect,omitempty"`
-		} `json:"effects,omitempty"`
-	} `json:"palette,omitempty"`
-	Recall *struct {
-		// Action When writing active, the actions in the scene are executed on the target. dynamic_palette starts dynamic scene with colors in the Palette object.
-		Action  *ScenePutRecallAction `json:"action,omitempty"`
-		Dimming *Dimming              `json:"dimming,omitempty"`
-
-		// Duration Transition to the scene within the timeframe given by duration
-		Duration *int `json:"duration,omitempty"`
-	} `json:"recall,omitempty"`
+	Palette *ScenePalette `json:"palette,omitempty"`
+	Recall  *SceneRecall  `json:"recall,omitempty"`
 
 	// Speed Speed of dynamic palette for this scene
 	Speed *float32      `json:"speed,omitempty"`
 	Type  *ScenePutType `json:"type,omitempty"`
 }
 
-// ScenePutRecallAction When writing active, the actions in the scene are executed on the target. dynamic_palette starts dynamic scene with colors in the Palette object.
-type ScenePutRecallAction string
-
 // ScenePutType defines model for ScenePut.Type.
 type ScenePutType string
+
+// SceneRecall defines model for SceneRecall.
+type SceneRecall struct {
+	// Action When writing active, the actions in the scene are executed on the target. dynamic_palette starts dynamic scene with colors in the Palette object.
+	Action  *SceneRecallAction `json:"action,omitempty"`
+	Dimming *Dimming           `json:"dimming,omitempty"`
+
+	// Duration Transition to the scene within the timeframe given by duration
+	Duration *int `json:"duration,omitempty"`
+}
+
+// SceneRecallAction When writing active, the actions in the scene are executed on the target. dynamic_palette starts dynamic scene with colors in the Palette object.
+type SceneRecallAction string
 
 // Signaling Feature containing signaling properties.
 type Signaling struct {

@@ -15,7 +15,7 @@ const (
 
 func TestNewCmdVersion(t *testing.T) {
 
-	ctx, out := openhue.NewTestContextWithoutApi()
+	ctx, out := openhue.NewTestContext(nil)
 
 	cmd := NewCmdVersion(ctx)
 	err := cmd.Execute()
