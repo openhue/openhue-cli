@@ -70,16 +70,18 @@ type Device struct {
 //
 
 type SetLightOptions struct {
-	Status     LightStatus
-	Brightness float32
-	Color      color.XY
+	Status      LightStatus
+	Brightness  float32
+	Color       color.XY
+	Temperature int
 }
 
 func NewSetLightOptions() *SetLightOptions {
 	return &SetLightOptions{
-		Status:     LightStatusUndefined,
-		Brightness: -1,
-		Color:      color.UndefinedColor,
+		Status:      LightStatusUndefined,
+		Brightness:  -1,
+		Color:       color.UndefinedColor,
+		Temperature: -1,
 	}
 }
 
@@ -135,6 +137,12 @@ func (light *Light) Set(o *SetLightOptions) {
 		}
 	}
 
+	if o.Temperature >= 153 && o.Temperature <= 500 {
+		request.ColorTemperature = &gen.ColorTemperature{
+			Mirek: &o.Temperature,
+		}
+	}
+
 	if o.Color != color.UndefinedColor {
 		request.Color = &gen.Color{
 			Xy: &gen.GamutPosition{
@@ -170,6 +178,12 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 	if o.Brightness >= 0 && o.Brightness <= 100.0 {
 		request.Dimming = &gen.Dimming{
 			Brightness: &o.Brightness,
+		}
+	}
+
+	if o.Temperature >= 153 && o.Temperature <= 500 {
+		request.ColorTemperature = &gen.ColorTemperature{
+			Mirek: &o.Temperature,
 		}
 	}
 

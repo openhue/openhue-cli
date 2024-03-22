@@ -12,13 +12,14 @@ import (
 //
 
 type CmdSetLightFlags struct {
-	On         bool
-	Off        bool
-	Brightness float32
-	Rgb        string
-	X          float32
-	Y          float32
-	ColorName  string
+	On          bool
+	Off         bool
+	Brightness  float32
+	Rgb         string
+	X           float32
+	Y           float32
+	ColorName   string
+	Temperature int
 }
 
 func (flags *CmdSetLightFlags) initCmd(cmd *cobra.Command) {
@@ -48,8 +49,11 @@ func (flags *CmdSetLightFlags) initCmd(cmd *cobra.Command) {
 		return color.GetSupportColorList(), cobra.ShellCompDirectiveDefault
 	})
 
+	// temperature
+	cmd.Flags().IntVarP(&flags.Temperature, "temperature", "t", -1, "Color temperature in Mirek [min=153, max=500]")
+
 	// exclusions
-	cmd.MarkFlagsMutuallyExclusive("color", "rgb", "cie-x")
+	cmd.MarkFlagsMutuallyExclusive("color", "rgb", "cie-x", "temperature")
 }
 
 // toSetLightOptions makes sure provided values for LightOptions are valid
@@ -70,6 +74,13 @@ func (flags *CmdSetLightFlags) toSetLightOptions() (*openhue.SetLightOptions, er
 		return nil, fmt.Errorf("--brightness flag must be greater than 0.0 and lower than 100.0, current value is %.2f", flags.Brightness)
 	} else {
 		o.Brightness = flags.Brightness
+	}
+
+	// validate the temperature flag
+	if flags.Temperature > 500 || (flags.Temperature != -1 && flags.Temperature < 153) {
+		return nil, fmt.Errorf("--temperature flag must be greater than 153 and lower than 500, current value is %d", flags.Temperature)
+	} else {
+		o.Temperature = flags.Temperature
 	}
 
 	// color in RGB
