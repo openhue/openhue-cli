@@ -78,28 +78,6 @@ const (
 	DimmingDeltaActionUp   DimmingDeltaAction = "up"
 )
 
-// Defines values for GroupedLightPutColorTemperatureDeltaAction.
-const (
-	GroupedLightPutColorTemperatureDeltaActionDown GroupedLightPutColorTemperatureDeltaAction = "down"
-	GroupedLightPutColorTemperatureDeltaActionStop GroupedLightPutColorTemperatureDeltaAction = "stop"
-	GroupedLightPutColorTemperatureDeltaActionUp   GroupedLightPutColorTemperatureDeltaAction = "up"
-)
-
-// Defines values for GroupedLightPutDimmingDeltaAction.
-const (
-	GroupedLightPutDimmingDeltaActionDown GroupedLightPutDimmingDeltaAction = "down"
-	GroupedLightPutDimmingDeltaActionStop GroupedLightPutDimmingDeltaAction = "stop"
-	GroupedLightPutDimmingDeltaActionUp   GroupedLightPutDimmingDeltaAction = "up"
-)
-
-// Defines values for GroupedLightPutSignalingSignal.
-const (
-	GroupedLightPutSignalingSignalAlternating GroupedLightPutSignalingSignal = "alternating"
-	GroupedLightPutSignalingSignalNoSignal    GroupedLightPutSignalingSignal = "no_signal"
-	GroupedLightPutSignalingSignalOnOff       GroupedLightPutSignalingSignal = "on_off"
-	GroupedLightPutSignalingSignalOnOffColor  GroupedLightPutSignalingSignal = "on_off_color"
-)
-
 // Defines values for GroupedLightPutType.
 const (
 	GroupedLightPutTypeGroupedLight GroupedLightPutType = "grouped_light"
@@ -471,10 +449,10 @@ const (
 
 // Defines values for SupportedSignals.
 const (
-	Alternating SupportedSignals = "alternating"
-	NoSignal    SupportedSignals = "no_signal"
-	OnOff       SupportedSignals = "on_off"
-	OnOffColor  SupportedSignals = "on_off_color"
+	SupportedSignalsAlternating SupportedSignals = "alternating"
+	SupportedSignalsNoSignal    SupportedSignals = "no_signal"
+	SupportedSignalsOnOff       SupportedSignals = "on_off"
+	SupportedSignalsOnOffColor  SupportedSignals = "on_off_color"
 )
 
 // Defines values for SupportedTimedEffects.
@@ -527,11 +505,8 @@ type ActionPost struct {
 			// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
 			Mirek *Mirek `json:"mirek,omitempty"`
 		} `json:"color_temperature,omitempty"`
-		Dimming  *Dimming `json:"dimming,omitempty"`
-		Dynamics *struct {
-			// Duration Duration of a light transition or timed effects in ms.
-			Duration *int `json:"duration,omitempty"`
-		} `json:"dynamics,omitempty"`
+		Dimming  *Dimming   `json:"dimming,omitempty"`
+		Dynamics *Dynamics2 `json:"dynamics,omitempty"`
 
 		// Effects Basic feature containing effect properties.
 		Effects *struct {
@@ -543,6 +518,11 @@ type ActionPost struct {
 		On       *On       `json:"on,omitempty"`
 	} `json:"action"`
 	Target ResourceIdentifier `json:"target"`
+}
+
+// Alert Joined alert control
+type Alert struct {
+	Action *string `json:"action,omitempty"`
 }
 
 // ApiResponse defines model for ApiResponse.
@@ -771,6 +751,12 @@ type Dynamics struct {
 	Speed *float32 `json:"speed,omitempty"`
 }
 
+// Dynamics2 defines model for Dynamics-2.
+type Dynamics2 struct {
+	// Duration Duration of a light transition or timed effects in ms.
+	Duration *int `json:"duration,omitempty"`
+}
+
 // Effects Basic feature containing effect properties.
 type Effects struct {
 	Effect *SupportedEffects `json:"effect,omitempty"`
@@ -834,67 +820,21 @@ type GroupedLightGet struct {
 // GroupedLightPut defines model for GroupedLightPut.
 type GroupedLightPut struct {
 	// Alert Joined alert control
-	Alert *struct {
-		Action *string `json:"action,omitempty"`
-	} `json:"alert,omitempty"`
-	Color *Color `json:"color,omitempty"`
-
-	// ColorTemperature Joined color temperature control
-	ColorTemperature *struct {
-		// Mirek color temperature in mirek or null when the light color is not in the ct spectrum
-		Mirek *Mirek `json:"mirek,omitempty"`
-	} `json:"color_temperature,omitempty"`
-	ColorTemperatureDelta *struct {
-		Action GroupedLightPutColorTemperatureDeltaAction `json:"action"`
-
-		// MirekDelta color temperature in mirek or null when the light color is not in the ct spectrum
-		MirekDelta *Mirek `json:"mirek_delta,omitempty"`
-	} `json:"color_temperature_delta,omitempty"`
-	Dimming      *Dimming `json:"dimming,omitempty"`
-	DimmingDelta *struct {
-		Action GroupedLightPutDimmingDeltaAction `json:"action"`
-
-		// BrightnessDelta Brightness percentage of full-scale increase delta to current dimlevel. Clip at Max-level or Min-level.
-		BrightnessDelta *float32 `json:"brightness_delta,omitempty"`
-	} `json:"dimming_delta,omitempty"`
-	Dynamics *struct {
-		// Duration Duration of a light transition or timed effects in ms.
-		Duration *int `json:"duration,omitempty"`
-	} `json:"dynamics,omitempty"`
-	On *On `json:"on,omitempty"`
+	Alert                 *Alert                 `json:"alert,omitempty"`
+	Color                 *Color                 `json:"color,omitempty"`
+	ColorTemperature      *ColorTemperature      `json:"color_temperature,omitempty"`
+	ColorTemperatureDelta *ColorTemperatureDelta `json:"color_temperature_delta,omitempty"`
+	Dimming               *Dimming               `json:"dimming,omitempty"`
+	DimmingDelta          *DimmingDelta          `json:"dimming_delta,omitempty"`
+	Dynamics              *Dynamics2             `json:"dynamics,omitempty"`
+	On                    *On                    `json:"on,omitempty"`
 
 	// Signaling Feature containing basic signaling properties.
-	Signaling *struct {
-		// Color List of colors to apply to the signal (not supported by all signals)
-		Color *[]Color `json:"color,omitempty"`
-
-		// Duration Duration has a max of 65534000 ms and a stepsize of 1 second.
-		// Values inbetween steps will be rounded.
-		// Duration is ignored for `no_signal`.
-		Duration *int `json:"duration,omitempty"`
-
-		// Signal - `no_signal`: No signal is active. Write “no_signal” to stop active signal.
-		// - `on_off`: Toggles between max brightness and Off in fixed color.
-		// - `on_off_color`: Toggles between off and max brightness with color provided.
-		// - `alternating`: Alternates between 2 provided colors.
-		Signal *GroupedLightPutSignalingSignal `json:"signal,omitempty"`
-	} `json:"signaling,omitempty"`
+	Signaling *Signaling `json:"signaling,omitempty"`
 
 	// Type Type of the supported resources (always `grouped_light` here)
 	Type *GroupedLightPutType `json:"type,omitempty"`
 }
-
-// GroupedLightPutColorTemperatureDeltaAction defines model for GroupedLightPut.ColorTemperatureDelta.Action.
-type GroupedLightPutColorTemperatureDeltaAction string
-
-// GroupedLightPutDimmingDeltaAction defines model for GroupedLightPut.DimmingDelta.Action.
-type GroupedLightPutDimmingDeltaAction string
-
-// GroupedLightPutSignalingSignal - `no_signal`: No signal is active. Write “no_signal” to stop active signal.
-// - `on_off`: Toggles between max brightness and Off in fixed color.
-// - `on_off_color`: Toggles between off and max brightness with color provided.
-// - `alternating`: Alternates between 2 provided colors.
-type GroupedLightPutSignalingSignal string
 
 // GroupedLightPutType Type of the supported resources (always `grouped_light` here)
 type GroupedLightPutType string
@@ -1146,9 +1086,8 @@ type LightLevelPut struct {
 
 // LightPut defines model for LightPut.
 type LightPut struct {
-	Alert *struct {
-		Action *string `json:"action,omitempty"`
-	} `json:"alert,omitempty"`
+	// Alert Joined alert control
+	Alert                 *Alert                 `json:"alert,omitempty"`
 	Color                 *Color                 `json:"color,omitempty"`
 	ColorTemperature      *ColorTemperature      `json:"color_temperature,omitempty"`
 	ColorTemperatureDelta *ColorTemperatureDelta `json:"color_temperature_delta,omitempty"`
@@ -1167,7 +1106,7 @@ type LightPut struct {
 	// Powerup Feature containing properties to configure powerup behaviour of a lightsource.
 	Powerup *Powerup `json:"powerup,omitempty"`
 
-	// Signaling Feature containing signaling properties.
+	// Signaling Feature containing basic signaling properties.
 	Signaling *Signaling `json:"signaling,omitempty"`
 
 	// TimedEffects Basic feature containing timed effect properties.
@@ -1494,17 +1433,27 @@ type SceneRecall struct {
 // SceneRecallAction When writing active, the actions in the scene are executed on the target. dynamic_palette starts dynamic scene with colors in the Palette object.
 type SceneRecallAction string
 
-// Signaling Feature containing signaling properties.
+// Signaling Feature containing basic signaling properties.
 type Signaling struct {
-	// Colors Colors that were provided for the active effect.
-	Colors *[]Color `json:"colors,omitempty"`
+	// Color List of colors to apply to the signal (not supported by all signals)
+	Color *[]Color `json:"color,omitempty"`
 
-	// Duration Duration has a max of 65534000 ms and a stepsize of 1 second. Values inbetween steps will be rounded. Duration is ignored for no_signal.
-	Duration *int             `json:"duration,omitempty"`
-	Signal   *SignalingSignal `json:"signal,omitempty"`
+	// Duration Duration has a max of 65534000 ms and a stepsize of 1 second.
+	// Values inbetween steps will be rounded.
+	// Duration is ignored for `no_signal`.
+	Duration *int `json:"duration,omitempty"`
+
+	// Signal - `no_signal`: No signal is active. Write “no_signal” to stop active signal.
+	// - `on_off`: Toggles between max brightness and Off in fixed color.
+	// - `on_off_color`: Toggles between off and max brightness with color provided.
+	// - `alternating`: Alternates between 2 provided colors.
+	Signal *SignalingSignal `json:"signal,omitempty"`
 }
 
-// SignalingSignal defines model for Signaling.Signal.
+// SignalingSignal - `no_signal`: No signal is active. Write “no_signal” to stop active signal.
+// - `on_off`: Toggles between max brightness and Off in fixed color.
+// - `on_off_color`: Toggles between off and max brightness with color provided.
+// - `alternating`: Alternates between 2 provided colors.
 type SignalingSignal string
 
 // SupportedDynamicStatus Current status of the lamp with dynamics.

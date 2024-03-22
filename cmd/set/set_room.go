@@ -35,6 +35,9 @@ openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on -x 0.675 -y 0.322
 
 # Set color (by name) of a single room
 openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on --color powder_blue
+
+# Set color temperature (in Mirek) of a single room
+openhue set light Studio --on -t 250
 `
 )
 
