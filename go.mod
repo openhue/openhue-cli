@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/brutella/dnssd v1.2.10
-	github.com/deepmap/oapi-codegen v1.16.2
+	github.com/deepmap/oapi-codegen v1.16.3
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sirupsen/logrus v1.9.3
