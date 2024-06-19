@@ -31,7 +31,7 @@ To begin developing with Open-Hue's OpenAPI specification, follow these steps:
 
 Before you start, ensure that you have the following prerequisites installed:
 - [Golang](https://go.dev/doc/install) that is used to build and run the project
-- [GoReleaser](https://goreleaser.com) (_optional_) that is used to build and release the binaries
+- [GoReleaser](https://goreleaser.com) that is used to build and release the binaries. Used behind the scene when running the `make build` command
 - [Docker](https://docs.docker.com/engine/install/) (_optional_) that is used to build the CLI Docker Image and run it as a container
 
 ### Fork the Repository
