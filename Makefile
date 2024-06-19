@@ -15,7 +15,7 @@ help:
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "make \033[36m%-10s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: generate
-generate: ## Generates the openhue/gen/openhue.gen.go client. Usage: make generate [spec=/path/to/openhue.yaml]
+generate: _check-oapi-codegen-installation ## Generates the openhue/gen/openhue.gen.go client. Usage: make generate [spec=/path/to/openhue.yaml]
 ifdef spec
 	@echo "Code generation from $(spec)"
 	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.gen.go "$(spec)"
@@ -26,7 +26,7 @@ endif
 	@echo "\n${GREEN}${BOLD}./openhue/openhue.gen.go successfully generated 🚀${RESET}"
 
 .PHONY: build
-build: ## Generates the openhue-cli executables in the ./dist folder
+build: _check-goreleaser-installation ## Generates the openhue-cli executables in the ./dist folder
 	@$(GORELEASER) check
 	@$(GORELEASER) build --clean --snapshot --single-target
 	@echo "\n${GREEN}${BOLD}openhue binaries successfully generated in the ./dist folder 📦${RESET}"
@@ -58,3 +58,15 @@ clean: ##
 	@rm -f coverage.html
 	@$(GO) clean
 	@echo "\n${GREEN}${BOLD}Project successfully cleaned 🧹${RESET} (removed ./dist folder + go clean)"
+
+#
+# Private targets
+#
+
+.PHONY: _check-goreleaser-installation
+_check-goreleaser-installation:
+	@command -v goreleaser >/dev/null 2>&1 || { echo >&2 "GoReleaser is not installed (https://goreleaser.com/install)"; exit 1; }
+
+.PHONY: _check-oapi-codegen-installation
+_check-oapi-codegen-installation:
+	@command -v oapi-codegen >/dev/null 2>&1 || { echo >&2 "oapi-codegen is not installed (https://github.com/oapi-codegen/oapi-codegen)"; exit 1; }
