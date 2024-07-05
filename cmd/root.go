@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	op "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"openhue-cli/cmd/get"
@@ -49,15 +50,15 @@ openhue controls your Philips Hue lighting system
 	return cmd
 }
 
-// LoadHomeIfNeeded checks if the command requires loading the openhue.Home context
+// LoadHomeIfNeeded checks if the command requires loading the openhue.HomeModel context
 func LoadHomeIfNeeded(ctx *openhue.Context, cmd *cobra.Command) {
 	if OpenHueCmdGroupHue.containsCmd(cmd) {
-		log.Infof("The '%s' command is in the '%s' group so we are loading the Home Context", cmd.Name(), OpenHueCmdGroupHue)
+		log.Infof("The '%s' command is in the '%s' group so we are loading the HomeModel Context", cmd.Name(), OpenHueCmdGroupHue)
 		timer := util.NewTimer()
-		home, err := openhue.LoadHome(ctx.Api)
+		home, err := openhue.LoadHome(ctx.H)
 		cobra.CheckErr(err)
 		ctx.Home = home
-		log.Infof("It took %dms to load the Home Context", timer.SinceInMillis())
+		log.Infof("It took %dms to load the HomeModel Context", timer.SinceInMillis())
 	}
 }
 
@@ -69,9 +70,8 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	c := openhue.Config{}
 	c.Load()
 
-	// get the API Client
-	api := c.NewOpenHueClient()
-	ctx := openhue.NewContext(openhue.NewIOStreams(), buildInfo, api, &c)
+	h, _ := op.NewHome(c.Bridge, c.Key)
+	ctx := openhue.NewContext(openhue.NewIOStreams(), buildInfo, h, &c)
 
 	// create the root command
 	root := NewCmdOpenHue(ctx)

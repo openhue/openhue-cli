@@ -1,13 +1,13 @@
 package openhue
 
 import (
+	"github.com/openhue/openhue-go"
 	"github.com/stretchr/testify/assert"
-	"openhue-cli/openhue/gen"
 	"testing"
 )
 
 func TestNewContext(t *testing.T) {
-	ctx := NewContext(NewTestIOStreamsDiscard(), NewTestBuildInfo(), &gen.ClientWithResponses{}, nil)
+	ctx := NewContext(NewTestIOStreamsDiscard(), NewTestBuildInfo(), &openhue.Home{}, nil)
 	assert.NotNil(t, ctx, "Context should not be nil")
 }
 

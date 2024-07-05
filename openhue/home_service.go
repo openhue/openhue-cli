@@ -2,25 +2,25 @@ package openhue
 
 import (
 	"fmt"
+	"github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
-	"openhue-cli/openhue/gen"
 )
 
-func LoadHome(api *gen.ClientWithResponses) (*Home, error) {
+func LoadHome(h *openhue.Home) (*HomeModel, error) {
 	log.Info("Loading home...")
 
-	ctx, err := loadHueHomeCtx(api)
+	ctx, err := loadHueHomeCtx(h)
 	if err != nil {
 		return nil, err
 	}
 
-	home := Home{
+	home := HomeModel{
 		Resource: Resource{
 			ctx:    ctx,
 			Id:     *ctx.home.Id,
-			Name:   "Home",
-			Type:   HomeResourceType(gen.ResourceIdentifierRtypeBridgeHome),
-			Parent: nil, // explicitly set Parent to nil as Home is the root object
+			Name:   "HomeModel",
+			Type:   HomeResourceType(openhue.ResourceIdentifierRtypeBridgeHome),
+			Parent: nil, // explicitly set Parent to nil as HomeModel is the root object
 		},
 		HueData: ctx.home,
 	}
@@ -36,7 +36,7 @@ func LoadHome(api *gen.ClientWithResponses) (*Home, error) {
 //
 
 // SearchLights returns a slice of Light optionally filtered by their room and their IDs or names
-func SearchLights(home *Home, roomNameOrId string, nameOrIds []string) []Light {
+func SearchLights(home *HomeModel, roomNameOrId string, nameOrIds []string) []Light {
 	var lights []Light
 
 	for _, room := range home.Rooms {
@@ -64,7 +64,7 @@ func SearchLights(home *Home, roomNameOrId string, nameOrIds []string) []Light {
 // Room
 //
 
-func SearchRooms(home *Home, nameOrIds []string) []Room {
+func SearchRooms(home *HomeModel, nameOrIds []string) []Room {
 	var rooms []Room
 
 	for _, room := range home.Rooms {
@@ -87,7 +87,7 @@ func SearchRooms(home *Home, nameOrIds []string) []Room {
 //
 
 // SearchScenes returns a slice of Scene filtered by the room
-func SearchScenes(home *Home, roomNameOrId string, nameOrIds []string) []Scene {
+func SearchScenes(home *HomeModel, roomNameOrId string, nameOrIds []string) []Scene {
 	var scenes []Scene
 
 	for _, room := range home.Rooms {
@@ -113,7 +113,7 @@ func SearchScenes(home *Home, roomNameOrId string, nameOrIds []string) []Scene {
 // Private
 //
 
-func (t HomeResourceType) is(r gen.ResourceIdentifierRtype) bool {
+func (t HomeResourceType) is(r openhue.ResourceIdentifierRtype) bool {
 
 	if t == HomeResourceType(r) {
 		return true
@@ -122,13 +122,13 @@ func (t HomeResourceType) is(r gen.ResourceIdentifierRtype) bool {
 	return false
 }
 
-func getRooms(ctx *hueHomeCtx, parent *Resource, children *[]gen.ResourceIdentifier) []Room {
+func getRooms(ctx *hueHomeCtx, parent *Resource, children *[]openhue.ResourceIdentifier) []Room {
 
 	var rooms []Room
 
 	for _, child := range *children {
 		rType := HomeResourceType(*child.Rtype)
-		if rType.is(gen.ResourceIdentifierRtypeRoom) {
+		if rType.is(openhue.ResourceIdentifierRtypeRoom) {
 			hueRoom := ctx.rooms[*child.Rid]
 			room := Room{
 				Resource: Resource{
@@ -169,7 +169,7 @@ func getScenes(ctx *hueHomeCtx, room *Resource) []Scene {
 				Resource: Resource{
 					Id:     *scene.Id,
 					Name:   *scene.Metadata.Name,
-					Type:   HomeResourceType(gen.ResourceIdentifierRtypeScene),
+					Type:   HomeResourceType(openhue.ResourceIdentifierRtypeScene),
 					Parent: room,
 					ctx:    ctx,
 				},
@@ -181,13 +181,13 @@ func getScenes(ctx *hueHomeCtx, room *Resource) []Scene {
 	return scenes
 }
 
-func getDevices(ctx *hueHomeCtx, parent *Resource, children *[]gen.ResourceIdentifier) []Device {
+func getDevices(ctx *hueHomeCtx, parent *Resource, children *[]openhue.ResourceIdentifier) []Device {
 
 	var devices []Device
 
 	for _, child := range *children {
 		rType := HomeResourceType(*child.Rtype)
-		if rType.is(gen.ResourceIdentifierRtypeDevice) {
+		if rType.is(openhue.ResourceIdentifierRtypeDevice) {
 			hueDevice := ctx.devices[*child.Rid]
 			device := Device{
 				Resource: Resource{
@@ -214,11 +214,11 @@ func getDevices(ctx *hueHomeCtx, parent *Resource, children *[]gen.ResourceIdent
 	return devices
 }
 
-func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services *[]gen.ResourceIdentifier) (*GroupedLight, error) {
+func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services *[]openhue.ResourceIdentifier) (*GroupedLight, error) {
 
 	for _, service := range *services {
 		rType := HomeResourceType(*service.Rtype)
-		if rType.is(gen.ResourceIdentifierRtypeGroupedLight) {
+		if rType.is(openhue.ResourceIdentifierRtypeGroupedLight) {
 			hueGroupedLight := ctx.groupedLights[*service.Rid]
 			return &GroupedLight{
 				Resource: Resource{
@@ -236,11 +236,11 @@ func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services *[]gen.Resource
 	return nil, fmt.Errorf("no 'grouped_light' service found for resource %s (%s)", parent.Id, parent.Name)
 }
 
-func getLight(ctx *hueHomeCtx, parent *Resource, services *[]gen.ResourceIdentifier) (*Light, error) {
+func getLight(ctx *hueHomeCtx, parent *Resource, services *[]openhue.ResourceIdentifier) (*Light, error) {
 
 	for _, service := range *services {
 		rType := HomeResourceType(*service.Rtype)
-		if rType.is(gen.ResourceIdentifierRtypeLight) {
+		if rType.is(openhue.ResourceIdentifierRtypeLight) {
 			light := ctx.lights[*service.Rid]
 			return &Light{
 				Resource: Resource{
