@@ -2,10 +2,10 @@ package set
 
 import (
 	"errors"
+	oh "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
-	"openhue-cli/openhue/gen"
 )
 
 const (
@@ -108,7 +108,7 @@ func (e *actionEnum) Type() string {
 	return "string"
 }
 
-func (e *actionEnum) toSceneRecallAction() gen.SceneRecallAction {
+func (e *actionEnum) toSceneRecallAction() oh.SceneRecallAction {
 
 	if len(string(*e)) == 0 {
 		log.Info("action flag not set, defaulting to 'active")
@@ -116,9 +116,9 @@ func (e *actionEnum) toSceneRecallAction() gen.SceneRecallAction {
 	}
 
 	if *e == dynamic {
-		return gen.SceneRecallActionDynamicPalette
+		return oh.SceneRecallActionDynamicPalette
 	}
-	return gen.SceneRecallAction(e.String())
+	return oh.SceneRecallAction(e.String())
 }
 
 func (o *CmdSetSceneOptions) roomMsg() string {

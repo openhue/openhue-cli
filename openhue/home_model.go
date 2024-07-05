@@ -1,14 +1,12 @@
 package openhue
 
 import (
-	"context"
-	"errors"
+	"github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
-	"openhue-cli/openhue/gen"
 	"openhue-cli/util/color"
 )
 
-type HomeResourceType gen.ResourceIdentifierRtype
+type HomeResourceType openhue.ResourceIdentifierRtype
 
 type Resource struct {
 	Id     string
@@ -29,14 +27,14 @@ func (r *Resource) matchesNameOrId(nameOrId string) bool {
 }
 
 //
-// Home
+// HomeModel
 //
 
-type Home struct {
+type HomeModel struct {
 	Resource
 	Rooms   []Room
 	Devices []Device
-	HueData *gen.BridgeHomeGet
+	HueData *openhue.BridgeHomeGet
 }
 
 //
@@ -47,7 +45,7 @@ type Room struct {
 	Resource
 	Devices []Device
 	Scenes  []Scene
-	HueData *gen.RoomGet
+	HueData *openhue.RoomGet
 
 	// Services
 	GroupedLight *GroupedLight
@@ -59,7 +57,7 @@ type Room struct {
 
 type Device struct {
 	Resource
-	HueData *gen.DeviceGet
+	HueData *openhue.DeviceGet
 
 	// Services
 	Light *Light
@@ -115,7 +113,7 @@ type LightService interface {
 type Light struct {
 	Resource
 	LightService
-	HueData *gen.LightGet
+	HueData *openhue.LightGet
 }
 
 func (light *Light) IsOn() bool {
@@ -123,43 +121,43 @@ func (light *Light) IsOn() bool {
 }
 
 func (light *Light) Set(o *SetLightOptions) {
-	request := &gen.UpdateLightJSONRequestBody{}
+	request := &openhue.UpdateLightJSONRequestBody{}
 
 	if o.Status != LightStatusUndefined {
-		request.On = &gen.On{
+		request.On = &openhue.On{
 			On: ToBool(o.Status),
 		}
 	}
 
 	if o.Brightness >= 0 && o.Brightness <= 100.0 {
-		request.Dimming = &gen.Dimming{
+		request.Dimming = &openhue.Dimming{
 			Brightness: &o.Brightness,
 		}
 	}
 
 	if o.Temperature >= 153 && o.Temperature <= 500 {
-		request.ColorTemperature = &gen.ColorTemperature{
+		request.ColorTemperature = &openhue.ColorTemperature{
 			Mirek: &o.Temperature,
 		}
 	}
 
 	if o.Color != color.UndefinedColor {
-		request.Color = &gen.Color{
-			Xy: &gen.GamutPosition{
+		request.Color = &openhue.Color{
+			Xy: &openhue.GamutPosition{
 				X: &o.Color.X,
 				Y: &o.Color.Y,
 			},
 		}
 	}
 
-	_, err := light.ctx.api.UpdateLight(context.Background(), light.Id, *request)
+	err := light.ctx.h.UpdateLight(light.Id, *request)
 	cobra.CheckErr(err)
 }
 
 type GroupedLight struct {
 	Resource
 	LightService
-	HueData *gen.GroupedLightGet
+	HueData *openhue.GroupedLightGet
 }
 
 func (groupedLight *GroupedLight) IsOn() bool {
@@ -167,36 +165,36 @@ func (groupedLight *GroupedLight) IsOn() bool {
 }
 
 func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
-	request := &gen.UpdateGroupedLightJSONRequestBody{}
+	request := &openhue.UpdateGroupedLightJSONRequestBody{}
 
 	if o.Status != LightStatusUndefined {
-		request.On = &gen.On{
+		request.On = &openhue.On{
 			On: ToBool(o.Status),
 		}
 	}
 
 	if o.Brightness >= 0 && o.Brightness <= 100.0 {
-		request.Dimming = &gen.Dimming{
+		request.Dimming = &openhue.Dimming{
 			Brightness: &o.Brightness,
 		}
 	}
 
 	if o.Temperature >= 153 && o.Temperature <= 500 {
-		request.ColorTemperature = &gen.ColorTemperature{
+		request.ColorTemperature = &openhue.ColorTemperature{
 			Mirek: &o.Temperature,
 		}
 	}
 
 	if o.Color != color.UndefinedColor {
-		request.Color = &gen.Color{
-			Xy: &gen.GamutPosition{
+		request.Color = &openhue.Color{
+			Xy: &openhue.GamutPosition{
 				X: &o.Color.X,
 				Y: &o.Color.Y,
 			},
 		}
 	}
 
-	_, err := groupedLight.ctx.api.UpdateGroupedLight(context.Background(), groupedLight.Id, *request)
+	err := groupedLight.ctx.h.UpdateGroupedLight(groupedLight.Id, *request)
 	cobra.CheckErr(err)
 }
 
@@ -211,20 +209,18 @@ type SceneService interface {
 type Scene struct {
 	Resource
 	SceneService
-	HueData *gen.SceneGet
+	HueData *openhue.SceneGet
 }
 
-func (scene *Scene) Activate(action gen.SceneRecallAction) error {
-	body := gen.UpdateSceneJSONRequestBody{
-		Recall: &gen.SceneRecall{
+func (scene *Scene) Activate(action openhue.SceneRecallAction) error {
+	body := openhue.UpdateSceneJSONRequestBody{
+		Recall: &openhue.SceneRecall{
 			Action: &action,
 		},
 	}
-	res, err := scene.ctx.api.UpdateSceneWithResponse(context.Background(), scene.Id, body)
+
+	err := scene.ctx.h.UpdateScene(scene.Id, body)
 	cobra.CheckErr(err)
 
-	if res.JSON200 == nil {
-		return errors.New("failed to activate scene " + scene.Id)
-	}
 	return nil
 }

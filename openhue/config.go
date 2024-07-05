@@ -1,14 +1,14 @@
 package openhue
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
-	sp "github.com/deepmap/oapi-codegen/pkg/securityprovider"
+	"github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
-	"openhue-cli/openhue/gen"
 	"openhue-cli/util/logger"
 	"os"
 	"path/filepath"
@@ -77,14 +77,16 @@ func (c *Config) Save() (string, error) {
 
 // NewOpenHueClient Creates a new NewClientWithResponses for a given server and hueApplicationKey.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
-func (c *Config) NewOpenHueClient() *gen.ClientWithResponses {
-	p, err := sp.NewSecurityProviderApiKey("header", "hue-application-Key", c.Key)
-	cobra.CheckErr(err)
+func (c *Config) NewOpenHueClient() *openhue.ClientWithResponses {
+	apiKeyAuth := func(ctx context.Context, req *http.Request) error {
+		req.Header.Set("hue-application-key", c.Key)
+		return nil
+	}
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := gen.NewClientWithResponses("https://"+c.Bridge, gen.WithRequestEditorFn(p.Intercept))
+	client, err := openhue.NewClientWithResponses("https://"+c.Bridge, openhue.WithRequestEditorFn(apiKeyAuth))
 	cobra.CheckErr(err)
 
 	return client
@@ -92,12 +94,12 @@ func (c *Config) NewOpenHueClient() *gen.ClientWithResponses {
 
 // NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application Key.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
-func NewOpenHueClientNoAuth(ip string) *gen.ClientWithResponses {
+func NewOpenHueClientNoAuth(ip string) *openhue.ClientWithResponses {
 
 	// skip SSL Verification
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client, err := gen.NewClientWithResponses("https://" + ip)
+	client, err := openhue.NewClientWithResponses("https://" + ip)
 	cobra.CheckErr(err)
 
 	return client

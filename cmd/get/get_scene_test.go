@@ -1,9 +1,9 @@
 package get
 
 import (
+	oh "github.com/openhue/openhue-go"
 	"github.com/stretchr/testify/assert"
 	"openhue-cli/openhue"
-	"openhue-cli/openhue/gen"
 	"testing"
 )
 
@@ -14,12 +14,12 @@ func TestGetAllScenes(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func NewFakeHome() *openhue.Home {
-	return &openhue.Home{
+func NewFakeHome() *openhue.HomeModel {
+	return &openhue.HomeModel{
 		Resource: openhue.Resource{
 			Id:     "home-01",
-			Name:   "Home",
-			Type:   openhue.HomeResourceType(gen.BridgeHomeGetTypeBridgeHome),
+			Name:   "HomeModel",
+			Type:   openhue.HomeResourceType(oh.BridgeHomeGetTypeBridgeHome),
 			Parent: nil,
 		},
 		Rooms: []openhue.Room{
@@ -27,7 +27,7 @@ func NewFakeHome() *openhue.Home {
 				Resource: openhue.Resource{
 					Id:   "room-01",
 					Name: "Room 1",
-					Type: openhue.HomeResourceType(gen.ResourceGetTypeRoom),
+					Type: openhue.HomeResourceType(oh.ResourceGetTypeRoom),
 				},
 				Devices: nil,
 				Scenes: []openhue.Scene{
@@ -36,14 +36,14 @@ func NewFakeHome() *openhue.Home {
 							Id:   "scene-01",
 							Name: "Soho",
 						},
-						HueData: &gen.SceneGet{},
+						HueData: &oh.SceneGet{},
 					},
 				},
 				GroupedLight: nil,
-				HueData:      &gen.RoomGet{},
+				HueData:      &oh.RoomGet{},
 			},
 		},
 		Devices: []openhue.Device{},
-		HueData: &gen.BridgeHomeGet{},
+		HueData: &oh.BridgeHomeGet{},
 	}
 }

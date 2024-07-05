@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	oh "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"net"
 	"openhue-cli/openhue"
-	"openhue-cli/openhue/gen"
 	"openhue-cli/util/mdns"
 	"os"
 	"time"
@@ -100,14 +100,14 @@ func getBridgeIPAddress(io openhue.IOStreams, o *CmdSetupOptions) (string, error
 	return ip.String(), nil
 }
 
-func (o *CmdSetupOptions) toAuthenticateBody() gen.AuthenticateJSONRequestBody {
-	body := gen.AuthenticateJSONRequestBody{}
+func (o *CmdSetupOptions) toAuthenticateBody() oh.AuthenticateJSONRequestBody {
+	body := oh.AuthenticateJSONRequestBody{}
 	body.Devicetype = &o.deviceType
 	body.Generateclientkey = &o.generateClientKey
 	return body
 }
 
-func tryAuth(client *gen.ClientWithResponses, body gen.AuthenticateJSONRequestBody) (string, bool, error) {
+func tryAuth(client *oh.ClientWithResponses, body oh.AuthenticateJSONRequestBody) (string, bool, error) {
 
 	resp, err := client.AuthenticateWithResponse(context.Background(), body)
 	cobra.CheckErr(err)

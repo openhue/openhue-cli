@@ -15,15 +15,15 @@ help:
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "make \033[36m%-10s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: generate
-generate: _check-oapi-codegen-installation ## Generates the openhue/gen/openhue.gen.go client. Usage: make generate [spec=/path/to/openhue.yaml]
+generate: _check-oapi-codegen-installation ## Generates the openhue/gen/openhue.openhue.go client. Usage: make generate [spec=/path/to/openhue.yaml]
 ifdef spec
 	@echo "Code generation from $(spec)"
-	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.gen.go "$(spec)"
+	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.openhue.go "$(spec)"
 else
 	@echo "Code generation from $(SPEC_URL)"
-	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.gen.go "$(SPEC_URL)"
+	@oapi-codegen --package=gen -generate=client,types -o ./openhue/gen/openhue.openhue.go "$(SPEC_URL)"
 endif
-	@echo "\n${GREEN}${BOLD}./openhue/openhue.gen.go successfully generated 🚀${RESET}"
+	@echo "\n${GREEN}${BOLD}./openhue/openhue.openhue.go successfully generated 🚀${RESET}"
 
 .PHONY: build
 build: _check-goreleaser-installation ## Generates the openhue-cli executables in the ./dist folder
