@@ -1,10 +1,9 @@
 package setup
 
 import (
+	oh "github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
-	"net"
 	"openhue-cli/openhue"
-	"openhue-cli/util/mdns"
 	"time"
 )
 
@@ -18,9 +17,9 @@ func NewCmdDiscover(io openhue.IOStreams) *cobra.Command {
 		Long:    `Discover your Hue Bridge on your local network using the mDNS Service Discovery`,
 		Run: func(cmd *cobra.Command, args []string) {
 
-			ip := make(chan *net.IP)
-			go mdns.DiscoverBridge(ip, 5*time.Second)
-			io.Printf("%s\n", <-ip)
+			b, err := oh.NewBridgeDiscovery(oh.WithTimeout(2 * time.Second)).Discover()
+			cobra.CheckErr(err)
+			io.Printf("%s\n", b.IpAddress)
 		},
 	}
 
