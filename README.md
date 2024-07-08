@@ -4,7 +4,6 @@
 [![Maintainability with Code Climate](https://api.codeclimate.com/v1/badges/fb934bb37c36a04f8efd/maintainability)](https://codeclimate.com/github/openhue/openhue-cli/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/fb934bb37c36a04f8efd/test_coverage)](https://codeclimate.com/github/openhue/openhue-cli/test_coverage)
 [![Docker Image Size (tag)](https://img.shields.io/docker/image-size/openhue/cli/latest)](https://hub.docker.com/r/openhue/cli)
-[![GitHub Repo stars](https://img.shields.io/github/stars/openhue/openhue-cli)](https://github.com/openhue/openhue-cli/stargazers)
 
 ## Overview
 
