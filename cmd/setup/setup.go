@@ -7,9 +7,7 @@ import (
 	oh "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"net"
 	"openhue-cli/openhue"
-	"openhue-cli/util/mdns"
 	"os"
 	"time"
 )
@@ -88,16 +86,13 @@ func getBridgeIPAddress(io openhue.IOStreams, o *CmdSetupOptions) (string, error
 
 	log.Info("Bridge IP address no set from flag --bridge, start lookup via mDNS service discovery")
 
-	ipChan := make(chan *net.IP)
-	go mdns.DiscoverBridge(ipChan, 5*time.Second)
-	ip := <-ipChan
-
-	if ip == nil {
+	b, err := oh.NewBridgeDiscovery(oh.WithTimeout(2 * time.Second)).Discover()
+	if err != nil {
 		return "", fmt.Errorf("[KO] Unable to discover your Hue Bridge on your local network, you can also visit %s\n", hueBridgeDiscover)
 	}
 
-	io.Printf("[OK] Found Hue Bridge with IP '%s'\n", ip)
-	return ip.String(), nil
+	io.Printf("[OK] Found Hue Bridge with IP '%s'\n", b.IpAddress)
+	return b.IpAddress, nil
 }
 
 func (o *CmdSetupOptions) toAuthenticateBody() oh.AuthenticateJSONRequestBody {
