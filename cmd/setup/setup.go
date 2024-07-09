@@ -1,8 +1,6 @@
 package setup
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	oh "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
@@ -51,11 +49,15 @@ func startSetup(io openhue.IOStreams, o *CmdSetupOptions) {
 		return
 	}
 
-	client := openhue.NewOpenHueClientNoAuth(ip)
+	authenticator, err := oh.NewAuthenticator(ip, oh.WithDeviceType(o.deviceType), oh.WithGenerateClientKey(o.generateClientKey))
+	if err != nil {
+		io.ErrPrintln(err.Error())
+		return
+	}
 
 	io.Println("[..] Please push the button on your Hue Bridge")
 	for {
-		key, retry, err := tryAuth(client, o.toAuthenticateBody())
+		key, retry, err := authenticator.Authenticate()
 		if err != nil && retry {
 			// this is an expected error, we just wait for the user to push the button
 			io.Printf(".")
@@ -93,30 +95,6 @@ func getBridgeIPAddress(io openhue.IOStreams, o *CmdSetupOptions) (string, error
 
 	io.Printf("[OK] Found Hue Bridge with IP '%s'\n", b.IpAddress)
 	return b.IpAddress, nil
-}
-
-func (o *CmdSetupOptions) toAuthenticateBody() oh.AuthenticateJSONRequestBody {
-	body := oh.AuthenticateJSONRequestBody{}
-	body.Devicetype = &o.deviceType
-	body.Generateclientkey = &o.generateClientKey
-	return body
-}
-
-func tryAuth(client *oh.ClientWithResponses, body oh.AuthenticateJSONRequestBody) (string, bool, error) {
-
-	resp, err := client.AuthenticateWithResponse(context.Background(), body)
-	cobra.CheckErr(err)
-
-	if resp.JSON200 == nil {
-		return "", false, fmt.Errorf("[KO] Unable to reach the Bridge, verify that the IP is correct. You can verify it via %s", hueBridgeDiscover)
-	}
-
-	auth := (*resp.JSON200)[0]
-	if auth.Error != nil {
-		return "", true, errors.New(*auth.Error.Description)
-	}
-
-	return *auth.Success.Username, false, nil
 }
 
 func saveConfig(bridge string, key string) (string, error) {

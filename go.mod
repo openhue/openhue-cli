@@ -2,8 +2,12 @@ module openhue-cli
 
 go 1.22.3
 
+//replace (
+//	"github.com/openhue/openhue-go" => "/home/thibault.pensec/local/perso/openhue-go"
+//)
+
 require (
-	github.com/openhue/openhue-go v0.2.0
+	github.com/openhue/openhue-go v0.3.0
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
