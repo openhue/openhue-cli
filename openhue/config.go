@@ -24,12 +24,12 @@ func init() {
 	// If the $XDG_CONFIG_HOME env var is set, use it instead of the home user home dir
 	xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
 	if len(xdgConfigHome) > 0 {
-		configPath = filepath.Join(xdgConfigHome, "/openhue")
+		configPath = filepath.Join(xdgConfigHome, "openhue")
 	} else {
 		// Find home directory.
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
-		configPath = filepath.Join(home, "/.openhue")
+		configPath = filepath.Join(home, ".openhue")
 	}
 
 	_ = os.MkdirAll(configPath, os.ModePerm)
