@@ -80,8 +80,12 @@ func PrintScene(scene openhue.Scene) string {
 		if scene.HueData.Status != nil {
 			active = string(*scene.HueData.Status.Active)
 		}
-		speed = strconv.FormatFloat(float64(*scene.HueData.Speed), 'f', 2, 64)
-		auto = strconv.FormatBool(*scene.HueData.AutoDynamic)
+		if scene.HueData.Speed != nil {
+			speed = strconv.FormatFloat(float64(*scene.HueData.Speed), 'f', 2, 64)
+		}
+		if scene.HueData.AutoDynamic != nil {
+			auto = strconv.FormatBool(*scene.HueData.AutoDynamic)
+		}
 	}
 
 	return scene.Id +
