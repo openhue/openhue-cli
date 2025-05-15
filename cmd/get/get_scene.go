@@ -67,10 +67,31 @@ func (o *SceneOptions) RunGetSceneCmd(ctx *openhue.Context, args []string) {
 
 func PrintScene(scene openhue.Scene) string {
 
+	parent := "unknown"
+	active := "unknown"
+	speed := "unknown"
+	auto := "unknown"
+
+	if scene.Parent != nil {
+		parent = scene.Parent.Name
+	}
+
+	if scene.HueData != nil {
+		if scene.HueData.Status != nil {
+			active = string(*scene.HueData.Status.Active)
+		}
+		if scene.HueData.Speed != nil {
+			speed = strconv.FormatFloat(float64(*scene.HueData.Speed), 'f', 2, 64)
+		}
+		if scene.HueData.AutoDynamic != nil {
+			auto = strconv.FormatBool(*scene.HueData.AutoDynamic)
+		}
+	}
+
 	return scene.Id +
 		"\t" + scene.Name +
-		"\t" + scene.Parent.Name +
-		"\t" + string(*scene.HueData.Status.Active) +
-		"\t" + strconv.FormatFloat(float64(*scene.HueData.Speed), 'f', 2, 64) +
-		"\t" + strconv.FormatBool(*scene.HueData.AutoDynamic)
+		"\t" + parent +
+		"\t" + active +
+		"\t" + speed +
+		"\t" + auto
 }
