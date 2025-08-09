@@ -202,6 +202,12 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 		}
 	}
 
+	if o.TransitionTime > 0 {
+		request.Dynamics = &openhue.Dynamics{
+			Duration: &o.TransitionTime,
+		}
+	}
+
 	err := groupedLight.ctx.h.UpdateGroupedLight(groupedLight.Id, *request)
 	cobra.CheckErr(err)
 }
