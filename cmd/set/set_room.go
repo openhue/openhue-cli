@@ -1,8 +1,9 @@
 package set
 
 import (
-	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
+
+	"github.com/spf13/cobra"
 )
 
 const (
@@ -24,8 +25,8 @@ openhue set room 83111103-a3eb-40c5-b22a-02deedd21fcb 8f0a7b52-df25-4bc7-b94d-0d
 # Turn off a room identified by its name
 openhue set room Studio --off
 
-# Set brightness of a single room
-openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on --brightness 42.65
+# Set brightness of a single room with transition time
+openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on --brightness 42.65 --transition-time 5s
 
 # Set color (in RGB) of a single room
 openhue set room 15f51223-1e83-4e48-9158-0c20dbd5734e --on --rgb #3399FF
