@@ -119,7 +119,7 @@ func (flags *CmdSetLightFlags) toSetLightOptions() (*openhue.SetLightOptions, er
 	if flags.TransitionTime != "0s" {
 		duration, err := time.ParseDuration(flags.TransitionTime)
 		cobra.CheckErr(err)
-		o.TransitionTime = int(duration.Milliseconds())
+		o.TransitionTime = duration
 	}
 
 	return o, nil

@@ -2,6 +2,7 @@ package openhue
 
 import (
 	"openhue-cli/util/color"
+	"time"
 
 	"github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
@@ -73,7 +74,7 @@ type SetLightOptions struct {
 	Brightness     float32
 	Color          color.XY
 	Temperature    int
-	TransitionTime int
+	TransitionTime time.Duration
 }
 
 func NewSetLightOptions() *SetLightOptions {
@@ -153,8 +154,9 @@ func (light *Light) Set(o *SetLightOptions) {
 	}
 
 	if o.TransitionTime > 0 {
+		duration := int(o.TransitionTime.Milliseconds())
 		request.Dynamics = &openhue.LightDynamics{
-			Duration: &o.TransitionTime,
+			Duration: &duration,
 		}
 	}
 
@@ -203,8 +205,9 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 	}
 
 	if o.TransitionTime > 0 {
+		duration := int(o.TransitionTime.Milliseconds())
 		request.Dynamics = &openhue.Dynamics{
-			Duration: &o.TransitionTime,
+			Duration: &duration,
 		}
 	}
 
