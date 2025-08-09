@@ -171,6 +171,10 @@ type GroupedLight struct {
 }
 
 func (groupedLight *GroupedLight) IsOn() bool {
+	// A room may not have any light, in this case the GroupedLight service is nil.
+	if groupedLight == nil || groupedLight.HueData == nil || groupedLight.HueData.On == nil || groupedLight.HueData.On.On == nil {
+		return false
+	}
 	return *groupedLight.HueData.On.On
 }
 
