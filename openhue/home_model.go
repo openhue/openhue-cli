@@ -1,9 +1,10 @@
 package openhue
 
 import (
+	"openhue-cli/util/color"
+
 	"github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
-	"openhue-cli/util/color"
 )
 
 type HomeResourceType openhue.ResourceIdentifierRtype
@@ -68,10 +69,11 @@ type Device struct {
 //
 
 type SetLightOptions struct {
-	Status      LightStatus
-	Brightness  float32
-	Color       color.XY
-	Temperature int
+	Status         LightStatus
+	Brightness     float32
+	Color          color.XY
+	Temperature    int
+	TransitionTime int
 }
 
 func NewSetLightOptions() *SetLightOptions {
@@ -147,6 +149,12 @@ func (light *Light) Set(o *SetLightOptions) {
 				X: &o.Color.X,
 				Y: &o.Color.Y,
 			},
+		}
+	}
+
+	if o.TransitionTime > 0 {
+		request.Dynamics = &openhue.LightDynamics{
+			Duration: &o.TransitionTime,
 		}
 	}
 

@@ -2,9 +2,11 @@ package set
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 	"openhue-cli/util/color"
+	"time"
+
+	"github.com/spf13/cobra"
 )
 
 //
@@ -12,14 +14,15 @@ import (
 //
 
 type CmdSetLightFlags struct {
-	On          bool
-	Off         bool
-	Brightness  float32
-	Rgb         string
-	X           float32
-	Y           float32
-	ColorName   string
-	Temperature int
+	On             bool
+	Off            bool
+	Brightness     float32
+	Rgb            string
+	X              float32
+	Y              float32
+	ColorName      string
+	Temperature    int
+	TransitionTime string
 }
 
 func (flags *CmdSetLightFlags) initCmd(cmd *cobra.Command) {
@@ -51,6 +54,9 @@ func (flags *CmdSetLightFlags) initCmd(cmd *cobra.Command) {
 
 	// temperature
 	cmd.Flags().IntVarP(&flags.Temperature, "temperature", "t", -1, "Color temperature in Mirek [min=153, max=500]")
+
+	// transition time
+	cmd.Flags().StringVar(&flags.TransitionTime, "transition-time", "0s", "Duration of a light transition")
 
 	// exclusions
 	cmd.MarkFlagsMutuallyExclusive("color", "rgb", "cie-x", "temperature")
@@ -108,6 +114,12 @@ func (flags *CmdSetLightFlags) toSetLightOptions() (*openhue.SetLightOptions, er
 			X: c.X,
 			Y: c.Y,
 		}
+	}
+
+	if flags.TransitionTime != "0s" {
+		duration, err := time.ParseDuration(flags.TransitionTime)
+		cobra.CheckErr(err)
+		o.TransitionTime = int(duration.Milliseconds())
 	}
 
 	return o, nil
