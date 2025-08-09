@@ -1,9 +1,10 @@
 package set
 
 import (
+	"openhue-cli/openhue"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"openhue-cli/openhue"
 )
 
 const (
@@ -39,6 +40,9 @@ openhue set light 15f51223-1e83-4e48-9158-0c20dbd5734e --on --color powder_blue
 
 # Set color temperature (in Mirek) of a single light
 openhue set light MyLight --on -t 250
+
+# Set transition time when changing brightness of a light
+openhue set light office1 --on --brightness 75 --transition-time 30s
 `
 )
 
