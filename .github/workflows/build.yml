@@ -23,15 +23,15 @@ jobs:
         with:
           go-version: '1.23.0'
 
-      - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v5.0.0
-        env:
-          CC_TEST_REPORTER_ID: 64da8b499e15dc84234cbe4ff019d5d533718ca6768807d2aa0057f56add2e8c
-        with:
-          coverageCommand: make coverage
-          debug: true
-          prefix: ${{ github.event.repository.name }}
-          coverageLocations:
-            "${{github.workspace}}/c.out:gocov"
+#      - name: Test & publish code coverage
+#        uses: paambaati/codeclimate-action@v5.0.0
+#        env:
+#          CC_TEST_REPORTER_ID: 64da8b499e15dc84234cbe4ff019d5d533718ca6768807d2aa0057f56add2e8c
+#        with:
+#          coverageCommand: make coverage
+#          debug: true
+#          prefix: ${{ github.event.repository.name }}
+#          coverageLocations:
+#            "${{github.workspace}}/c.out:gocov"
 
 

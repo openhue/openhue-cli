@@ -2,9 +2,10 @@ package get
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 	"openhue-cli/util"
+
+	"github.com/spf13/cobra"
 )
 
 const (
@@ -64,7 +65,7 @@ func PrintRoom(room openhue.Room) string {
 		status = "[on]"
 	}
 
-	if room.GroupedLight.HueData.Dimming != nil {
+	if room.GroupedLight != nil && room.GroupedLight.HueData.Dimming != nil {
 		brightness = fmt.Sprint(*room.GroupedLight.HueData.Dimming.Brightness) + "%"
 	}
 
