@@ -16,7 +16,7 @@ func Init(path string, level string) {
 		logLevel, err := log.ParseLevel(level)
 		if err != nil {
 			log.Fatal(err)
-			level = log.InfoLevel.String()
+			logLevel = log.InfoLevel
 		}
 		log.SetLevel(logLevel)
 		log.SetOutput(file)
