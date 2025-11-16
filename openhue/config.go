@@ -39,7 +39,8 @@ type Config struct {
 	// The IP of the Philips HUE Bridge
 	Bridge string
 	// The HUE Application Key
-	Key string
+	Key      string
+	LogLevel string
 }
 
 func (c *Config) GetConfigFile() string {
@@ -47,7 +48,6 @@ func (c *Config) GetConfigFile() string {
 }
 
 func (c *Config) Load() {
-	logger.Init(filepath.Join(configPath, "openhue.log"))
 	viper.SetConfigFile(c.GetConfigFile())
 
 	// When trying to run CLI without configuration
@@ -59,6 +59,8 @@ func (c *Config) Load() {
 
 	c.Bridge = viper.GetString("Bridge")
 	c.Key = viper.GetString("Key")
+	c.LogLevel = viper.GetString("log_level")
+	logger.Init(filepath.Join(configPath, "openhue.log"), c.LogLevel)
 }
 
 func (c *Config) Save() (string, error) {
