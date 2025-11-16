@@ -44,3 +44,9 @@ func PrintTable[T any](io openhue.IOStreams, table []T, lineFn func(T) string, h
 
 	_ = w.Flush()
 }
+
+func PrintTerminal[T any](io openhue.IOStreams, table []T, lineFn func(T) string) {
+	for _, l := range table {
+		io.Println(lineFn(l))
+	}
+}
