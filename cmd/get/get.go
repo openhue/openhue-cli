@@ -8,7 +8,8 @@ import (
 )
 
 type CmdGetOptions struct {
-	Json bool
+	Json     bool
+	Terminal bool
 }
 
 // NewCmdGet returns an initialized Command instance for 'get' sub command
@@ -34,6 +35,7 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 
 	// persistence flags
 	cmd.PersistentFlags().BoolVarP(&o.Json, "json", "j", false, "Format output as JSON")
+	cmd.PersistentFlags().BoolVarP(&o.Terminal, "terminal", "c", false, "Format from Terminal use")
 
 	// sub commands
 	cmd.AddCommand(NewCmdGetEvents(ctx, &o))
