@@ -13,10 +13,14 @@ func Init(path string, level string) {
 			log.Fatal(err)
 		}
 
-		logLevel, err := log.ParseLevel(level)
-		if err != nil {
-			log.Fatal(err)
-			logLevel = log.InfoLevel
+		logLevel := log.InfoLevel
+		if level != "" {
+			parsedLevel, err := log.ParseLevel(level)
+			if err != nil {
+				log.Warnf("Invalid log level '%s', defaulting to 'info'", level)
+			} else {
+				logLevel = parsedLevel
+			}
 		}
 		log.SetLevel(logLevel)
 		log.SetOutput(file)
