@@ -42,7 +42,7 @@ This will create a copy of the project that you can work on independently.
 
 1. Clone the OpenHue CLI repository to your local machine:
 ```shell
-git clone https://github.com/your-username/openhue-cli.git
+git clone https://github.com/openhue/openhue-cli.git
 cd openhue-cli
 ```
 2. Run the following command to build OpenHue CLI on your local environment:
