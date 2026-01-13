@@ -21,11 +21,12 @@ var UndefinedColor = XY{
 // RGBHex Hexadecimal representation of an RGB color. Must start with '#'
 type RGBHex string
 
-// toXY converts a RGBHex value to its XY representation in CIE color space
+// toXY converts a RGBHex value to its XY representation in CIE color space.
+// Used internally by the color Table initialization.
 func (c *RGBHex) toXY() *XY {
-	hex, err := NewRGBFomHex(string(*c))
+	rgb, err := NewRGBFomHex(string(*c))
 	if err != nil {
 		return nil
 	}
-	return hex.ToXY()
+	return rgb.ToXY()
 }

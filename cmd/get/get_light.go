@@ -73,19 +73,29 @@ func PrintLight(light openhue.Light) string {
 
 	status := "[  ]"
 	brightness := "N/A"
-	room := light.Parent.Parent.Name // parent of a light is the device that belongs to a room
+	room := "N/A"
+	archetype := "N/A"
 
-	if *light.HueData.On.On {
+	// parent of a light is the device that belongs to a room
+	if light.Parent != nil && light.Parent.Parent != nil {
+		room = light.Parent.Parent.Name
+	}
+
+	if light.HueData != nil && light.HueData.On != nil && light.HueData.On.On != nil && *light.HueData.On.On {
 		status = "[on]"
 	}
 
-	if light.HueData.Dimming != nil {
+	if light.HueData != nil && light.HueData.Dimming != nil && light.HueData.Dimming.Brightness != nil {
 		brightness = fmt.Sprint(*light.HueData.Dimming.Brightness) + "%"
+	}
+
+	if light.HueData != nil && light.HueData.Metadata != nil && light.HueData.Metadata.Archetype != nil {
+		archetype = string(*light.HueData.Metadata.Archetype)
 	}
 
 	return light.Id +
 		"\t" + light.Name +
-		"\t" + string(*light.HueData.Metadata.Archetype) +
+		"\t" + archetype +
 		"\t" + status +
 		"\t" + brightness +
 		"\t" + room

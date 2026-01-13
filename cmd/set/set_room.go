@@ -65,7 +65,13 @@ func NewCmdSetRoom(ctx *openhue.Context) *cobra.Command {
 			}
 
 			for _, room := range rooms {
-				room.GroupedLight.Set(o)
+				if room.GroupedLight == nil {
+					ctx.Io.ErrPrintln("room", room.Name, "has no grouped light service")
+					continue
+				}
+				if err := room.GroupedLight.Set(o); err != nil {
+					ctx.Io.ErrPrintln("failed to set room", room.Name+":", err)
+				}
 			}
 		},
 	}

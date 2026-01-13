@@ -77,7 +77,7 @@ func PrintScene(scene openhue.Scene) string {
 	}
 
 	if scene.HueData != nil {
-		if scene.HueData.Status != nil {
+		if scene.HueData.Status != nil && scene.HueData.Status.Active != nil {
 			active = string(*scene.HueData.Status.Active)
 		}
 		if scene.HueData.Speed != nil {
