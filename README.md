@@ -18,9 +18,49 @@ This tool provides a convenient way to control your Philips Hue lights and perfo
 - List available lights and their status.
 - Control lights: on, off, brightness, and color.
 - Schedule light actions.
+- **MCP Server**: Enable AI assistants to control your lights.
 
 For a complete list of features and usage, 
 please refer to the [OpenHue CLI online documentation](https://www.openhue.io/cli/openhue-cli).
+
+## MCP Server (AI Integration)
+
+OpenHue CLI includes a built-in [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that allows AI assistants like Claude to control your Philips Hue lights through natural language.
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `list_lights` | List all lights with optional room filter |
+| `list_rooms` | List all rooms with status and brightness |
+| `list_scenes` | List all scenes with optional room filter |
+| `set_light` | Control a light (on/off, brightness, color, temperature) |
+| `set_room` | Control all lights in a room |
+| `activate_scene` | Activate a scene with optional dynamic mode |
+
+### Setup with Claude Desktop
+
+Add the following to your Claude Desktop configuration file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "openhue": {
+      "command": "openhue",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Once configured, you can ask Claude things like:
+- "Turn on the living room lights"
+- "Set the bedroom to 50% brightness"
+- "Activate the Relax scene"
+- "What lights are currently on?"
 
 ## Getting Started
 
