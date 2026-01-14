@@ -209,7 +209,7 @@ func buildColorConfig(o *SetLightOptions) *openhue.Color {
 
 // SceneService defines the interface for activating scenes
 type SceneService interface {
-	Activate()
+	Activate(action openhue.SceneRecallAction) error
 }
 
 // Scene represents a Hue scene - a predefined lighting configuration for a room
