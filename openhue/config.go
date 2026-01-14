@@ -32,7 +32,20 @@ func init() {
 		configPath = filepath.Join(home, ".openhue")
 	}
 
-	_ = os.MkdirAll(configPath, os.ModePerm)
+	if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating config directory %s: %v\n", configPath, err)
+		os.Exit(1)
+	}
+}
+
+// newInsecureHTTPClient creates an HTTP client that skips TLS certificate verification.
+// This is required because Philips HUE bridges use self-signed certificates.
+func newInsecureHTTPClient() *http.Client {
+	return &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
 }
 
 type Config struct {
@@ -92,10 +105,11 @@ func (c *Config) NewOpenHueClient() *openhue.ClientWithResponses {
 		return nil
 	}
 
-	// skip SSL Verification
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-
-	client, err := openhue.NewClientWithResponses("https://"+c.Bridge, openhue.WithRequestEditorFn(apiKeyAuth))
+	client, err := openhue.NewClientWithResponses(
+		"https://"+c.Bridge,
+		openhue.WithHTTPClient(newInsecureHTTPClient()),
+		openhue.WithRequestEditorFn(apiKeyAuth),
+	)
 	cobra.CheckErr(err)
 
 	return client
@@ -104,11 +118,10 @@ func (c *Config) NewOpenHueClient() *openhue.ClientWithResponses {
 // NewOpenHueClientNoAuth Creates a new NewClientWithResponses for a given server and no application Key.
 // This function will also skip SSL verification, as the Philips HUE Bridge exposes a self-signed certificate.
 func NewOpenHueClientNoAuth(ip string) *openhue.ClientWithResponses {
-
-	// skip SSL Verification
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-
-	client, err := openhue.NewClientWithResponses("https://" + ip)
+	client, err := openhue.NewClientWithResponses(
+		"https://"+ip,
+		openhue.WithHTTPClient(newInsecureHTTPClient()),
+	)
 	cobra.CheckErr(err)
 
 	return client

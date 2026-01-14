@@ -25,9 +25,14 @@ func (c *RGB) ToXY() *XY {
 	Z := red*0.0193 + green*0.1192 + blue*0.9505
 
 	// Calculate the xy values from the XYZ values
+	// Guard against division by zero (black color)
+	sum := X + Y + Z
+	if sum == 0 {
+		return &XY{X: 0, Y: 0, Brightness: 0}
+	}
 	return &XY{
-		X:          X / (X + Y + Z),
-		Y:          Y / (X + Y + Z),
+		X:          X / sum,
+		Y:          Y / sum,
 		Brightness: Y,
 	}
 }
@@ -36,13 +41,22 @@ func (c *RGB) ToXY() *XY {
 // Example: #FF0000 will return RGB{255, 0, 0}
 func NewRGBFomHex(hex string) (*RGB, error) {
 
-	if !(hex[0:1] == "#") || len(hex) != 7 {
-		return nil, errors.New("wrong format for the input hexadecimal string")
+	if len(hex) != 7 || hex[0] != '#' {
+		return nil, errors.New("wrong format for the input hexadecimal string: expected #RRGGBB")
 	}
 
-	r, _ := strconv.ParseInt(hex[1:3], 16, 32)
-	g, _ := strconv.ParseInt(hex[3:5], 16, 32)
-	b, _ := strconv.ParseInt(hex[5:7], 16, 32)
+	r, err := strconv.ParseInt(hex[1:3], 16, 32)
+	if err != nil {
+		return nil, errors.New("invalid red component in hex color: " + hex[1:3])
+	}
+	g, err := strconv.ParseInt(hex[3:5], 16, 32)
+	if err != nil {
+		return nil, errors.New("invalid green component in hex color: " + hex[3:5])
+	}
+	b, err := strconv.ParseInt(hex[5:7], 16, 32)
+	if err != nil {
+		return nil, errors.New("invalid blue component in hex color: " + hex[5:7])
+	}
 
 	return &RGB{
 		int(r),

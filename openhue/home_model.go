@@ -5,11 +5,13 @@ import (
 	"time"
 
 	"github.com/openhue/openhue-go"
-	"github.com/spf13/cobra"
 )
 
+// HomeResourceType represents the type of a Hue resource (light, room, scene, etc.)
 type HomeResourceType openhue.ResourceIdentifierRtype
 
+// Resource is the base type for all Hue resources, containing common fields
+// like ID, Name, Type, and a reference to the parent resource in the hierarchy.
 type Resource struct {
 	Id     string
 	Name   string
@@ -28,10 +30,7 @@ func (r *Resource) matchesNameOrId(nameOrId string) bool {
 	return r.Name == nameOrId || r.Id == nameOrId
 }
 
-//
-// HomeModel
-//
-
+// HomeModel represents the root of the Hue home hierarchy, containing all rooms and devices.
 type HomeModel struct {
 	Resource
 	Rooms   []Room
@@ -39,10 +38,7 @@ type HomeModel struct {
 	HueData *openhue.BridgeHomeGet
 }
 
-//
-// Room
-//
-
+// Room represents a room in the Hue system, containing devices and scenes.
 type Room struct {
 	Resource
 	Devices []Device
@@ -53,10 +49,7 @@ type Room struct {
 	GroupedLight *GroupedLight
 }
 
-//
-// Device
-//
-
+// Device represents a physical Hue device (bulb, sensor, etc.)
 type Device struct {
 	Resource
 	HueData *openhue.DeviceGet
@@ -65,18 +58,17 @@ type Device struct {
 	Light *Light
 }
 
-//
-// Light
-//
-
+// SetLightOptions contains the parameters for controlling a light or group of lights.
+// Values set to their "undefined" state (-1 for numbers, UndefinedColor for color) are ignored.
 type SetLightOptions struct {
 	Status         LightStatus
-	Brightness     float32
-	Color          color.XY
-	Temperature    int
-	TransitionTime time.Duration
+	Brightness     float32       // 0-100 percentage, -1 means unchanged
+	Color          color.XY      // CIE color space coordinates
+	Temperature    int           // Color temperature in Mirek (153-500), -1 means unchanged
+	TransitionTime time.Duration // Transition duration for the change
 }
 
+// NewSetLightOptions creates a SetLightOptions with all values set to undefined/unchanged.
 func NewSetLightOptions() *SetLightOptions {
 	return &SetLightOptions{
 		Status:      LightStatusUndefined,
@@ -86,6 +78,7 @@ func NewSetLightOptions() *SetLightOptions {
 	}
 }
 
+// LightStatus represents the on/off state of a light
 type LightStatus string
 
 const (
@@ -108,11 +101,13 @@ func ToBool(status LightStatus) *bool {
 	}
 }
 
+// LightService defines the common interface for controllable lights
 type LightService interface {
 	IsOn() bool
-	Set(options SetLightOptions)
+	Set(options *SetLightOptions) error
 }
 
+// Light represents a single light device
 type Light struct {
 	Resource
 	LightService
@@ -120,37 +115,18 @@ type Light struct {
 }
 
 func (light *Light) IsOn() bool {
+	if light.HueData == nil || light.HueData.On == nil || light.HueData.On.On == nil {
+		return false
+	}
 	return *light.HueData.On.On
 }
 
-func (light *Light) Set(o *SetLightOptions) {
-	request := &openhue.UpdateLightJSONRequestBody{}
-
-	if o.Status != LightStatusUndefined {
-		request.On = &openhue.On{
-			On: ToBool(o.Status),
-		}
-	}
-
-	if o.Brightness >= 0 && o.Brightness <= 100.0 {
-		request.Dimming = &openhue.Dimming{
-			Brightness: &o.Brightness,
-		}
-	}
-
-	if o.Temperature >= 153 && o.Temperature <= 500 {
-		request.ColorTemperature = &openhue.ColorTemperature{
-			Mirek: &o.Temperature,
-		}
-	}
-
-	if o.Color != color.UndefinedColor {
-		request.Color = &openhue.Color{
-			Xy: &openhue.GamutPosition{
-				X: &o.Color.X,
-				Y: &o.Color.Y,
-			},
-		}
+func (light *Light) Set(o *SetLightOptions) error {
+	request := &openhue.UpdateLightJSONRequestBody{
+		On:               buildOnConfig(o),
+		Dimming:          buildDimmingConfig(o),
+		ColorTemperature: buildColorTemperatureConfig(o),
+		Color:            buildColorConfig(o),
 	}
 
 	if o.TransitionTime > 0 {
@@ -160,10 +136,10 @@ func (light *Light) Set(o *SetLightOptions) {
 		}
 	}
 
-	err := light.ctx.h.UpdateLight(light.Id, *request)
-	cobra.CheckErr(err)
+	return light.ctx.h.UpdateLight(light.Id, *request)
 }
 
+// GroupedLight represents a group of lights (typically a room)
 type GroupedLight struct {
 	Resource
 	LightService
@@ -178,34 +154,12 @@ func (groupedLight *GroupedLight) IsOn() bool {
 	return *groupedLight.HueData.On.On
 }
 
-func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
-	request := &openhue.UpdateGroupedLightJSONRequestBody{}
-
-	if o.Status != LightStatusUndefined {
-		request.On = &openhue.On{
-			On: ToBool(o.Status),
-		}
-	}
-
-	if o.Brightness >= 0 && o.Brightness <= 100.0 {
-		request.Dimming = &openhue.Dimming{
-			Brightness: &o.Brightness,
-		}
-	}
-
-	if o.Temperature >= 153 && o.Temperature <= 500 {
-		request.ColorTemperature = &openhue.ColorTemperature{
-			Mirek: &o.Temperature,
-		}
-	}
-
-	if o.Color != color.UndefinedColor {
-		request.Color = &openhue.Color{
-			Xy: &openhue.GamutPosition{
-				X: &o.Color.X,
-				Y: &o.Color.Y,
-			},
-		}
+func (groupedLight *GroupedLight) Set(o *SetLightOptions) error {
+	request := &openhue.UpdateGroupedLightJSONRequestBody{
+		On:               buildOnConfig(o),
+		Dimming:          buildDimmingConfig(o),
+		ColorTemperature: buildColorTemperatureConfig(o),
+		Color:            buildColorConfig(o),
 	}
 
 	if o.TransitionTime > 0 {
@@ -215,24 +169,57 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) {
 		}
 	}
 
-	err := groupedLight.ctx.h.UpdateGroupedLight(groupedLight.Id, *request)
-	cobra.CheckErr(err)
+	return groupedLight.ctx.h.UpdateGroupedLight(groupedLight.Id, *request)
 }
 
-//
-// Scene
-//
+// Helper functions to build common light configuration parts
 
+func buildOnConfig(o *SetLightOptions) *openhue.On {
+	if o.Status == LightStatusUndefined {
+		return nil
+	}
+	return &openhue.On{On: ToBool(o.Status)}
+}
+
+func buildDimmingConfig(o *SetLightOptions) *openhue.Dimming {
+	if o.Brightness < 0 || o.Brightness > 100.0 {
+		return nil
+	}
+	return &openhue.Dimming{Brightness: &o.Brightness}
+}
+
+func buildColorTemperatureConfig(o *SetLightOptions) *openhue.ColorTemperature {
+	if o.Temperature < 153 || o.Temperature > 500 {
+		return nil
+	}
+	return &openhue.ColorTemperature{Mirek: &o.Temperature}
+}
+
+func buildColorConfig(o *SetLightOptions) *openhue.Color {
+	if o.Color == color.UndefinedColor {
+		return nil
+	}
+	return &openhue.Color{
+		Xy: &openhue.GamutPosition{
+			X: &o.Color.X,
+			Y: &o.Color.Y,
+		},
+	}
+}
+
+// SceneService defines the interface for activating scenes
 type SceneService interface {
-	Activate()
+	Activate(action openhue.SceneRecallAction) error
 }
 
+// Scene represents a Hue scene - a predefined lighting configuration for a room
 type Scene struct {
 	Resource
 	SceneService
 	HueData *openhue.SceneGet
 }
 
+// Activate triggers the scene with the specified action (active, static, or dynamic)
 func (scene *Scene) Activate(action openhue.SceneRecallAction) error {
 	body := openhue.UpdateSceneJSONRequestBody{
 		Recall: &openhue.SceneRecall{
@@ -240,8 +227,5 @@ func (scene *Scene) Activate(action openhue.SceneRecallAction) error {
 		},
 	}
 
-	err := scene.ctx.h.UpdateScene(scene.Id, body)
-	cobra.CheckErr(err)
-
-	return nil
+	return scene.ctx.h.UpdateScene(scene.Id, body)
 }

@@ -46,12 +46,11 @@ openhue set light office1 --on --brightness 75 --transition-time 30s
 `
 )
 
-var room = ""
-
 // NewCmdSetLight returns initialized Command instance for the 'set light' sub command
 func NewCmdSetLight(ctx *openhue.Context) *cobra.Command {
 
 	f := CmdSetLightFlags{}
+	var room string
 
 	cmd := &cobra.Command{
 		Use:     "light [lightId]",
@@ -73,7 +72,9 @@ func NewCmdSetLight(ctx *openhue.Context) *cobra.Command {
 
 			for _, light := range lights {
 				log.Info("set light ", light.Id)
-				light.Set(o)
+				if err := light.Set(o); err != nil {
+					ctx.Io.ErrPrintln("failed to set light", light.Name+":", err)
+				}
 			}
 		},
 	}

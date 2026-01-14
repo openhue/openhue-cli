@@ -3,10 +3,11 @@ package get
 import (
 	"crypto/tls"
 	"encoding/json"
+	"net/http"
+
 	"github.com/r3labs/sse/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"net/http"
 	"openhue-cli/openhue"
 	"openhue-cli/util"
 )
@@ -23,9 +24,12 @@ func NewCmdGetEvents(ctx *openhue.Context, c *CmdGetOptions) *cobra.Command {
 		Short: "(alpha) Watch events from the bridge",
 		Long: `
 This command allows to watch events emitted by the Hue Bridge. Events are formatted as JSON objects.
+Press Ctrl+C to stop watching events.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			client := createSseClient(ctx)
+			// Subscribe blocks until the connection is closed or an error occurs.
+			// Use Ctrl+C to terminate the event stream.
 			err := client.Subscribe("messages", onEvent(ctx))
 			cobra.CheckErr(err)
 		},

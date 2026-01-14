@@ -153,11 +153,9 @@ var Table = map[RGBHex]*XY{
 
 // GetSupportColorList returns the list of the supported colors contained in the Table map
 func GetSupportColorList() []string {
-	colors := make([]string, len(Table))
-	i := 0
+	colors := make([]string, 0, len(Table))
 	for c := range Table {
-		colors[i] = string(c)
-		i++
+		colors = append(colors, string(c))
 	}
 	return colors
 }

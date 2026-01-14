@@ -5,6 +5,10 @@ import (
 	"os"
 )
 
+// Init initializes the logger for the application.
+// In production mode, logs are written to a file at the given path.
+// The file handle is intentionally not closed as it needs to remain open
+// for the entire lifetime of the CLI process. The OS will close it on exit.
 func Init(path string, level string) {
 	if isProd() {
 		// If the file doesn't exist, create it or append to the file
@@ -12,6 +16,7 @@ func Init(path string, level string) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		// Note: file is intentionally not closed - see function documentation
 
 		logLevel := log.InfoLevel
 		if level != "" {
