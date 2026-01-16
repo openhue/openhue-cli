@@ -64,6 +64,8 @@ func (o *LightOptions) RunGetLightCmd(ctx *openhue.Context, args []string) {
 
 	if o.Json {
 		util.PrintJsonArray(ctx.Io, lights)
+	} else if o.Terminal {
+		util.PrintTerminal(ctx.Io, lights, PrintLight)
 	} else {
 		util.PrintTable(ctx.Io, lights, PrintLight, "ID", "Name", "Type", "Status", "Brightness", "Room")
 	}
