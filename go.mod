@@ -11,7 +11,7 @@ toolchain go1.24.1
 require (
 	github.com/openhue/openhue-go v0.4.0
 	github.com/r3labs/sse/v2 v2.10.0
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.11.1
