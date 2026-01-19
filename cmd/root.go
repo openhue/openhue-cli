@@ -92,7 +92,7 @@ func Execute(buildInfo *openhue.BuildInfo) {
 
 	root.AddCommand(set.NewCmdSet(ctx))
 	root.AddCommand(get.NewCmdGet(ctx))
-	root.AddCommand(mcp.NewCmdMcp(&c))
+	root.AddCommand(mcp.NewCmdMcp(ctx))
 
 	// execute the root command
 	err := root.Execute()

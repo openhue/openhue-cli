@@ -36,7 +36,7 @@ openhue mcp
 )
 
 // NewCmdMcp returns an initialized Command instance for the 'mcp' sub command
-func NewCmdMcp(config *openhue.Config) *cobra.Command {
+func NewCmdMcp(ctx *openhue.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "mcp",
 		Short:   mcpDocShort,
@@ -44,16 +44,16 @@ func NewCmdMcp(config *openhue.Config) *cobra.Command {
 		Example: mcpDocExample,
 		GroupID: "mcp",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runMcpServer(config)
+			return runMcpServer(ctx)
 		},
 	}
 
 	return cmd
 }
 
-func runMcpServer(config *openhue.Config) error {
+func runMcpServer(ctx *openhue.Context) error {
 	// Create Hue API client
-	h, err := op.NewHome(config.Bridge, config.Key)
+	h, err := op.NewHome(ctx.Config.Bridge, ctx.Config.Key)
 	if err != nil {
 		return fmt.Errorf("failed to connect to Hue bridge: %w", err)
 	}

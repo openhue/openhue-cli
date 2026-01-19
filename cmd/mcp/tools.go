@@ -100,7 +100,10 @@ func listRoomsHandler(h *op.Home) server.ToolHandlerFunc {
 			info := map[string]any{
 				"id":   room.Id,
 				"name": room.Name,
-				"on":   room.GroupedLight.IsOn(),
+			}
+
+			if room.GroupedLight != nil {
+				info["on"] = room.GroupedLight.IsOn()
 			}
 
 			if room.GroupedLight != nil && room.GroupedLight.HueData != nil &&
