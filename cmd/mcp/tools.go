@@ -31,7 +31,7 @@ func registerTools(s *server.MCPServer, h *op.Home) {
 
 func listLightsTool() mcp.Tool {
 	return mcp.NewTool("list_lights",
-		mcp.WithDescription("List all available lights in your Hue system. Returns light ID, name, status (on/off), brightness, and room."),
+		mcp.WithDescription("List all available lights in your Hue system. Returns light ID, name, status (on/off), brightness, and room. Use this to get valid light names or IDs for set_light."),
 		mcp.WithString("room",
 			mcp.Description("Optional: filter lights by room name or ID"),
 		),
@@ -82,7 +82,7 @@ func listLightsHandler(h *op.Home) server.ToolHandlerFunc {
 
 func listRoomsTool() mcp.Tool {
 	return mcp.NewTool("list_rooms",
-		mcp.WithDescription("List all rooms in your Hue system. Returns room ID, name, status (on/off), and brightness."),
+		mcp.WithDescription("List all rooms in your Hue system. Returns room ID, name, status (on/off), and brightness. Use this to get valid room names or IDs for set_room."),
 	)
 }
 
@@ -129,7 +129,7 @@ func listRoomsHandler(h *op.Home) server.ToolHandlerFunc {
 
 func listScenesTool() mcp.Tool {
 	return mcp.NewTool("list_scenes",
-		mcp.WithDescription("List all scenes in your Hue system. Returns scene ID, name, and the room it belongs to."),
+		mcp.WithDescription("List all scenes in your Hue system. Returns scene ID, name, and the room it belongs to. Use this to get valid scene names or IDs for activate_scene."),
 		mcp.WithString("room",
 			mcp.Description("Optional: filter scenes by room name or ID"),
 		),
@@ -175,22 +175,22 @@ func listScenesHandler(h *op.Home) server.ToolHandlerFunc {
 
 func setLightTool() mcp.Tool {
 	return mcp.NewTool("set_light",
-		mcp.WithDescription("Control a light: turn on/off, set brightness, color, or temperature."),
+		mcp.WithDescription("Control a light: turn on/off, set brightness, color, or temperature. Multiple settings can be applied in a single call. Use list_lights first to get valid light names or IDs."),
 		mcp.WithString("light",
 			mcp.Required(),
 			mcp.Description("Light name or ID to control"),
 		),
 		mcp.WithBoolean("on",
-			mcp.Description("Turn the light on (true) or off (false)"),
+			mcp.Description("Optional: turn the light on (true) or off (false)"),
 		),
 		mcp.WithNumber("brightness",
-			mcp.Description("Brightness level from 0 to 100"),
+			mcp.Description("Optional: brightness level from 0 to 100"),
 		),
 		mcp.WithString("color",
-			mcp.Description("Color as hex RGB value (e.g., '#FF5500' or 'FF5500')"),
+			mcp.Description("Optional: color as hex RGB value (e.g., '#FF5500' or 'FF5500')"),
 		),
 		mcp.WithNumber("temperature",
-			mcp.Description("Color temperature in Mirek (153=cold/blue to 500=warm/yellow)"),
+			mcp.Description("Optional: color temperature in Mirek (153=coolest daylight, 500=warmest candlelight)"),
 		),
 		mcp.WithString("room",
 			mcp.Description("Optional: specify room to disambiguate lights with the same name"),
@@ -277,22 +277,22 @@ func setLightHandler(h *op.Home) server.ToolHandlerFunc {
 
 func setRoomTool() mcp.Tool {
 	return mcp.NewTool("set_room",
-		mcp.WithDescription("Control all lights in a room: turn on/off, set brightness, color, or temperature."),
+		mcp.WithDescription("Control all lights in a room: turn on/off, set brightness, color, or temperature. Multiple settings can be applied in a single call. Use list_rooms first to get valid room names or IDs."),
 		mcp.WithString("room",
 			mcp.Required(),
 			mcp.Description("Room name or ID to control"),
 		),
 		mcp.WithBoolean("on",
-			mcp.Description("Turn the room lights on (true) or off (false)"),
+			mcp.Description("Optional: turn the room lights on (true) or off (false)"),
 		),
 		mcp.WithNumber("brightness",
-			mcp.Description("Brightness level from 0 to 100"),
+			mcp.Description("Optional: brightness level from 0 to 100"),
 		),
 		mcp.WithString("color",
-			mcp.Description("Color as hex RGB value (e.g., '#FF5500' or 'FF5500')"),
+			mcp.Description("Optional: color as hex RGB value (e.g., '#FF5500' or 'FF5500')"),
 		),
 		mcp.WithNumber("temperature",
-			mcp.Description("Color temperature in Mirek (153=cold/blue to 500=warm/yellow)"),
+			mcp.Description("Optional: color temperature in Mirek (153=coolest daylight, 500=warmest candlelight)"),
 		),
 	)
 }
@@ -379,7 +379,7 @@ func setRoomHandler(h *op.Home) server.ToolHandlerFunc {
 
 func activateSceneTool() mcp.Tool {
 	return mcp.NewTool("activate_scene",
-		mcp.WithDescription("Activate a scene to set predefined lighting for a room."),
+		mcp.WithDescription("Activate a scene to set predefined lighting for a room. Use list_scenes first to get valid scene names or IDs."),
 		mcp.WithString("scene",
 			mcp.Required(),
 			mcp.Description("Scene name or ID to activate"),
@@ -388,7 +388,7 @@ func activateSceneTool() mcp.Tool {
 			mcp.Description("Optional: specify room to disambiguate scenes with the same name"),
 		),
 		mcp.WithString("action",
-			mcp.Description("Action type: 'active' (default), 'static', or 'dynamic'"),
+			mcp.Description("Optional: 'active' (default) recalls scene normally, 'static' freezes any dynamic effects, 'dynamic' enables color palette animation"),
 		),
 	)
 }
