@@ -1,15 +1,13 @@
 module openhue-cli
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.25.5
 
 //replace (
 //	"github.com/openhue/openhue-go" => "/Users/thibault.pensec/local/perso/openhue-go"
 //)
 
 require (
-	github.com/mark3labs/mcp-go v0.48.0
+	github.com/mark3labs/mcp-go v0.49.0
 	github.com/openhue/openhue-go v0.4.0
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sirupsen/logrus v1.9.4
