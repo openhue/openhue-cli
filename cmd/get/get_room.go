@@ -60,14 +60,21 @@ func PrintRoom(room openhue.Room) string {
 
 	status := "[  ]"
 	brightness := "N/A"
+	archetype := "N/A"
 
+	// IsOn() already handles nil GroupedLight internally
 	if room.GroupedLight.IsOn() {
 		status = "[on]"
 	}
 
-	if room.GroupedLight != nil && room.GroupedLight.HueData.Dimming != nil {
+	if room.GroupedLight != nil && room.GroupedLight.HueData != nil &&
+		room.GroupedLight.HueData.Dimming != nil && room.GroupedLight.HueData.Dimming.Brightness != nil {
 		brightness = fmt.Sprint(*room.GroupedLight.HueData.Dimming.Brightness) + "%"
 	}
 
-	return room.Id + "\t" + room.Name + "\t" + string(*room.HueData.Metadata.Archetype) + "\t" + status + "\t" + brightness
+	if room.HueData != nil && room.HueData.Metadata != nil && room.HueData.Metadata.Archetype != nil {
+		archetype = string(*room.HueData.Metadata.Archetype)
+	}
+
+	return room.Id + "\t" + room.Name + "\t" + archetype + "\t" + status + "\t" + brightness
 }

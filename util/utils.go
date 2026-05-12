@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"openhue-cli/openhue"
 	"text/tabwriter"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // PrintJsonArray formats the input array as JSON and prints it. If the length of the array is equal to 1,
@@ -17,13 +19,20 @@ func PrintJsonArray[T any](streams openhue.IOStreams, array []T) {
 	}
 }
 
-func PrintJson[T any](io openhue.IOStreams, array T) {
-	var out []byte
-	out, _ = json.MarshalIndent(array, "", "  ")
+// PrintJson formats the value as indented JSON and prints it
+func PrintJson[T any](io openhue.IOStreams, value T) {
+	out, err := json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		log.Warnf("Failed to marshal JSON: %v", err)
+		io.ErrPrintln("Error: unable to format output as JSON")
+		return
+	}
 	io.Println(string(out))
 }
 
-// PrintTable prints each line of the objects contained in the table value
+// PrintTable prints each line of the objects contained in the table value.
+// Note: fmt.Fprint errors are intentionally ignored as they only fail on
+// invalid io.Writer, which would be a programming error, not a runtime issue.
 func PrintTable[T any](io openhue.IOStreams, table []T, lineFn func(T) string, header ...string) {
 
 	w := tabwriter.NewWriter(io.Out, 0, 0, 3, ' ', 0)

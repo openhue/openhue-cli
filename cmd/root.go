@@ -4,7 +4,9 @@ import (
 	op "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"openhue-cli/cmd/completion"
 	"openhue-cli/cmd/get"
+	"openhue-cli/cmd/mcp"
 	"openhue-cli/cmd/set"
 	"openhue-cli/cmd/setup"
 	"openhue-cli/cmd/version"
@@ -19,6 +21,8 @@ const (
 	OpenHueCmdGroupHue = OpenHueCmdGroup("hue")
 	// OpenHueCmdGroupConfig contains the commands to configure the CLI
 	OpenHueCmdGroupConfig = OpenHueCmdGroup("config")
+	// OpenHueCmdGroupMcp contains the MCP server command
+	OpenHueCmdGroupMcp = OpenHueCmdGroup("mcp")
 )
 
 // NewCmdOpenHue represents the `openhue` base command, AKA entry point of the CLI
@@ -45,6 +49,11 @@ openhue controls your Philips Hue lighting system
 	cmd.AddGroup(&cobra.Group{
 		ID:    string(OpenHueCmdGroupHue),
 		Title: "Philips Hue",
+	})
+
+	cmd.AddGroup(&cobra.Group{
+		ID:    string(OpenHueCmdGroupMcp),
+		Title: "MCP Server",
 	})
 
 	return cmd
@@ -77,17 +86,23 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	root := NewCmdOpenHue(ctx)
 
 	// add sub commands
-	root.AddCommand(version.NewCmdVersion(ctx))
-	root.AddCommand(setup.NewCmdSetup(ctx.Io))
-	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
-	root.AddCommand(setup.NewCmdConfigure(ctx.Io))
-
-	root.AddCommand(set.NewCmdSet(ctx))
-	root.AddCommand(get.NewCmdGet(ctx))
+	addCommands(root, ctx)
 
 	// execute the root command
 	err := root.Execute()
 	cobra.CheckErr(err)
+}
+
+func addCommands(root *cobra.Command, ctx *openhue.Context) {
+	root.AddCommand(version.NewCmdVersion(ctx))
+	root.AddCommand(setup.NewCmdSetup(ctx.Io))
+	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
+	root.AddCommand(setup.NewCmdConfigure(ctx.Io))
+	root.AddCommand(completion.NewCmdCompletion(ctx.Io))
+
+	root.AddCommand(set.NewCmdSet(ctx))
+	root.AddCommand(get.NewCmdGet(ctx))
+	root.AddCommand(mcp.NewCmdMcp(ctx))
 }
 
 // containsCmd verifies if the given cobra.Command is contained in the group.

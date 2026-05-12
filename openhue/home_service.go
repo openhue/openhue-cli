@@ -6,6 +6,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// LoadHome loads all resources from the Hue bridge and builds the HomeModel hierarchy.
+// This includes rooms, devices, lights, grouped lights, and scenes.
 func LoadHome(h *openhue.Home) (*HomeModel, error) {
 	log.Info("Loading home...")
 
@@ -60,10 +62,8 @@ func SearchLights(home *HomeModel, roomNameOrId string, nameOrIds []string) []Li
 	return lights
 }
 
-//
-// Room
-//
-
+// SearchRooms returns a slice of Room optionally filtered by their IDs or names.
+// If nameOrIds is empty, all rooms are returned.
 func SearchRooms(home *HomeModel, nameOrIds []string) []Room {
 	var rooms []Room
 
