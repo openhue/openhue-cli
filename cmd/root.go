@@ -4,6 +4,7 @@ import (
 	op "github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"openhue-cli/cmd/completion"
 	"openhue-cli/cmd/get"
 	"openhue-cli/cmd/mcp"
 	"openhue-cli/cmd/set"
@@ -85,18 +86,23 @@ func Execute(buildInfo *openhue.BuildInfo) {
 	root := NewCmdOpenHue(ctx)
 
 	// add sub commands
-	root.AddCommand(version.NewCmdVersion(ctx))
-	root.AddCommand(setup.NewCmdSetup(ctx.Io))
-	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
-	root.AddCommand(setup.NewCmdConfigure(ctx.Io))
-
-	root.AddCommand(set.NewCmdSet(ctx))
-	root.AddCommand(get.NewCmdGet(ctx))
-	root.AddCommand(mcp.NewCmdMcp(ctx))
+	addCommands(root, ctx)
 
 	// execute the root command
 	err := root.Execute()
 	cobra.CheckErr(err)
+}
+
+func addCommands(root *cobra.Command, ctx *openhue.Context) {
+	root.AddCommand(version.NewCmdVersion(ctx))
+	root.AddCommand(setup.NewCmdSetup(ctx.Io))
+	root.AddCommand(setup.NewCmdDiscover(ctx.Io))
+	root.AddCommand(setup.NewCmdConfigure(ctx.Io))
+	root.AddCommand(completion.NewCmdCompletion(ctx.Io))
+
+	root.AddCommand(set.NewCmdSet(ctx))
+	root.AddCommand(get.NewCmdGet(ctx))
+	root.AddCommand(mcp.NewCmdMcp(ctx))
 }
 
 // containsCmd verifies if the given cobra.Command is contained in the group.
