@@ -1,15 +1,13 @@
 module openhue-cli
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.25.5
 
 //replace (
 //	"github.com/openhue/openhue-go" => "/Users/thibault.pensec/local/perso/openhue-go"
 //)
 
 require (
-	github.com/mark3labs/mcp-go v0.48.0
+	github.com/mark3labs/mcp-go v0.52.0
 	github.com/openhue/openhue-go v0.4.0
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sirupsen/logrus v1.9.4
@@ -33,6 +31,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
