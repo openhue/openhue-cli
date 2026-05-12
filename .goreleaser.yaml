@@ -41,6 +41,18 @@ brews:
     homepage: https://github.com/openhue/homebrew-cli
     description: OpenHue CLI is a command-line interface for interacting with Philips Hue smart lighting systems
     license: Apache License 2.0
+    caveats: |
+      To enable shell completions for your current shell session, run:
+        #{case File.basename(ENV["SHELL"].to_s)
+          when "bash"
+            "source <(openhue completion bash)"
+          when "zsh"
+            "source <(openhue completion zsh)"
+          when "fish"
+            "openhue completion fish | source"
+          else
+            "openhue completion setup"
+          end}
     repository:
       owner: openhue
       name: homebrew-cli
