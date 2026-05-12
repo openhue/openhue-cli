@@ -97,7 +97,8 @@ func printSetupCommand(out io.Writer, shell string) error {
 }
 
 func setupCommandForShell(shell string) (string, error) {
-	switch filepath.Base(shell) {
+	base := filepath.Base(shell)
+	switch base {
 	case "bash":
 		return "source <(openhue completion bash)", nil
 	case "zsh":
@@ -105,7 +106,7 @@ func setupCommandForShell(shell string) (string, error) {
 	case "fish":
 		return "openhue completion fish | source", nil
 	default:
-		return "", fmt.Errorf("unsupported shell %q; supported shells are bash, zsh, and fish", shell)
+		return "", fmt.Errorf("unsupported shell %q; supported shells are bash, zsh, and fish", base)
 	}
 }
 

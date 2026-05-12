@@ -109,7 +109,7 @@ func TestCompletionSetupReturnsAnErrorForUnsupportedShell(t *testing.T) {
 	// Assert
 	require.Error(t, err)
 	assert.Empty(t, strings.TrimSpace(out.String()))
-	assert.Contains(t, err.Error(), "unsupported shell")
+	assert.Contains(t, err.Error(), `unsupported shell "tcsh"`)
 }
 
 func createTestContext(shell string) (*cobra.Command, *strings.Builder) {
