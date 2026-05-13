@@ -7,7 +7,7 @@ go 1.25.5
 //)
 
 require (
-	github.com/mark3labs/mcp-go v0.52.0
+	github.com/mark3labs/mcp-go v0.53.0
 	github.com/openhue/openhue-go v0.4.0
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sirupsen/logrus v1.9.4
