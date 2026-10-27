@@ -1,0 +1,287 @@
+#compdef openhue openhue-cli
+
+# zsh completion for openhue (https://www.openhue.io/cli).
+#
+# Light, room and scene arguments insert the resource UUID; the menu shows
+# the name, room and state. Once a UUID is on the line, an empty word
+# completes options; type part of a name for another resource. Lists come
+# from `openhue get <kind> --json` (needs jq) and are cached per shell;
+# colors and actions come from the binary's own Cobra completers. Cache
+# lifetime in seconds:
+#   zstyle ':completion:*:openhue*:*' cache-ttl 120
+
+typeset -gA _openhue_cache _openhue_cache_time
+
+# Fill reply with "id<TAB>name<TAB>where<TAB>state<TAB>where-id" lines.
+_openhue_fetch() {
+  local kind=$1 ttl filter
+  zstyle -s ":completion:${curcontext}:" cache-ttl ttl || ttl=120
+  if [[ -z $_openhue_cache[$kind] ]] ||
+     (( SECONDS - ${_openhue_cache_time[$kind]:-0} > ttl )); then
+    case $kind in
+      light) filter='.[] | [.Id, .Name, (.Parent.Parent.Name // ""),
+                (if .HueData.on.on then "on" else "off" end),
+                (.Parent.Parent.Id // "")] | @tsv' ;;
+      room)  filter='.[] | [.Id, .Name, (.HueData.metadata.archetype // ""),
+                (if .GroupedLight.HueData.on.on then "on" else "off" end),
+                ""] | @tsv' ;;
+      scene) filter='.[] | [.Id, .Name, (.Parent.Name // ""),
+                (.HueData.status.active // ""), (.Parent.Id // "")] | @tsv' ;;
+    esac
+    _openhue_cache[$kind]=$(_call_program ${kind}s $service get $kind --json 2>/dev/null \
+                            | jq -r "$filter" 2>/dev/null)
+    _openhue_cache_time[$kind]=$SECONDS
+  fi
+  reply=("${(@f)_openhue_cache[$kind]}")
+}
+
+# _openhue_resources KIND TAG DESCRIPTION
+# Matches typed text against names (case-insensitive substring) or UUID
+# prefixes, honours -r/--room when given, inserts the UUID.
+_openhue_resources() {
+  local kind=$1 tag=$2 desc=$3
+  local line id name where state whereid room
+  local -a ids disp
+  (( $+commands[jq] )) || { _message "jq is required to complete ${kind} names"; return 1 }
+  room=${opt_args[-r]:-$opt_args[--room]}
+  _openhue_fetch $kind
+  for line in $reply; do
+    [[ -z $line ]] && continue
+    id=${line%%$'\t'*};      line=${line#*$'\t'}
+    name=${line%%$'\t'*};    line=${line#*$'\t'}
+    where=${line%%$'\t'*};   line=${line#*$'\t'}
+    state=${line%%$'\t'*};   whereid=${line#*$'\t'}
+    [[ -n $room && $room != $whereid && $room != $where ]] && continue
+    (( ${words[(I)$id]} )) && continue
+    if [[ -n $PREFIX && $name != (#i)*${(b)PREFIX}* && $id != ${PREFIX}* ]]; then
+      continue
+    fi
+    ids+=($id)
+    disp+=("${(r:30:)name} ${where:+${(r:16:)where} }$state")
+  done
+  if (( ! $#ids )); then
+    (( $#reply )) || _message "no ${kind}s found (is the bridge reachable?)"
+    return 1
+  fi
+  # Like _pids: -U skips prefix matching, so insert via menu to replace it.
+  _wanted $tag expl $desc compadd -U -l -d disp -a ids || return 1
+  compstate[insert]=menu
+  return 0
+}
+
+# Append the positional spec for KIND to specs. On an empty word after N
+# positional arguments, emit N numbered specs instead of '*', so the
+# current word has none and _arguments offers the options.
+_openhue_positional() {
+  local kind=$1 action=$2 i n=0
+  if [[ -z $PREFIX$SUFFIX ]]; then
+    for (( i = 2; i < CURRENT; i++ )); do
+      case $words[i] in
+        -[bxyctra]|--brightness|--cie-x|--cie-y|--color|--rgb|--temperature|--transition-time|--room|--action|--type)
+          (( i++ )) ;;
+        -*) ;;
+        *) (( n++ )) ;;
+      esac
+    done
+  fi
+  if (( n )); then
+    for (( i = 1; i <= n; i++ )); do specs+=("$i:$kind:$action"); done
+  else
+    specs+=("*:$kind:$action")
+  fi
+}
+
+_openhue_lights() { _openhue_resources light lights light }
+_openhue_rooms()  { _openhue_resources room  rooms  room }
+_openhue_scenes() { _openhue_resources scene scenes scene }
+
+# Values offered by the binary's Cobra flag completer, "value<TAB>description".
+_openhue_flag_values() {
+  local key="flag:$*" ttl
+  zstyle -s ":completion:${curcontext}:" cache-ttl ttl || ttl=120
+  if [[ -z $_openhue_cache[$key] ]] ||
+     (( SECONDS - ${_openhue_cache_time[$key]:-0} > ttl )); then
+    _openhue_cache[$key]=$(_call_program values $service __complete "$@" '""' 2>/dev/null | grep -v '^:[0-9]')
+    _openhue_cache_time[$key]=$SECONDS
+  fi
+  reply=("${(@f)_openhue_cache[$key]}")
+}
+
+_openhue_colors() {
+  local -a colors
+  _openhue_flag_values set light --color
+  colors=(${(o)reply%%$'\t'*})
+  _wanted colors expl 'color' compadd -a colors
+}
+
+_openhue_actions() {
+  local -a actions
+  _openhue_flag_values set scene --action
+  actions=(${reply//$'\t'/:})
+  _describe -t actions 'action' actions
+}
+
+_openhue_commands() {
+  local -a cmds
+  cmds=(
+    'config:manual openhue CLI setup'
+    'discover:Hue Bridge discovery'
+    'setup:automatic openhue CLI setup'
+    'get:display one or many resources'
+    'set:set specific features on resources'
+    'mcp:start an MCP server'
+    'completion:generate shell completion script'
+    'help:help about any command'
+    'version:print the version information'
+  )
+  _describe -t commands 'openhue command' cmds
+}
+
+_openhue_get() {
+  local curcontext=$curcontext state line ret=1
+  typeset -A opt_args
+  local -a cmds specs
+  _arguments -C \
+    '(- *)'{-h,--help}'[help for get]' \
+    '(-j --json)'{-j,--json}'[format output as JSON]' \
+    '(-t --type)'{-t,--type}'[filter by resource type]:type:(light room scene)' \
+    '1: :->cmd' \
+    '*:: :->args' && ret=0
+  case $state in
+    cmd)
+      cmds=(
+        'light:get lights'
+        'room:get rooms'
+        'scene:get scenes'
+        'events:(alpha) watch events from the bridge'
+      )
+      _describe -t commands 'get command' cmds && ret=0
+      ;;
+    args)
+      curcontext="${curcontext%:*:*}:openhue-get-$words[1]:"
+      case $words[1] in
+        light|lights)
+          specs=(
+            '(- *)'{-h,--help}'[help for light]'
+            '(-j --json)'{-j,--json}'[format output as JSON]'
+            '(-r --room)'{-r,--room}'[filter by room]:room:_openhue_rooms'
+          )
+          _openhue_positional light _openhue_lights
+          _arguments "$specs[@]" && ret=0 ;;
+        room|rooms)
+          specs=(
+            '(- *)'{-h,--help}'[help for room]'
+            '(-j --json)'{-j,--json}'[format output as JSON]'
+          )
+          _openhue_positional room _openhue_rooms
+          _arguments "$specs[@]" && ret=0 ;;
+        scene|scenes)
+          specs=(
+            '(- *)'{-h,--help}'[help for scene]'
+            '(-j --json)'{-j,--json}'[format output as JSON]'
+            '(-r --room)'{-r,--room}'[filter by room]:room:_openhue_rooms'
+          )
+          _openhue_positional scene _openhue_scenes
+          _arguments "$specs[@]" && ret=0 ;;
+        events)
+          _arguments \
+            '(- *)'{-h,--help}'[help for events]' \
+            '(-j --json)'{-j,--json}'[format output as JSON]' && ret=0 ;;
+      esac
+      ;;
+  esac
+  return ret
+}
+
+_openhue_set() {
+  local curcontext=$curcontext state line ret=1
+  typeset -A opt_args
+  local -a cmds specs light_opts
+  light_opts=(
+    '(- *)'{-h,--help}'[help]'
+    '(-b --brightness)'{-b,--brightness}'[brightness 0-100]:brightness (0-100)'
+    '(-x --cie-x)'{-x,--cie-x}'[X coordinate in the CIE color space]:CIE x (e.g. 0.675)'
+    '(-y --cie-y)'{-y,--cie-y}'[Y coordinate in the CIE color space]:CIE y (e.g. 0.322)'
+    '(-c --color --rgb -x --cie-x -y --cie-y -t --temperature)'{-c,--color}'[color name]:color:_openhue_colors'
+    '(--rgb -c --color -x --cie-x -y --cie-y -t --temperature)--rgb[RGB hexadecimal value]:RGB hex (e.g. #CCE5FF)'
+    '(-t --temperature -c --color --rgb -x --cie-x -y --cie-y)'{-t,--temperature}'[color temperature in Mirek]:mirek (153-500)'
+    '(--on --off)--on[turn on]'
+    '(--on --off)--off[turn off]'
+    '--transition-time[duration of the transition]:duration (e.g. 5s)'
+  )
+  _arguments -C \
+    '(- *)'{-h,--help}'[help for set]' \
+    '1: :->cmd' \
+    '*:: :->args' && ret=0
+  case $state in
+    cmd)
+      cmds=(
+        'light:update one or multiple lights'
+        'room:update one or multiple rooms'
+        'scene:activate a scene'
+      )
+      _describe -t commands 'set command' cmds && ret=0
+      ;;
+    args)
+      curcontext="${curcontext%:*:*}:openhue-set-$words[1]:"
+      case $words[1] in
+        light|lights)
+          specs=("$light_opts[@]"
+            '(-r --room)'{-r,--room}'[room of the light(s)]:room:_openhue_rooms')
+          _openhue_positional light _openhue_lights
+          _arguments "$specs[@]" && ret=0 ;;
+        room|rooms)
+          specs=("$light_opts[@]")
+          _openhue_positional room _openhue_rooms
+          _arguments "$specs[@]" && ret=0 ;;
+        scene|scenes)
+          _arguments \
+            '(- *)'{-h,--help}'[help for scene]' \
+            '(-a --action)'{-a,--action}'[action to perform]:action:_openhue_actions' \
+            '(-r --room)'{-r,--room}'[room where the scene is located]:room:_openhue_rooms' \
+            '1:scene:_openhue_scenes' && ret=0 ;;
+      esac
+      ;;
+  esac
+  return ret
+}
+
+_openhue() {
+  local curcontext=$curcontext state line ret=1
+  typeset -A opt_args
+  _arguments -C \
+    '(- *)'{-h,--help}'[help for openhue]' \
+    '1: :_openhue_commands' \
+    '*:: :->args' && ret=0
+  case $state in
+    args)
+      curcontext="${curcontext%:*:*}:openhue-$words[1]:"
+      case $words[1] in
+        get|g) _openhue_get && ret=0 ;;
+        set|s) _openhue_set && ret=0 ;;
+        config)
+          _arguments \
+            '(- *)'{-h,--help}'[help for config]' \
+            '(-b --bridge)'{-b,--bridge}'[local IP of the Hue Bridge]:bridge IP:_hosts' \
+            '(-k --key)'{-k,--key}'[Hue application key]:application key' && ret=0 ;;
+        setup)
+          _arguments \
+            '(- *)'{-h,--help}'[help for setup]' \
+            '(-b --bridge)'{-b,--bridge}'[Hue Bridge IP address]:bridge IP:_hosts' \
+            '(-d --devicetype)'{-d,--devicetype}'[device identifier]:device type' \
+            '(-k --generateclientkey)'{-k,--generateclientkey}'[generate the client key]' && ret=0 ;;
+        completion)
+          _arguments \
+            '(- *)'{-h,--help}'[help for completion]' \
+            '1:shell:(bash fish zsh setup)' && ret=0 ;;
+        help)
+          _arguments '1: :_openhue_commands' && ret=0 ;;
+        discover|mcp|version)
+          _arguments '(- *)'{-h,--help}'[help]' && ret=0 ;;
+      esac
+      ;;
+  esac
+  return ret
+}
+
+_openhue "$@"
