@@ -13,11 +13,13 @@
 typeset -gA _openhue_cache _openhue_cache_time
 
 # Fill reply with "id<TAB>name<TAB>where<TAB>state<TAB>where-id" lines.
+# Returns 1 if the bridge could not be queried; a successful empty result
+# is cached like any other.
 _openhue_fetch() {
-  local kind=$1 ttl filter
+  local kind=$1 ttl filter out
   zstyle -s ":completion:${curcontext}:" cache-ttl ttl || ttl=120
-  if [[ -z $_openhue_cache[$kind] ]] ||
-     (( SECONDS - ${_openhue_cache_time[$kind]:-0} > ttl )); then
+  if [[ -z $_openhue_cache_time[$kind] ]] ||
+     (( SECONDS - $_openhue_cache_time[$kind] > ttl )); then
     case $kind in
       light) filter='.[] | [.Id, .Name, (.Parent.Parent.Name // ""),
                 (if .HueData.on.on then "on" else "off" end),
@@ -28,8 +30,10 @@ _openhue_fetch() {
       scene) filter='.[] | [.Id, .Name, (.Parent.Name // ""),
                 (.HueData.status.active // ""), (.Parent.Id // "")] | @tsv' ;;
     esac
-    _openhue_cache[$kind]=$(_call_program ${kind}s $service get $kind --json 2>/dev/null \
-                            | jq -r "$filter" 2>/dev/null)
+    out=$(set -o pipefail
+          _call_program ${kind}s $service get $kind --json 2>/dev/null \
+            | jq -r "$filter" 2>/dev/null) || return 1
+    _openhue_cache[$kind]=$out
     _openhue_cache_time[$kind]=$SECONDS
   fi
   reply=("${(@f)_openhue_cache[$kind]}")
@@ -44,7 +48,7 @@ _openhue_resources() {
   local -a ids disp
   (( $+commands[jq] )) || { _message "jq is required to complete ${kind} names"; return 1 }
   room=${opt_args[-r]:-$opt_args[--room]}
-  _openhue_fetch $kind
+  _openhue_fetch $kind || { _message "cannot list ${kind}s (is the bridge reachable?)"; return 1 }
   for line in $reply; do
     [[ -z $line ]] && continue
     id=${line%%$'\t'*};      line=${line#*$'\t'}
@@ -59,10 +63,7 @@ _openhue_resources() {
     ids+=($id)
     disp+=("${(r:30:)name} ${where:+${(r:16:)where} }$state")
   done
-  if (( ! $#ids )); then
-    (( $#reply )) || _message "no ${kind}s found (is the bridge reachable?)"
-    return 1
-  fi
+  (( $#ids )) || return 1
   # Like _pids: -U skips prefix matching, so insert via menu to replace it.
   _wanted $tag expl $desc compadd -U -l -d disp -a ids || return 1
   compstate[insert]=menu
@@ -99,8 +100,8 @@ _openhue_scenes() { _openhue_resources scene scenes scene }
 _openhue_flag_values() {
   local key="flag:$*" ttl
   zstyle -s ":completion:${curcontext}:" cache-ttl ttl || ttl=120
-  if [[ -z $_openhue_cache[$key] ]] ||
-     (( SECONDS - ${_openhue_cache_time[$key]:-0} > ttl )); then
+  if [[ -z $_openhue_cache_time[$key] ]] ||
+     (( SECONDS - $_openhue_cache_time[$key] > ttl )); then
     _openhue_cache[$key]=$(_call_program values $service __complete "$@" '""' 2>/dev/null | grep -v '^:[0-9]')
     _openhue_cache_time[$key]=$SECONDS
   fi
