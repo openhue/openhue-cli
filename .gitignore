@@ -43,3 +43,6 @@ bin/
 
 # Gorelease build folder
 dist/
+
+# go build output
+openhue-cli
