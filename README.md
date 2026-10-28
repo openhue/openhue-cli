@@ -17,7 +17,46 @@ This tool provides a convenient way to control your Philips Hue lights and perfo
 - Discover and connect to Philips Hue bridges.
 - List available lights and their status.
 - Control lights: on, off, brightness, and color.
+- Create, update, export and delete scenes.
 - Schedule light actions.
+
+## Managing scenes
+
+```bash
+# Save the current look of a room as a scene
+openhue create scene Cozy --room "Living Room"
+
+# Define each light (the real lights are not changed), with transitions, effects or gradients
+openhue create scene Work -r Office --light "Desk:on,brightness=100,temperature=250" --light "Ceiling:off,transition=3s"
+openhue create scene Strip -r Office --only-listed --light "Strip:gradient=#FF0000;#0000FF" --light "Lamp:effect=candle"
+
+# Dynamic scene
+openhue create scene Aurora -r Lounge --auto-dynamic --speed 30 --palette-color blue --palette-color "#00FF88"
+
+# Edit a scene: unmentioned lights keep their stored values, removed lights are turned off in the scene
+openhue update scene Cozy --light "Desk:brightness=20" --remove-light Ceiling
+openhue update scene Cozy --name Relax
+
+# Recall it, or delete it (irreversible: export it first if you want a copy)
+openhue set scene Relax
+openhue delete scene Relax
+```
+
+Large scenes can be written in a YAML file ([sample](./docs/examples/scene.yaml)) and versioned.
+Flags override the file's values, and `--from-file -` reads the standard input. With `update`, the file is a patch:
+what it does not mention is left untouched.
+
+```bash
+openhue create scene --from-file docs/examples/scene.yaml
+openhue get scene Sunset --room "Living Room" --yaml > sunset.yaml   # export, edit, then...
+openhue update scene Sunset --room "Living Room" --from-file sunset.yaml
+```
+
+The bridge requires every light of the room in a scene: with `--only-listed` and `--remove-light`, the other lights are turned off in the scene instead of being left out.
+
+`--dry-run` prints the request instead of sending it. The export only covers the keys documented in the sample
+file: other settings stored in the bridge are preserved by `update`, but not exported. Run
+`openhue create scene --help` for the full list of flags and per-light settings.
 
 For a complete list of features and usage, 
 please refer to the [OpenHue CLI online documentation](https://www.openhue.io/cli/openhue-cli).

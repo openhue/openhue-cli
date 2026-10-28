@@ -1,6 +1,7 @@
 package get
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 	"openhue-cli/util"
@@ -10,6 +11,7 @@ import (
 type SceneOptions struct {
 	*CmdGetOptions
 	Room string
+	Yaml bool
 }
 
 // NewCmdGetScene returns initialized Command instance for the 'get scene' sub command
@@ -39,20 +41,31 @@ openhue get scenes --room "Living Room"
 # Filter scenes for a given room ID
 openhue get scenes -r 878a65d6-613b-4239-8b77-588b535bfb4a
 
+# Export a scene as a YAML definition, editable and re-applicable with 'create scene' or 'update scene' --from-file
+openhue get scene Cozy --room "Living Room" --yaml
+
 # List multiple scenes using either the ID or the name of the scene
 openhue get scenes "Palm Beach" Nebula 462e54d9-ec5d-4bf6-879d-ad34cb9a692e`,
 		Args: cobra.MatchAll(cobra.RangeArgs(0, 100), cobra.OnlyValidArgs),
-		Run: func(cmd *cobra.Command, args []string) {
-			o.RunGetSceneCmd(ctx, args)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if o.Yaml {
+				cmd.SilenceUsage = true
+			}
+			return o.RunGetSceneCmd(ctx, args)
 		},
 	}
 
 	cmd.Flags().StringVarP(&o.Room, "room", "r", "", "Filter scenes by room (name or ID)")
+	cmd.Flags().BoolVar(&o.Yaml, "yaml", false, "Export a single scene as a YAML definition")
 
 	return cmd
 }
 
-func (o *SceneOptions) RunGetSceneCmd(ctx *openhue.Context, args []string) {
+func (o *SceneOptions) RunGetSceneCmd(ctx *openhue.Context, args []string) error {
+
+	if o.Yaml {
+		return o.runExportYaml(ctx, args)
+	}
 
 	var scenes []openhue.Scene
 
@@ -63,6 +76,29 @@ func (o *SceneOptions) RunGetSceneCmd(ctx *openhue.Context, args []string) {
 	} else {
 		util.PrintTable(ctx.Io, scenes, PrintScene, "ID", "Name", "Room", "Status", "Speed", "Auto Dynamic")
 	}
+	return nil
+}
+
+// runExportYaml prints the single scene matching the argument as a YAML definition.
+func (o *SceneOptions) runExportYaml(ctx *openhue.Context, args []string) error {
+	if o.Json {
+		return fmt.Errorf("--yaml and --json cannot be used together")
+	}
+	if len(args) != 1 {
+		return fmt.Errorf("--yaml requires exactly one scene name or ID")
+	}
+
+	scene, room, err := openhue.FindScene(ctx.Home, o.Room, args[0])
+	if err != nil {
+		return err
+	}
+
+	out, err := openhue.MarshalSceneDefinition(openhue.SceneToDefinition(room, scene))
+	if err != nil {
+		return err
+	}
+	ctx.Io.Printf("%s", out)
+	return nil
 }
 
 func PrintScene(scene openhue.Scene) string {
@@ -77,15 +113,11 @@ func PrintScene(scene openhue.Scene) string {
 	}
 
 	if scene.HueData != nil {
-		if scene.HueData.Status != nil && scene.HueData.Status.Active != nil {
+		if scene.HueData.Status.Active != nil {
 			active = string(*scene.HueData.Status.Active)
 		}
-		if scene.HueData.Speed != nil {
-			speed = strconv.FormatFloat(float64(*scene.HueData.Speed), 'f', 2, 64)
-		}
-		if scene.HueData.AutoDynamic != nil {
-			auto = strconv.FormatBool(*scene.HueData.AutoDynamic)
-		}
+		speed = strconv.FormatFloat(float64(scene.HueData.Speed), 'f', 2, 64)
+		auto = strconv.FormatBool(scene.HueData.AutoDynamic)
 	}
 
 	return scene.Id +

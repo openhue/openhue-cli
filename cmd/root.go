@@ -5,10 +5,13 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"openhue-cli/cmd/completion"
+	"openhue-cli/cmd/create"
+	"openhue-cli/cmd/delete"
 	"openhue-cli/cmd/get"
 	"openhue-cli/cmd/mcp"
 	"openhue-cli/cmd/set"
 	"openhue-cli/cmd/setup"
+	"openhue-cli/cmd/update"
 	"openhue-cli/cmd/version"
 	"openhue-cli/openhue"
 	"openhue-cli/util"
@@ -102,6 +105,9 @@ func addCommands(root *cobra.Command, ctx *openhue.Context) {
 
 	root.AddCommand(set.NewCmdSet(ctx))
 	root.AddCommand(get.NewCmdGet(ctx))
+	root.AddCommand(create.NewCmdCreate(ctx))
+	root.AddCommand(update.NewCmdUpdate(ctx))
+	root.AddCommand(delete.NewCmdDelete(ctx))
 	root.AddCommand(mcp.NewCmdMcp(ctx))
 }
 

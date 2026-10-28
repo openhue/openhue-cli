@@ -1,0 +1,38 @@
+# Scene definition, usable with:
+#   openhue create scene --from-file docs/examples/scene.yaml
+#   openhue update scene Sunset --from-file docs/examples/scene.yaml   (applied as a patch)
+# and exported with:
+#   openhue get scene Sunset --room "Living Room" --yaml
+name: Sunset
+room: Living Room
+
+# dynamic playback (speed 0-100)
+speed: 30
+auto_dynamic: true
+palette:
+  colors: [orange, "#FF4500", "xy@0.6/0.35"] # name, #RRGGBB or xy@x/y
+  temperatures: [400]
+  brightness: [60, 80]
+  effects: [candle]
+
+# applied to every light, unless the light says otherwise
+defaults:
+  brightness: 40
+  transition: 3s
+
+lights:
+  - light: Desk lamp
+    on: true
+    temperature: 400
+  - light: Ceiling
+    on: false
+  - light: Fireplace lamp
+    effect: candle # an effect replaces the color/temperature/gradient of the light
+  - light: Gradient strip
+    brightness: 70
+    gradient:
+      mode: interpolated_palette
+      points: ["#FF4500", "#4B0082"]
+
+# only meaningful for 'update scene --from-file' (turns the light off in the scene)
+# remove_lights: [Old lamp]

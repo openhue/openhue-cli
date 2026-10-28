@@ -1,6 +1,7 @@
 package openhue
 
 import (
+	"context"
 	"openhue-cli/util/color"
 	"time"
 
@@ -115,14 +116,14 @@ type Light struct {
 }
 
 func (light *Light) IsOn() bool {
-	if light.HueData == nil || light.HueData.On == nil || light.HueData.On.On == nil {
+	if light.HueData == nil {
 		return false
 	}
-	return *light.HueData.On.On
+	return light.HueData.On.On
 }
 
 func (light *Light) Set(o *SetLightOptions) error {
-	request := &openhue.UpdateLightJSONRequestBody{
+	request := &openhue.LightPut{
 		On:               buildOnConfig(o),
 		Dimming:          buildDimmingConfig(o),
 		ColorTemperature: buildColorTemperatureConfig(o),
@@ -136,7 +137,7 @@ func (light *Light) Set(o *SetLightOptions) error {
 		}
 	}
 
-	return light.ctx.h.UpdateLight(light.Id, *request)
+	return light.ctx.h.UpdateLight(context.Background(), light.Id, *request)
 }
 
 // GroupedLight represents a group of lights (typically a room)
@@ -148,14 +149,14 @@ type GroupedLight struct {
 
 func (groupedLight *GroupedLight) IsOn() bool {
 	// A room may not have any light, in this case the GroupedLight service is nil.
-	if groupedLight == nil || groupedLight.HueData == nil || groupedLight.HueData.On == nil || groupedLight.HueData.On.On == nil {
+	if groupedLight == nil || groupedLight.HueData == nil || groupedLight.HueData.On == nil {
 		return false
 	}
-	return *groupedLight.HueData.On.On
+	return groupedLight.HueData.On.On
 }
 
 func (groupedLight *GroupedLight) Set(o *SetLightOptions) error {
-	request := &openhue.UpdateGroupedLightJSONRequestBody{
+	request := &openhue.GroupedLightPut{
 		On:               buildOnConfig(o),
 		Dimming:          buildDimmingConfig(o),
 		ColorTemperature: buildColorTemperatureConfig(o),
@@ -169,7 +170,7 @@ func (groupedLight *GroupedLight) Set(o *SetLightOptions) error {
 		}
 	}
 
-	return groupedLight.ctx.h.UpdateGroupedLight(groupedLight.Id, *request)
+	return groupedLight.ctx.h.UpdateGroupedLight(context.Background(), groupedLight.Id, *request)
 }
 
 // Helper functions to build common light configuration parts
@@ -178,14 +179,14 @@ func buildOnConfig(o *SetLightOptions) *openhue.On {
 	if o.Status == LightStatusUndefined {
 		return nil
 	}
-	return &openhue.On{On: ToBool(o.Status)}
+	return &openhue.On{On: *ToBool(o.Status)}
 }
 
 func buildDimmingConfig(o *SetLightOptions) *openhue.Dimming {
 	if o.Brightness < 0 || o.Brightness > 100.0 {
 		return nil
 	}
-	return &openhue.Dimming{Brightness: &o.Brightness}
+	return &openhue.Dimming{Brightness: o.Brightness}
 }
 
 func buildColorTemperatureConfig(o *SetLightOptions) *openhue.ColorTemperature {
@@ -200,9 +201,9 @@ func buildColorConfig(o *SetLightOptions) *openhue.Color {
 		return nil
 	}
 	return &openhue.Color{
-		Xy: &openhue.GamutPosition{
-			X: &o.Color.X,
-			Y: &o.Color.Y,
+		Xy: openhue.GamutPosition{
+			X: o.Color.X,
+			Y: o.Color.Y,
 		},
 	}
 }
@@ -221,11 +222,11 @@ type Scene struct {
 
 // Activate triggers the scene with the specified action (active, static, or dynamic)
 func (scene *Scene) Activate(action openhue.SceneRecallAction) error {
-	body := openhue.UpdateSceneJSONRequestBody{
+	body := openhue.ScenePut{
 		Recall: &openhue.SceneRecall{
 			Action: &action,
 		},
 	}
 
-	return scene.ctx.h.UpdateScene(scene.Id, body)
+	return scene.ctx.h.UpdateScene(context.Background(), scene.Id, body)
 }

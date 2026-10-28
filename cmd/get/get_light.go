@@ -81,7 +81,7 @@ func PrintLight(light openhue.Light) string {
 		room = light.Parent.Parent.Name
 	}
 
-	if light.HueData != nil && light.HueData.On != nil && light.HueData.On.On != nil && *light.HueData.On.On {
+	if light.HueData != nil && light.HueData.On.On {
 		status = "[on]"
 	}
 
@@ -89,8 +89,8 @@ func PrintLight(light openhue.Light) string {
 		brightness = fmt.Sprint(*light.HueData.Dimming.Brightness) + "%"
 	}
 
-	if light.HueData != nil && light.HueData.Metadata != nil && light.HueData.Metadata.Archetype != nil {
-		archetype = string(*light.HueData.Metadata.Archetype)
+	if light.HueData != nil && light.HueData.Metadata.Archetype != "" {
+		archetype = string(light.HueData.Metadata.Archetype)
 	}
 
 	return light.Id +

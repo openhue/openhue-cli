@@ -19,7 +19,7 @@ func LoadHome(h *openhue.Home) (*HomeModel, error) {
 	home := HomeModel{
 		Resource: Resource{
 			ctx:    ctx,
-			Id:     *ctx.home.Id,
+			Id:     ctx.home.Id,
 			Name:   "HomeModel",
 			Type:   HomeResourceType(openhue.ResourceIdentifierRtypeBridgeHome),
 			Parent: nil, // explicitly set Parent to nil as HomeModel is the root object
@@ -122,19 +122,19 @@ func (t HomeResourceType) is(r openhue.ResourceIdentifierRtype) bool {
 	return false
 }
 
-func getRooms(ctx *hueHomeCtx, parent *Resource, children *[]openhue.ResourceIdentifier) []Room {
+func getRooms(ctx *hueHomeCtx, parent *Resource, children []openhue.ResourceIdentifier) []Room {
 
 	var rooms []Room
 
-	for _, child := range *children {
-		rType := HomeResourceType(*child.Rtype)
+	for _, child := range children {
+		rType := HomeResourceType(child.Rtype)
 		if rType.is(openhue.ResourceIdentifierRtypeRoom) {
-			hueRoom := ctx.rooms[*child.Rid]
+			hueRoom := ctx.rooms[child.Rid]
 			room := Room{
 				Resource: Resource{
 					ctx:    ctx,
-					Id:     *hueRoom.Id,
-					Name:   *hueRoom.Metadata.Name,
+					Id:     hueRoom.Id,
+					Name:   hueRoom.Metadata.Name,
 					Type:   rType,
 					Parent: parent,
 				},
@@ -164,10 +164,10 @@ func getScenes(ctx *hueHomeCtx, room *Resource) []Scene {
 
 	for _, scene := range ctx.scenes {
 		hueScene := scene
-		if *scene.Group.Rid == room.Id {
+		if scene.Group.Rid == room.Id {
 			scenes = append(scenes, Scene{
 				Resource: Resource{
-					Id:     *scene.Id,
+					Id:     scene.Id,
 					Name:   *scene.Metadata.Name,
 					Type:   HomeResourceType(openhue.ResourceIdentifierRtypeScene),
 					Parent: room,
@@ -181,19 +181,19 @@ func getScenes(ctx *hueHomeCtx, room *Resource) []Scene {
 	return scenes
 }
 
-func getDevices(ctx *hueHomeCtx, parent *Resource, children *[]openhue.ResourceIdentifier) []Device {
+func getDevices(ctx *hueHomeCtx, parent *Resource, children []openhue.ResourceIdentifier) []Device {
 
 	var devices []Device
 
-	for _, child := range *children {
-		rType := HomeResourceType(*child.Rtype)
+	for _, child := range children {
+		rType := HomeResourceType(child.Rtype)
 		if rType.is(openhue.ResourceIdentifierRtypeDevice) {
-			hueDevice := ctx.devices[*child.Rid]
+			hueDevice := ctx.devices[child.Rid]
 			device := Device{
 				Resource: Resource{
 					ctx:    ctx,
-					Id:     *hueDevice.Id,
-					Name:   *hueDevice.Metadata.Name,
+					Id:     hueDevice.Id,
+					Name:   hueDevice.Metadata.Name,
 					Type:   rType,
 					Parent: parent,
 				},
@@ -214,16 +214,16 @@ func getDevices(ctx *hueHomeCtx, parent *Resource, children *[]openhue.ResourceI
 	return devices
 }
 
-func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services *[]openhue.ResourceIdentifier) (*GroupedLight, error) {
+func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services []openhue.ResourceIdentifier) (*GroupedLight, error) {
 
-	for _, service := range *services {
-		rType := HomeResourceType(*service.Rtype)
+	for _, service := range services {
+		rType := HomeResourceType(service.Rtype)
 		if rType.is(openhue.ResourceIdentifierRtypeGroupedLight) {
-			hueGroupedLight := ctx.groupedLights[*service.Rid]
+			hueGroupedLight := ctx.groupedLights[service.Rid]
 			return &GroupedLight{
 				Resource: Resource{
 					ctx:    ctx,
-					Id:     *hueGroupedLight.Id,
+					Id:     hueGroupedLight.Id,
 					Name:   "Grouped Light (" + parent.Name + ")",
 					Type:   rType,
 					Parent: parent.Parent,
@@ -236,17 +236,17 @@ func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services *[]openhue.Reso
 	return nil, fmt.Errorf("no 'grouped_light' service found for resource %s (%s)", parent.Id, parent.Name)
 }
 
-func getLight(ctx *hueHomeCtx, parent *Resource, services *[]openhue.ResourceIdentifier) (*Light, error) {
+func getLight(ctx *hueHomeCtx, parent *Resource, services []openhue.ResourceIdentifier) (*Light, error) {
 
-	for _, service := range *services {
-		rType := HomeResourceType(*service.Rtype)
+	for _, service := range services {
+		rType := HomeResourceType(service.Rtype)
 		if rType.is(openhue.ResourceIdentifierRtypeLight) {
-			light := ctx.lights[*service.Rid]
+			light := ctx.lights[service.Rid]
 			return &Light{
 				Resource: Resource{
 					ctx:    ctx,
-					Id:     *light.Id,
-					Name:   *light.Metadata.Name,
+					Id:     light.Id,
+					Name:   light.Metadata.Name,
 					Type:   rType,
 					Parent: parent,
 				},
