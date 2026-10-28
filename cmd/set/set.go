@@ -18,6 +18,7 @@ Set the values for specific resources.
 `,
 	}
 
+	cmd.AddCommand(NewCmdSetControl(ctx))
 	cmd.AddCommand(NewCmdSetLight(ctx))
 	cmd.AddCommand(NewCmdSetRoom(ctx))
 	cmd.AddCommand(NewCmdSetScene(ctx))

@@ -18,6 +18,7 @@ This tool provides a convenient way to control your Philips Hue lights and perfo
 - List available lights and their status.
 - Control lights: on, off, brightness, and color.
 - Create, update, export and delete scenes.
+- List the buttons and rotary dials of your switches, and tune button settings.
 - Schedule light actions.
 
 ## Managing scenes
@@ -57,6 +58,24 @@ The bridge requires every light of the room in a scene: with `--only-listed` and
 `--dry-run` prints the request instead of sending it. The export only covers the keys documented in the sample
 file: other settings stored in the bridge are preserved by `update`, but not exported. Run
 `openhue create scene --help` for the full list of flags and per-light settings.
+
+## Managing controls
+
+Buttons and rotary dials of your switches, dimmers and dials are listed with the device and room they belong to.
+
+```bash
+# List all controls, or filter them
+openhue get control
+openhue get control --room "Living Room" --kind rotary
+openhue get control --device "Hue dimmer switch" --json
+
+# Change how often a button reports `repeat` events while held (a duration, or milliseconds)
+openhue set control <controlId> --repeat-interval 800ms
+openhue set control "Hue dimmer switch" --control 2 --repeat-interval 1s
+```
+
+Controls have no name: select one by ID, or by device with `--control <n>` (the control number shown by `get control`).
+Rotary dials have no configurable settings.
 
 For a complete list of features and usage, 
 please refer to the [OpenHue CLI online documentation](https://www.openhue.io/cli/openhue-cli).

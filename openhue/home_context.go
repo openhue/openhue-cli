@@ -16,6 +16,8 @@ type hueHomeCtx struct {
 	lights        map[string]openhue.LightGet
 	groupedLights map[string]openhue.GroupedLightGet
 	scenes        map[string]openhue.SceneGet
+	buttons       map[string]openhue.ButtonGet
+	rotaries      map[string]openhue.RelativeRotaryGet
 }
 
 func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
@@ -51,6 +53,19 @@ func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
 		return nil, err
 	}
 
+	// Controls are not essential to light and scene commands: tolerate failures.
+	buttons, err := home.GetButtons(ctx)
+	if err != nil {
+		log.Warnf("unable to load buttons: %v", err)
+		buttons = nil
+	}
+
+	rotaries, err := home.GetRelativeRotaries(ctx)
+	if err != nil {
+		log.Warnf("unable to load relative rotaries: %v", err)
+		rotaries = nil
+	}
+
 	log.Info("HomeModel loaded")
 
 	return &hueHomeCtx{
@@ -61,5 +76,7 @@ func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
 		lights:        lights,
 		groupedLights: groupedLights,
 		scenes:        scenes,
+		buttons:       buttons,
+		rotaries:      rotaries,
 	}, nil
 }

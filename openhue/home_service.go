@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
+	"slices"
+	"sort"
+	"strings"
 )
 
 // LoadHome loads all resources from the Hue bridge and builds the HomeModel hierarchy.
@@ -110,6 +113,90 @@ func SearchScenes(home *HomeModel, roomNameOrId string, nameOrIds []string) []Sc
 }
 
 //
+// Control
+//
+
+// allDevices returns every device of the home, in rooms or not.
+func allDevices(home *HomeModel) []Device {
+	var devices []Device
+	for _, room := range home.Rooms {
+		devices = append(devices, room.Devices...)
+	}
+	return append(devices, home.Devices...)
+}
+
+// SearchControls returns the controls of the home, optionally filtered by room (name or ID), device (name or ID),
+// kind (empty for all) and control IDs. Filters are combined.
+func SearchControls(home *HomeModel, room, device string, kind ControlKind, ids []string) []Control {
+	controls := []Control{}
+
+	for _, d := range allDevices(home) {
+		if !d.matchesNameOrId(device) {
+			continue
+		}
+		for _, c := range d.Controls {
+			if kind != "" && c.Kind != kind {
+				continue
+			}
+			if room != "" {
+				r := c.Room()
+				if r == nil || !r.matchesNameOrId(room) {
+					continue
+				}
+			}
+			if len(ids) > 0 && !slices.Contains(ids, c.Id) {
+				continue
+			}
+			controls = append(controls, c)
+		}
+	}
+
+	return controls
+}
+
+// FindControl resolves exactly one control from either a control ID, or a device name or ID together with a
+// control number (controlNumber > 0). Zero or several matches are errors listing the candidates.
+func FindControl(home *HomeModel, deviceOrId string, controlNumber int) (*Control, error) {
+	var matches []Control
+
+	if controlNumber <= 0 {
+		matches = SearchControls(home, "", "", "", []string{deviceOrId})
+	}
+	if len(matches) == 0 {
+		for _, c := range SearchControls(home, "", deviceOrId, "", nil) {
+			if controlNumber <= 0 || c.ControlId == controlNumber {
+				matches = append(matches, c)
+			}
+		}
+	}
+
+	switch len(matches) {
+	case 1:
+		return &matches[0], nil
+	case 0:
+		return nil, fmt.Errorf("no control found for '%s'%s", deviceOrId, controlNumberMsg(controlNumber))
+	default:
+		return nil, fmt.Errorf("%d controls match '%s'%s, use a control ID or --control to select one:\n%s",
+			len(matches), deviceOrId, controlNumberMsg(controlNumber), describeControls(matches))
+	}
+}
+
+func controlNumberMsg(n int) string {
+	if n > 0 {
+		return fmt.Sprintf(" with control number %d", n)
+	}
+	return ""
+}
+
+func describeControls(controls []Control) string {
+	var lines []string
+	for _, c := range controls {
+		lines = append(lines, fmt.Sprintf("  %s  %s (control %d)", c.Id, c.Name, c.ControlId))
+	}
+	return strings.Join(lines, "\n")
+}
+
+//
 // Private
 //
 
@@ -207,11 +294,69 @@ func getDevices(ctx *hueHomeCtx, parent *Resource, children []openhue.ResourceId
 				device.Light = light
 			}
 
+			device.Controls = getControls(ctx, &device.Resource)
+
 			devices = append(devices, device)
 		}
 	}
 
 	return devices
+}
+
+// getControls returns the buttons and relative rotaries owned by the given device, ordered by kind then control number.
+func getControls(ctx *hueHomeCtx, device *Resource) []Control {
+	var controls []Control
+
+	for _, b := range ctx.buttons {
+		if b.Owner.Rid != device.Id {
+			continue
+		}
+		hueButton := b
+		controls = append(controls, Control{
+			Resource:  Resource{ctx: ctx, Id: b.Id, Name: controlName(device, ControlKindButton, controlNumber(b.Metadata)), Type: HomeResourceType(openhue.ResourceIdentifierRtypeButton), Parent: device},
+			Kind:      ControlKindButton,
+			ControlId: controlNumber(b.Metadata),
+			Button:    &hueButton,
+		})
+	}
+
+	for _, r := range ctx.rotaries {
+		if r.Owner.Rid != device.Id {
+			continue
+		}
+		hueRotary := r
+		controls = append(controls, Control{
+			Resource:  Resource{ctx: ctx, Id: r.Id, Name: controlName(device, ControlKindRotary, controlNumber(r.Metadata)), Type: HomeResourceType(openhue.ResourceIdentifierRtypeRelativeRotary), Parent: device},
+			Kind:      ControlKindRotary,
+			ControlId: controlNumber(r.Metadata),
+			Rotary:    &hueRotary,
+		})
+	}
+
+	sort.Slice(controls, func(i, j int) bool {
+		if controls[i].Kind != controls[j].Kind {
+			return controls[i].Kind == ControlKindButton
+		}
+		if controls[i].ControlId != controls[j].ControlId {
+			return controls[i].ControlId < controls[j].ControlId
+		}
+		return controls[i].Id < controls[j].Id
+	})
+
+	return controls
+}
+
+func controlNumber(m *struct {
+	ControlId *int `json:"control_id,omitempty"`
+}) int {
+	if m == nil || m.ControlId == nil {
+		return 1
+	}
+	return *m.ControlId
+}
+
+func controlName(device *Resource, kind ControlKind, number int) string {
+	return fmt.Sprintf("%s %s %d", device.Name, kind, number)
 }
 
 func getGroupedLight(ctx *hueHomeCtx, parent *Resource, services []openhue.ResourceIdentifier) (*GroupedLight, error) {

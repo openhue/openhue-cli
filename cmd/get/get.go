@@ -37,6 +37,7 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 	cmd.PersistentFlags().BoolVarP(&o.Json, "json", "j", false, "Format output as JSON")
 
 	// sub commands
+	cmd.AddCommand(NewCmdGetControl(ctx, &o))
 	cmd.AddCommand(NewCmdGetEvents(ctx, &o))
 	cmd.AddCommand(NewCmdGetLight(ctx, &o))
 	cmd.AddCommand(NewCmdGetRoom(ctx, &o))
