@@ -88,6 +88,12 @@ cd openhue-cli
 make build
 ```
 
+### Shell completion
+
+`openhue completion <shell>` prints a generated completion script for bash, zsh or fish; `openhue completion setup` prints the command to enable it in your current shell.
+
+For zsh, [`completions/_openhue`](completions/_openhue) is a hand-written alternative that also completes light, room and scene names (inserting the resource ID), color names and per-command flags. It needs `jq`. Copy it into a directory on your `$fpath`.
+
 ### Test
 Run the following command to execute all the tests and calculate the code coverage:
 ```shell
