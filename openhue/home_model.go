@@ -250,12 +250,27 @@ type Control struct {
 	ControlId int
 	Button    *openhue.ButtonGet
 	Rotary    *openhue.RelativeRotaryGet
+	// Behavior is the behavior instance configuring the buttons of the device, nil if the accessory has none
+	Behavior *BehaviorInstance
 }
 
-// MarshalJSON prints the raw resource as reported by the bridge.
+// MarshalJSON prints the raw resource as reported by the bridge, with the button configuration when there is one.
 func (c Control) MarshalJSON() ([]byte, error) {
 	if c.Kind == ControlKindButton && c.Button != nil {
-		return json.Marshal(c.Button)
+		cfg := c.ButtonConfig()
+		if cfg == nil {
+			return json.Marshal(c.Button)
+		}
+		raw, err := json.Marshal(c.Button)
+		if err != nil {
+			return nil, err
+		}
+		var doc map[string]any
+		if err := json.Unmarshal(raw, &doc); err != nil {
+			return nil, err
+		}
+		doc["configuration"] = cfg
+		return json.Marshal(doc)
 	}
 	if c.Kind == ControlKindRotary && c.Rotary != nil {
 		return json.Marshal(c.Rotary)

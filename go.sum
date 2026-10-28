@@ -38,8 +38,8 @@ github.com/oapi-codegen/nullable v1.1.0 h1:eAh8JVc5430VtYVnq00Hrbpag9PFRGWLjxR1/
 github.com/oapi-codegen/nullable v1.1.0/go.mod h1:KUZ3vUzkmEKY90ksAmit2+5juDIhIZhfDl+0PwOQlFY=
 github.com/oapi-codegen/runtime v1.4.1 h1:9nwLoI+KrWxzbBcp0jO/R8uXqbik/HUyCvPeU68Y/qo=
 github.com/oapi-codegen/runtime v1.4.1/go.mod h1:GwV7hC2hviaMzj+ITfHVRESK5J2W/GefVwIND/bMGvU=
-github.com/openhue/openhue-go v1.1.0 h1:5eSdp1JrVUfzL9srGa6f2wxH1NHS8gXAMBMIcAEiuyA=
-github.com/openhue/openhue-go v1.1.0/go.mod h1:K+MARQyHJGUDGNTs+3EQe5GmUymUagpmdyM9KGcvK7E=
+github.com/openhue/openhue-go v1.2.0 h1:0cQAcI4gZPMdJ/VyqzsML8WWiw5oMquWhPRJDEIjhYc=
+github.com/openhue/openhue-go v1.2.0/go.mod h1:K+MARQyHJGUDGNTs+3EQe5GmUymUagpmdyM9KGcvK7E=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
 github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

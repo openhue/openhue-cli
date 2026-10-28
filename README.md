@@ -77,6 +77,28 @@ openhue set control "Hue dimmer switch" --control 2 --repeat-interval 1s
 Controls have no name: select one by ID, or by device with `--control <n>` (the control number shown by `get control`).
 Rotary dials have no configurable settings.
 
+`get control` also shows what each button does (`Short press` and `Hold` columns), and `set control` assigns scenes
+to a button of an accessory already configured in the Hue app, as the app does:
+
+```bash
+# A short press recalls a scene; with --with-off a second press turns the lights off
+openhue set control "Hue dimmer switch" --control 1 --scene Cozy --with-off
+
+# Repeat --scene to cycle through scenes (--repeat-timeout restarts the cycle after some idle time)
+openhue set control "Hue dimmer switch" --control 4 --scene Soho --scene Nebula --scene Dusk --repeat-timeout 10s
+
+# Choose what holding the button does (dim-up, dim-down, dim-alternate, none), or remove the short-press action
+openhue set control "Hue dimmer switch" --control 2 --on-hold dim-up
+openhue set control "Hue dimmer switch" --control 3 --clear
+
+# Print the configuration that would be sent to the bridge, without changing anything
+openhue set control "Hue dimmer switch" --control 1 --scene Cozy --dry-run
+```
+
+Scenes are looked up (by name or ID) among the scenes of the room the button is bound to. Everything else in the
+accessory configuration (other buttons, long press, time-based assignments) is left as is. The CLI reads the
+configuration, changes it and writes it back: edits made in the Hue app during that instant can be overwritten.
+
 For a complete list of features and usage, 
 please refer to the [OpenHue CLI online documentation](https://www.openhue.io/cli/openhue-cli).
 

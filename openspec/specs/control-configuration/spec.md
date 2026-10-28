@@ -7,7 +7,7 @@ Lets users change the configurable settings of a Hue button from the command lin
 ## Requirements
 
 ### Requirement: Select the control to configure
-`openhue set control` SHALL target exactly one control, given by ID, or by `<device name or ID>` together with `--control <n>` (the control number on that device).
+`openhue set control` SHALL target exactly one control, given by ID, or by `<device name or ID>` with optional `--control <n>` (the control number on that device). When `--control` is omitted, the target SHALL resolve to exactly one control.
 
 #### Scenario: By ID
 - **WHEN** the user runs `openhue set control <id> --repeat-interval 800ms`
@@ -19,7 +19,7 @@ Lets users change the configurable settings of a Hue button from the command lin
 
 #### Scenario: Ambiguous or missing
 - **WHEN** the argument matches no control, or several (for example a device with four buttons and no `--control`)
-- **THEN** an error naming the candidates is printed, nothing is sent and the exit status is non-zero
+- **THEN** an error is printed, nothing is sent and the exit status is non-zero; when several controls match, the error names the candidates
 
 ### Requirement: Configure button repeat interval
 `set control` SHALL accept `--repeat-interval`, a duration (`500ms`, `1s`) or a number of milliseconds, and send it as the button's repeat interval; on success it SHALL print the control and new value.

@@ -30,7 +30,10 @@ func NewCmdGetControl(ctx *openhue.Context, co *CmdGetOptions) *cobra.Command {
 		Short:   "Get controls (buttons and rotary dials)",
 		Long: `
 Displays the physical controls of your switches, dimmers and dials: buttons and rotary dials,
-with their device, room, control number on the device and last reported event.
+with their device, room, control number on the device and last reported event. For buttons, the
+"Short press" and "Hold" columns show what the button is configured to do (see 'openhue set control'):
+'scene <name>', 'cycle: <name>, <name>, ... (<n>)', 'time-based', 'smart-scene <id>', 'dim-up', '-' when
+nothing is assigned. With --json, each button also carries its raw 'configuration' as stored on the bridge.
 `,
 		Example: `
 # List all controls
@@ -92,7 +95,7 @@ func (o *ControlOptions) RunGetControlCmd(ctx *openhue.Context, args []string) e
 	if o.Json {
 		util.PrintJson(ctx.Io, controls)
 	} else {
-		util.PrintTable(ctx.Io, controls, PrintControl, "ID", "Kind", "Device", "Room", "Control", "Last Event", "Time")
+		util.PrintTable(ctx.Io, controls, PrintControl, "ID", "Kind", "Device", "Room", "Control", "Short press", "Hold", "Last Event", "Time")
 	}
 	return nil
 }
@@ -113,11 +116,18 @@ func PrintControl(c openhue.Control) string {
 		when = at.Local().Format(time.DateTime)
 	}
 
+	shortPress, hold := "-", "-"
+	if c.Kind == openhue.ControlKindButton {
+		shortPress, hold = c.ShortPressSummary(), c.HoldSummary()
+	}
+
 	return c.Id +
 		"\t" + string(c.Kind) +
 		"\t" + device +
 		"\t" + room +
 		"\t" + strconv.Itoa(c.ControlId) +
+		"\t" + shortPress +
+		"\t" + hold +
 		"\t" + event +
 		"\t" + when
 }

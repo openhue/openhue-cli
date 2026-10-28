@@ -18,6 +18,7 @@ type hueHomeCtx struct {
 	scenes        map[string]openhue.SceneGet
 	buttons       map[string]openhue.ButtonGet
 	rotaries      map[string]openhue.RelativeRotaryGet
+	behaviors     map[string]openhue.BehaviorInstanceGet
 }
 
 func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
@@ -66,6 +67,13 @@ func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
 		rotaries = nil
 	}
 
+	// Behavior instances only describe what the buttons do: tolerate failures too.
+	behaviors, err := home.GetBehaviorInstances(ctx)
+	if err != nil {
+		log.Warnf("unable to load behavior instances: %v", err)
+		behaviors = nil
+	}
+
 	log.Info("HomeModel loaded")
 
 	return &hueHomeCtx{
@@ -78,5 +86,6 @@ func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
 		scenes:        scenes,
 		buttons:       buttons,
 		rotaries:      rotaries,
+		behaviors:     behaviors,
 	}, nil
 }

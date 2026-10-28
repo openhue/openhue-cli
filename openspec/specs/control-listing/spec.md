@@ -7,7 +7,7 @@ Lets users discover and inspect the physical controls (buttons and rotary dials)
 ## Requirements
 
 ### Requirement: List controls
-`openhue get control` SHALL list every button and relative rotary known to the bridge as a table with ID, kind, device name, room name, control number and last event with its time. A control whose device is in no room SHALL show an empty room, and one that never reported SHALL show an empty last event.
+`openhue get control` SHALL list every button and relative rotary known to the bridge as a table with ID, kind, device name, room name, control number and last event with its time (when the bridge provides one). Listing is best-effort: if control discovery partly fails, the controls that could be loaded are listed. A control whose device is in no room SHALL show an empty room, and one that never reported SHALL show an empty last event.
 
 #### Scenario: List all
 - **WHEN** the user runs `openhue get control` on a home with a dimmer switch (4 buttons) and a tap dial (4 buttons, 1 rotary)

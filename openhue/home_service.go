@@ -317,6 +317,7 @@ func getControls(ctx *hueHomeCtx, device *Resource) []Control {
 			Kind:      ControlKindButton,
 			ControlId: controlNumber(b.Metadata),
 			Button:    &hueButton,
+			Behavior:  findBehavior(ctx, device.Id),
 		})
 	}
 

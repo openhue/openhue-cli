@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"openhue-cli/openhue"
+	"strings"
 	"testing"
 	"time"
 
@@ -59,7 +60,7 @@ func runGetControl(t *testing.T, home *openhue.HomeModel, args ...string) (strin
 	t.Helper()
 	ctx, out := openhue.NewTestContext(home)
 	cmd := NewCmdGetControl(ctx, &CmdGetOptions{})
-	cmd.SetArgs(args)
+	cmd.SetArgs(append([]string{}, args...))
 	cmd.SetOut(&bytes.Buffer{})
 	cmd.SetErr(&bytes.Buffer{})
 	err := cmd.Execute()
@@ -70,7 +71,7 @@ func runGetControlJson(t *testing.T, home *openhue.HomeModel, args ...string) []
 	t.Helper()
 	ctx, out := openhue.NewTestContext(home)
 	cmd := NewCmdGetControl(ctx, &CmdGetOptions{Json: true})
-	cmd.SetArgs(args)
+	cmd.SetArgs(append([]string{}, args...))
 	cmd.SetOut(&bytes.Buffer{})
 	cmd.SetErr(&bytes.Buffer{})
 	require.NoError(t, cmd.Execute())
@@ -136,6 +137,7 @@ func TestGetControlEmptyHome(t *testing.T) {
 	assert.Empty(t, got)
 	ctx, jsonOut := openhue.NewTestContext(home)
 	cmd := NewCmdGetControl(ctx, &CmdGetOptions{Json: true})
+	cmd.SetArgs([]string{})
 	require.NoError(t, cmd.Execute())
 	assert.JSONEq(t, "[]", jsonOut.String())
 }
@@ -145,4 +147,31 @@ func TestGetControlJsonIsRawResource(t *testing.T) {
 	require.Len(t, got, 1, "a single result is still an array")
 	assert.Equal(t, "button", got[0]["type"])
 	assert.Contains(t, got[0], "button")
+}
+
+func TestGetControlShowsButtonActions(t *testing.T) {
+	var cfg map[string]any
+	require.NoError(t, json.Unmarshal([]byte(`{
+		"device":{"rid":"d1","rtype":"device"},
+		"buttons":{
+			"b1":{"on_short_release":{"scene_cycle_extended":{"slots":[[{"action":{"recall":{"rid":"s1","rtype":"scene"}}}],[{"action":{"recall":{"rid":"s2","rtype":"scene"}}}]]}},
+				"on_long_press":{"action":"do_nothing"},"on_repeat":{"action":"dim_up"}}}}`), &cfg))
+
+	home := controlsHome()
+	home.Rooms[0].Devices[0].Controls[0].Behavior = &openhue.BehaviorInstance{Id: "bi1", Configuration: cfg}
+
+	out, err := runGetControl(t, home)
+	require.NoError(t, err)
+	lines := strings.Split(strings.TrimSpace(out), "\n")
+	assert.Contains(t, lines[0], "Short press")
+	assert.Contains(t, lines[0], "Hold")
+	assert.Regexp(t, `b1\s.*cycle: <unknown scene>, <unknown scene> \(2\)\s+dim-up`, out)
+	assert.Regexp(t, `b2\s.*\s-\s+-\s`, out, "unconfigured accessory shows dashes")
+
+	got := runGetControlJson(t, home, "b1")
+	conf, ok := got[0]["configuration"].(map[string]any)
+	require.True(t, ok, "JSON carries the configuration")
+	assert.Contains(t, conf, "on_long_press")
+	got = runGetControlJson(t, home, "b2")
+	assert.NotContains(t, got[0], "configuration")
 }

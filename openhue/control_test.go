@@ -19,6 +19,13 @@ import (
 // When controlsFail is set, the buttons endpoint returns an error.
 func loadControlsHome(t *testing.T, controlsFail bool) *HomeModel {
 	t.Helper()
+	return loadControlsHomeWith(t, controlsFail, `[]`, `[]`)
+}
+
+// loadControlsHomeWith is loadControlsHome with the given scenes and behavior instances (JSON arrays). A behaviors
+// value of "fail" makes the behavior instances endpoint return an error.
+func loadControlsHomeWith(t *testing.T, controlsFail bool, scenes, behaviors string) *HomeModel {
+	t.Helper()
 	h, m := openhue.NewTestHome()
 	st := &http.Response{StatusCode: 200}
 
@@ -40,7 +47,12 @@ func loadControlsHome(t *testing.T, controlsFail bool) *HomeModel {
 		{"id":"d4","type":"device","metadata":{"name":"Plain","archetype":"unknown_archetype"},"services":[]}]`)
 	set("GetLightsWithResponse", &openhue.GetLightsResponse{HTTPResponse: st}, `[]`)
 	set("GetGroupedLightsWithResponse", &openhue.GetGroupedLightsResponse{HTTPResponse: st}, `[{"id":"gl1","type":"grouped_light"}]`)
-	set("GetScenesWithResponse", &openhue.GetScenesResponse{HTTPResponse: st}, `[]`)
+	set("GetScenesWithResponse", &openhue.GetScenesResponse{HTTPResponse: st}, scenes)
+	if behaviors == "fail" {
+		m.On("GetBehaviorInstancesWithResponse", mock.Anything, mock.Anything).Return(&openhue.GetBehaviorInstancesResponse{HTTPResponse: &http.Response{StatusCode: 500}}, nil)
+	} else {
+		set("GetBehaviorInstancesWithResponse", &openhue.GetBehaviorInstancesResponse{HTTPResponse: st}, behaviors)
+	}
 
 	if controlsFail {
 		m.On("GetButtonsWithResponse", mock.Anything, mock.Anything).Return(&openhue.GetButtonsResponse{HTTPResponse: &http.Response{StatusCode: 500}}, nil)

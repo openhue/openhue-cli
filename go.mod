@@ -8,7 +8,7 @@ go 1.25.5
 
 require (
 	github.com/mark3labs/mcp-go v0.57.0
-	github.com/openhue/openhue-go v1.1.0
+	github.com/openhue/openhue-go v1.2.0
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
