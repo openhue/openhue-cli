@@ -2,7 +2,9 @@ package openhue
 
 import (
 	"context"
+	"encoding/json"
 	"openhue-cli/util/color"
+	"strconv"
 	"time"
 
 	"github.com/openhue/openhue-go"
@@ -56,7 +58,8 @@ type Device struct {
 	HueData *openhue.DeviceGet
 
 	// Services
-	Light *Light
+	Light    *Light
+	Controls []Control
 }
 
 // SetLightOptions contains the parameters for controlling a light or group of lights.
@@ -229,4 +232,94 @@ func (scene *Scene) Activate(action openhue.SceneRecallAction) error {
 	}
 
 	return scene.ctx.h.UpdateScene(context.Background(), scene.Id, body)
+}
+
+// ControlKind is the kind of a physical control: a button or a rotary dial.
+type ControlKind string
+
+const (
+	ControlKindButton ControlKind = "button"
+	ControlKindRotary ControlKind = "rotary"
+)
+
+// Control represents a physical control (button or relative rotary) of a device. Its Parent is the device.
+type Control struct {
+	Resource
+	Kind ControlKind
+	// ControlId is the number of the control on its device (1 if the bridge does not report it)
+	ControlId int
+	Button    *openhue.ButtonGet
+	Rotary    *openhue.RelativeRotaryGet
+	// Behavior is the behavior instance configuring the buttons of the device, nil if the accessory has none
+	Behavior *BehaviorInstance
+}
+
+// MarshalJSON prints the raw resource as reported by the bridge, with the button configuration when there is one.
+func (c Control) MarshalJSON() ([]byte, error) {
+	if c.Kind == ControlKindButton && c.Button != nil {
+		cfg := c.ButtonConfig()
+		if cfg == nil {
+			return json.Marshal(c.Button)
+		}
+		raw, err := json.Marshal(c.Button)
+		if err != nil {
+			return nil, err
+		}
+		var doc map[string]any
+		if err := json.Unmarshal(raw, &doc); err != nil {
+			return nil, err
+		}
+		doc["configuration"] = cfg
+		return json.Marshal(doc)
+	}
+	if c.Kind == ControlKindRotary && c.Rotary != nil {
+		return json.Marshal(c.Rotary)
+	}
+	return json.Marshal(map[string]any{"id": c.Id, "type": string(c.Kind)})
+}
+
+// Device returns the device owning the control, or nil.
+func (c *Control) Device() *Resource {
+	return c.Parent
+}
+
+// Room returns the room of the owning device, or nil if the device is in no room.
+func (c *Control) Room() *Resource {
+	if c.Parent == nil || c.Parent.Parent == nil {
+		return nil
+	}
+	if c.Parent.Parent.Type.is(openhue.ResourceIdentifierRtypeRoom) {
+		return c.Parent.Parent
+	}
+	return nil
+}
+
+// LastEvent returns a short description of the last report of the control and its time, both empty if it never reported.
+func (c *Control) LastEvent() (string, *time.Time) {
+	switch {
+	case c.Button != nil && c.Button.Button != nil:
+		b := c.Button.Button
+		if b.ButtonReport != nil && b.ButtonReport.Event != nil {
+			return string(*b.ButtonReport.Event), b.ButtonReport.Updated
+		}
+		if b.LastEvent != nil {
+			return string(*b.LastEvent), nil
+		}
+	case c.Rotary != nil && c.Rotary.RelativeRotary != nil:
+		r := c.Rotary.RelativeRotary
+		if r.RotaryReport != nil && r.RotaryReport.Action != nil {
+			ev := string(*r.RotaryReport.Action)
+			if rot := r.RotaryReport.Rotation; rot != nil && rot.Direction != nil {
+				ev += " " + string(*rot.Direction)
+				if rot.Steps != nil {
+					ev += " " + strconv.Itoa(*rot.Steps)
+				}
+			}
+			return ev, r.RotaryReport.Updated
+		}
+		if r.LastEvent != nil && r.LastEvent.Action != nil {
+			return string(*r.LastEvent.Action), nil
+		}
+	}
+	return "", nil
 }
