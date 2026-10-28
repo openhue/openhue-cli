@@ -68,12 +68,12 @@ func PrintRoom(room openhue.Room) string {
 	}
 
 	if room.GroupedLight != nil && room.GroupedLight.HueData != nil &&
-		room.GroupedLight.HueData.Dimming != nil && room.GroupedLight.HueData.Dimming.Brightness != nil {
-		brightness = fmt.Sprint(*room.GroupedLight.HueData.Dimming.Brightness) + "%"
+		room.GroupedLight.HueData.Dimming != nil {
+		brightness = fmt.Sprint(room.GroupedLight.HueData.Dimming.Brightness) + "%"
 	}
 
-	if room.HueData != nil && room.HueData.Metadata != nil && room.HueData.Metadata.Archetype != nil {
-		archetype = string(*room.HueData.Metadata.Archetype)
+	if room.HueData != nil && room.HueData.Metadata.Archetype != "" {
+		archetype = string(room.HueData.Metadata.Archetype)
 	}
 
 	return room.Id + "\t" + room.Name + "\t" + archetype + "\t" + status + "\t" + brightness

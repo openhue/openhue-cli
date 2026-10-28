@@ -107,8 +107,8 @@ func listRoomsHandler(h *op.Home) server.ToolHandlerFunc {
 			}
 
 			if room.GroupedLight != nil && room.GroupedLight.HueData != nil &&
-				room.GroupedLight.HueData.Dimming != nil && room.GroupedLight.HueData.Dimming.Brightness != nil {
-				info["brightness"] = *room.GroupedLight.HueData.Dimming.Brightness
+				room.GroupedLight.HueData.Dimming != nil {
+				info["brightness"] = room.GroupedLight.HueData.Dimming.Brightness
 			}
 
 			result = append(result, info)

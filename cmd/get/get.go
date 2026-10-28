@@ -1,6 +1,7 @@
 package get
 
 import (
+	"context"
 	oh "github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
@@ -46,11 +47,11 @@ Retrieve information for any kind of resources exposed by your Hue Bridge: light
 
 func RunGetAllResources(ctx *openhue.Context, typeFlag string, o *CmdGetOptions) {
 
-	resp, err := ctx.H.GetResources()
+	resp, err := ctx.H.GetResources(context.Background())
 	cobra.CheckErr(err)
 	var resources []oh.ResourceGet
 	for _, r := range resp {
-		if len(typeFlag) == 0 || len(typeFlag) > 0 && *r.Type == oh.ResourceGetType(typeFlag) {
+		if len(typeFlag) == 0 || len(typeFlag) > 0 && r.Type == oh.ResourceGetType(typeFlag) {
 			resources = append(resources, r)
 		}
 	}
@@ -63,5 +64,5 @@ func RunGetAllResources(ctx *openhue.Context, typeFlag string, o *CmdGetOptions)
 }
 
 func PrintResource(resource oh.ResourceGet) string {
-	return *resource.Id + "\t" + string(*resource.Type)
+	return resource.Id + "\t" + string(resource.Type)
 }

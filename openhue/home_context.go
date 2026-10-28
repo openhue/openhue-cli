@@ -1,6 +1,8 @@
 package openhue
 
 import (
+	"context"
+
 	"github.com/openhue/openhue-go"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,33 +19,34 @@ type hueHomeCtx struct {
 }
 
 func loadHueHomeCtx(home *openhue.Home) (*hueHomeCtx, error) {
+	ctx := context.Background()
 
-	hueHome, err := home.GetBridgeHome()
+	hueHome, err := home.GetBridgeHome(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	rooms, err := home.GetRooms()
+	rooms, err := home.GetRooms(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	devices, err := home.GetDevices()
+	devices, err := home.GetDevices(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	lights, err := home.GetLights()
+	lights, err := home.GetLights(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	groupedLights, err := home.GetGroupedLights()
+	groupedLights, err := home.GetGroupedLights(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	scenes, err := home.GetScenes()
+	scenes, err := home.GetScenes(ctx)
 	if err != nil {
 		return nil, err
 	}
