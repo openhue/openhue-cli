@@ -1,0 +1,37 @@
+# Checks that the openhue skill is still discoverable by the skills CLI that
+# powers https://www.skills.sh after SKILL.md changes land on main.
+#
+# skills.sh has no publish or update API: it reads the GitHub repo directly and
+# ranks skills from install telemetry. So this only verifies the listing source;
+# it does not run an install, which would add a fake install to the leaderboard.
+
+name: skills.sh
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "SKILL.md"
+      - ".claude/skills/**"
+      - ".github/workflows/skills-sh.yml"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: List skills as the skills CLI sees them
+        run: |
+          npx --yes skills add "${{ github.repository }}" --list | sed 's/\x1b\[[0-9;]*m//g' | tee skills.txt
+          # The root SKILL.md is named "openhue"; fail if it is not discovered.
+          grep -qE '^[^A-Za-z0-9]*openhue[[:space:]]*$' skills.txt

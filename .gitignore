@@ -45,4 +45,4 @@ bin/
 dist/
 
 # go build output
-openhue-cli
+/openhue-cli

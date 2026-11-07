@@ -11,6 +11,7 @@ import (
 	"openhue-cli/cmd/mcp"
 	"openhue-cli/cmd/set"
 	"openhue-cli/cmd/setup"
+	"openhue-cli/cmd/skill"
 	"openhue-cli/cmd/update"
 	"openhue-cli/cmd/version"
 	"openhue-cli/openhue"
@@ -76,7 +77,7 @@ func LoadHomeIfNeeded(ctx *openhue.Context, cmd *cobra.Command) {
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(buildInfo *openhue.BuildInfo) {
+func Execute(buildInfo *openhue.BuildInfo, skillContent []byte) {
 
 	// load the configuration
 	c := openhue.Config{}
@@ -90,6 +91,7 @@ func Execute(buildInfo *openhue.BuildInfo) {
 
 	// add sub commands
 	addCommands(root, ctx)
+	root.AddCommand(skill.NewCmdInstallSkill(ctx.Io, skillContent))
 
 	// execute the root command
 	err := root.Execute()
