@@ -99,6 +99,40 @@ Scenes are looked up (by name or ID) among the scenes of the room the button is 
 accessory configuration (other buttons, long press, time-based assignments) is left as is. The CLI reads the
 configuration, changes it and writes it back: edits made in the Hue app during that instant can be overwritten.
 
+## Using OpenHue with AI agents
+
+### Agent skill
+
+The CLI ships an agent skill, published on [skills.sh](https://www.skills.sh/openhue/openhue-cli/openhue), that teaches
+coding agents (Claude Code and others) how to drive `openhue`. Install it with:
+
+```bash
+npx skills add openhue/openhue-cli
+```
+
+Then ask your agent things like "dim the living room to 30%" or "create a cozy scene in the office".
+
+### Natural-language shell helper
+
+Combine the skill with Claude Code's non-interactive mode to control your lights from the terminal in plain English.
+Add this function to your `~/.zshrc` or `~/.bashrc`:
+
+```bash
+hue() {
+  claude -p "$*" --model haiku \
+    --append-system-prompt "$(cat ~/.claude/skills/openhue/SKILL.md)" \
+    --allowedTools "Bash(openhue:*)"
+}
+```
+
+```bash
+hue turn the office lights to warm white at 40%
+```
+
+The skill is loaded as extra system prompt, Haiku keeps it fast and cheap, and `--allowedTools` restricts Claude to
+`openhue` commands only. Adjust the `SKILL.md` path if your skill is installed elsewhere (for example
+`.claude/skills/openhue-cli/SKILL.md` in this repository).
+
 For a complete list of features and usage, 
 please refer to the [OpenHue CLI online documentation](https://www.openhue.io/cli/openhue-cli).
 
