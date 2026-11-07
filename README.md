@@ -118,10 +118,6 @@ Check that it works:
 ```shell
 openhue help
 ```
-To teach Claude Code how to use the CLI, install the bundled skill:
-```shell
-openhue install-skill
-```
 To upgrade when a new version is released:
 ```shell
 brew update

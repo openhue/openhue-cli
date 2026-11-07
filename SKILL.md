@@ -1,6 +1,6 @@
 ---
 name: openhue
-description: Control Philips Hue lights from the terminal with the `openhue` CLI — install it, pair it with a Hue Bridge, list and switch lights and rooms, set brightness and colors, activate, create, edit and delete scenes, configure switch buttons, and run the MCP server for LLM clients. Use when the user wants to control Hue lights, rooms or scenes, or asks how to run an `openhue ...` command.
+description: Control Philips Hue lights from the terminal with the `openhue` CLI — install it, pair it with a Hue Bridge, list and switch lights and rooms, set brightness and colors, activate, create, edit and delete scenes, configure switch buttons. Use when the user wants to control Hue lights, rooms or scenes, or asks how to run an `openhue ...` command.
 ---
 
 # Using the openhue CLI
@@ -17,13 +17,6 @@ brew install openhue-cli
 openhue version
 ```
 
-Install this skill for Claude Code (re-run after each upgrade to refresh it):
-
-```bash
-openhue install-skill              # ~/.claude/skills/openhue/SKILL.md
-openhue install-skill --project    # ./.claude/skills/openhue/SKILL.md
-```
-
 ### Docker alternative
 
 The image has no config of its own: mount the host config folder on `/.openhue` for every command. An alias makes the rest of this guide work as written:
@@ -36,7 +29,6 @@ openhue get lights
 
 - Config under `$XDG_CONFIG_HOME/openhue` on the host? Mount that folder instead: `-v "${XDG_CONFIG_HOME}/openhue:/.openhue"`.
 - On Linux, `--network host` lets `setup` and `discover` find the bridge without `-b`.
-- `install-skill` writes inside the container, so use `openhue install-skill --print > ~/.claude/skills/openhue/SKILL.md` (create the folder first).
 
 ## 2. Pair with the bridge (once)
 
@@ -146,14 +138,6 @@ Repeat `--scene` to cycle scenes on each press. Other flags: `--on-hold dim-up|d
 ```bash
 openhue get events    # streams bridge events as JSON; Ctrl+C to stop
 ```
-
-## 8. Use from an LLM (MCP server)
-
-```json
-{ "mcpServers": { "openhue": { "command": "openhue", "args": ["mcp"] } } }
-```
-
-Tools exposed: `list_lights`, `list_rooms`, `list_scenes`, `set_light`, `set_room`, `activate_scene`.
 
 ## Troubleshooting
 

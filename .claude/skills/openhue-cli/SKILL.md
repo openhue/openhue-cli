@@ -18,7 +18,6 @@ Run from source: `go run . <args>` (or `make build` → `./dist`).
 | | `config -b <ip> -k <key>` | | Save bridge IP + application key manually |
 | | `discover` | | Print bridges found via mDNS |
 | | `completion` | | Shell completion scripts |
-| | `install-skill` | | Write the root `SKILL.md` (embedded in the binary) to `~/.claude/skills/openhue/` (`$CLAUDE_CONFIG_DIR/skills` if set). `--project` → `./.claude/skills`, `--dir <skills dir>`, `--print` → stdout. Overwrites; reports installed / updated / already up to date |
 | | `version` | | Build info |
 | Philips Hue | `get light\|room\|scene\|control\|events` | `get`=`g` | Read resources |
 | | `set light\|room\|scene\|control` | `set`=`s` | Change state / activate / configure |
@@ -33,7 +32,7 @@ Every resource subcommand accepts singular or plural (`light`/`lights`, `scene`/
 
 - Config file: `~/.openhue/config.yaml`, or `$XDG_CONFIG_HOME/openhue/config.yaml`. Keys: `Bridge`, `Key`, optional `log_level`.
 - Log file: `openhue.log` next to the config.
-- Without config, any command not in `CommandsWithNoConfig` (`setup`, `config`, `help`, `discover`, `auth`, `version`, `completion`, `install-skill`) prints "not configured yet, please run the 'setup' command" and exits 0.
+- Without config, any command not in `CommandsWithNoConfig` (`setup`, `config`, `help`, `discover`, `auth`, `version`, `completion`) prints "not configured yet, please run the 'setup' command" and exits 0.
 - Commands in the `hue` group load the full `HomeModel` from the bridge in `PersistentPreRun` before running (one round-trip of all resources). Config/MCP commands skip it.
 
 ## Resolving resources

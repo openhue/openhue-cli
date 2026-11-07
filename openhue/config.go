@@ -16,7 +16,7 @@ import (
 )
 
 // CommandsWithNoConfig contains the list of commands that don't require the configuration to exist
-var CommandsWithNoConfig = []string{"setup", "config", "help", "discover", "auth", "version", "completion", "install-skill"}
+var CommandsWithNoConfig = []string{"setup", "config", "help", "discover", "auth", "version", "completion"}
 var configPath string
 
 func init() {
