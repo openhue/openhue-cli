@@ -24,11 +24,19 @@ openhue install-skill              # ~/.claude/skills/openhue/SKILL.md
 openhue install-skill --project    # ./.claude/skills/openhue/SKILL.md
 ```
 
-Docker alternative (mount the config folder):
+### Docker alternative
+
+The image has no config of its own: mount the host config folder on `/.openhue` for every command. An alias makes the rest of this guide work as written:
 
 ```bash
-docker run -v "${HOME}/.openhue:/.openhue" --rm -it openhue/cli get lights
+alias openhue='docker run -v "${HOME}/.openhue:/.openhue" --rm -it openhue/cli'
+openhue setup -b 192.168.1.68    # pass the bridge IP: mDNS rarely crosses Docker's default network
+openhue get lights
 ```
+
+- Config under `$XDG_CONFIG_HOME/openhue` on the host? Mount that folder instead: `-v "${XDG_CONFIG_HOME}/openhue:/.openhue"`.
+- On Linux, `--network host` lets `setup` and `discover` find the bridge without `-b`.
+- `install-skill` writes inside the container, so use `openhue install-skill --print > ~/.claude/skills/openhue/SKILL.md` (create the folder first).
 
 ## 2. Pair with the bridge (once)
 
@@ -105,7 +113,8 @@ Edit or copy through YAML:
 
 ```bash
 openhue get scene Cozy -r "Living Room" --yaml > cozy.yaml
-openhue update scene Cozy -r "Living Room" --from-file cozy.yaml
+openhue create scene "Cozy Copy" -r "Living Room" --from-file cozy.yaml   # copy, original untouched
+openhue update scene Cozy -r "Living Room" --from-file cozy.yaml          # or edit cozy.yaml and apply it back
 openhue update scene Cozy --light "Shelf:on,brightness=30" --remove-light Ceiling
 openhue update scene Cozy --name "Cozy Evening"
 ```
