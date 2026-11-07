@@ -17,6 +17,13 @@ brew install openhue-cli
 openhue version
 ```
 
+Install this skill for Claude Code (re-run after each upgrade to refresh it):
+
+```bash
+openhue install-skill              # ~/.claude/skills/openhue/SKILL.md
+openhue install-skill --project    # ./.claude/skills/openhue/SKILL.md
+```
+
 Docker alternative (mount the config folder):
 
 ```bash

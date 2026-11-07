@@ -60,7 +60,7 @@ Config stored in `~/.openhue/config.yaml` (or `$XDG_CONFIG_HOME/openhue/`). Cont
 
 `.claude/skills/openhue-cli/SKILL.md` documents every command, alias and flag of the CLI. **Whenever you add, rename, remove or change a command, subcommand, alias, flag, default or MCP tool, update that skill in the same change.** It covers the command map, the flag tables, the examples and the MCP tool list. Check it against `go run . <cmd> --help`; if the two disagree, `--help` is right.
 
-The root `SKILL.md` is the user-facing guide (install, setup, everyday usage). Update it too when a change affects how users run the CLI.
+The root `SKILL.md` is the user-facing guide (install, setup, everyday usage). Update it too when a change affects how users run the CLI. It is embedded in the binary (`//go:embed` in `main.go`) and written to disk by `openhue install-skill` (`cmd/skill/`).
 
 ### Testing Pattern
 
