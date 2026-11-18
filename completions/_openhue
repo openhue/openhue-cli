@@ -10,33 +10,47 @@
 # lifetime in seconds:
 #   zstyle ':completion:*:openhue*:*' cache-ttl 120
 
-typeset -gA _openhue_cache _openhue_cache_time
+typeset -gA _openhue_cache _openhue_cache_time _openhue_cache_failed
 
 # Fill reply with "id<TAB>name<TAB>where<TAB>state<TAB>where-id" lines.
-# Returns 1 if the bridge could not be queried; a successful empty result
-# is cached like any other.
+# Returns 1 if the bridge could not be queried. A successful empty result
+# is cached like any other; a failure is remembered for ttl/8 (15 s by
+# default) so a bridge that is down does not block every Tab.
 _openhue_fetch() {
-  local kind=$1 ttl filter out
+  local kind=$1 ttl filter out age
+  local -a cmd
   zstyle -s ":completion:${curcontext}:" cache-ttl ttl || ttl=120
-  if [[ -z $_openhue_cache_time[$kind] ]] ||
-     (( SECONDS - $_openhue_cache_time[$kind] > ttl )); then
-    case $kind in
-      light) filter='.[] | [.Id, .Name, (.Parent.Parent.Name // ""),
-                (if .HueData.on.on then "on" else "off" end),
-                (.Parent.Parent.Id // "")] | @tsv' ;;
-      room)  filter='.[] | [.Id, .Name, (.HueData.metadata.archetype // ""),
-                (if .GroupedLight.HueData.on.on then "on" else "off" end),
-                ""] | @tsv' ;;
-      scene) filter='.[] | [.Id, .Name, (.Parent.Name // ""),
-                (.HueData.status.active // ""), (.Parent.Id // "")] | @tsv' ;;
-    esac
-    out=$(set -o pipefail
-          _call_program ${kind}s $service get $kind --json 2>/dev/null \
-            | jq -r "$filter" 2>/dev/null) || return 1
-    _openhue_cache[$kind]=$out
-    _openhue_cache_time[$kind]=$SECONDS
+  if [[ -n $_openhue_cache_time[$kind] ]]; then
+    age=$(( SECONDS - _openhue_cache_time[$kind] ))
+    if [[ -n $_openhue_cache_failed[$kind] ]]; then
+      (( age <= ttl / 8 )) && return 1
+    elif (( age <= ttl )); then
+      reply=("${(@f)_openhue_cache[$kind]}")
+      return 0
+    fi
   fi
-  reply=("${(@f)_openhue_cache[$kind]}")
+  case $kind in
+    light) filter='.[] | [.Id, .Name, (.Parent.Parent.Name // ""),
+              (if .HueData.on.on then "on" else "off" end),
+              (.Parent.Parent.Id // "")] | @tsv' ;;
+    room)  filter='.[] | [.Id, .Name, (.HueData.metadata.archetype // ""),
+              (if .GroupedLight.HueData.on.on then "on" else "off" end),
+              ""] | @tsv' ;;
+    scene) filter='.[] | [.Id, .Name, (.Parent.Name // ""),
+              (.HueData.status.active // ""), (.Parent.Id // "")] | @tsv' ;;
+  esac
+  cmd=($service get $kind --json)
+  (( $+commands[timeout] )) && cmd=(timeout 5 $cmd)
+  _openhue_cache_time[$kind]=$SECONDS
+  if out=$(set -o pipefail
+           _call_program ${kind}s $cmd 2>/dev/null | jq -r "$filter" 2>/dev/null); then
+    _openhue_cache[$kind]=$out
+    unset "_openhue_cache_failed[$kind]"
+    reply=("${(@f)out}")
+    return 0
+  fi
+  _openhue_cache_failed[$kind]=1
+  return 1
 }
 
 # _openhue_resources KIND TAG DESCRIPTION
@@ -78,6 +92,8 @@ _openhue_positional() {
   if [[ -z $PREFIX$SUFFIX ]]; then
     for (( i = 2; i < CURRENT; i++ )); do
       case $words[i] in
+        # Flags that take a value: skip the value. Keep in sync with the
+        # specs in _openhue_get and _openhue_set when adding a flag.
         -[bxyctra]|--brightness|--cie-x|--cie-y|--color|--rgb|--temperature|--transition-time|--room|--action|--type)
           (( i++ )) ;;
         -*) ;;
