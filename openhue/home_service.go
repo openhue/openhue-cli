@@ -62,6 +62,25 @@ func SearchLights(home *HomeModel, roomNameOrId string, nameOrIds []string) []Li
 		}
 	}
 
+	// Lights that don't belong to any room are direct children of the home.
+	// They can only be matched when no room filter is applied.
+	if roomNameOrId == "" {
+		for _, device := range home.Devices {
+			if device.Light == nil {
+				continue
+			}
+			if len(nameOrIds) == 0 {
+				lights = append(lights, *device.Light)
+				continue
+			}
+			for _, nameOrId := range nameOrIds {
+				if device.Light.matchesNameOrId(nameOrId) {
+					lights = append(lights, *device.Light)
+				}
+			}
+		}
+	}
+
 	return lights
 }
 
