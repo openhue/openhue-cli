@@ -2,6 +2,7 @@ package get
 
 import (
 	"fmt"
+	oh "github.com/openhue/openhue-go"
 	"github.com/spf13/cobra"
 	"openhue-cli/openhue"
 	"openhue-cli/util"
@@ -77,7 +78,7 @@ func PrintLight(light openhue.Light) string {
 	archetype := "N/A"
 
 	// parent of a light is the device that belongs to a room
-	if light.Parent != nil && light.Parent.Parent != nil {
+	if light.Parent != nil && light.Parent.Parent != nil && light.Parent.Parent.Type == openhue.HomeResourceType(oh.ResourceGetTypeRoom) {
 		room = light.Parent.Parent.Name
 	}
 
